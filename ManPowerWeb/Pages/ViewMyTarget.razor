@@ -1,0 +1,526 @@
+﻿@page "/planning/annualTargets/viewTarget/{ProgramId}"
+
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@using System.Text.RegularExpressions
+@using Radzen
+@using System.Text.Json
+
+
+<div id="main">
+    <RadzenCard Style="padding-left:45px;">
+        @foreach (var prop in programTargetsList.Where(u => u.ProgramTargetId == Convert.ToInt32(ProgramId)))
+        {
+            <div class="wizard-heading" style="align-content:center;">View My Target</div>
+
+            @foreach (var item in assignees.Where(u => u.ProgramTargetId == prop.ProgramTargetId))
+            {
+                <div class="row">
+
+                    <div class="col-6">
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Year" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Placeholder="@prop.TargetYear.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled/>
+                            </div>
+                        </div>
+                        <br />
+
+                        @foreach (var i in assignees)
+                        {
+                            @if(i._DepartmentUnitPositions._DepartmentUnit.DepartmentUnitTypeId == 2)
+                            {
+                                district = i._DepartmentUnitPositions._DepartmentUnit._DepartmentUnitType.Name;
+                            }
+                            else if (i._DepartmentUnitPositions._DepartmentUnit.DepartmentUnitTypeId == 3)
+                            {
+                                ds = i._DepartmentUnitPositions._DepartmentUnit._DepartmentUnitType.Name;
+                            }
+                            
+                        }
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="District" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@district" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                            <br />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Designation" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@item._Designation.DesigntionName" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+
+                    @*----------------------------*@
+                    <div class="col-6">
+
+                        <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Target" />
+                        </div>
+                        <div class="col-7">
+                            @if(String.IsNullOrWhiteSpace(ds))
+                            {
+                                    <RadzenTextBox Class="w-100" Placeholder="District Level Target" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            }
+                            else
+                            {
+                                    <RadzenTextBox Class="w-100" Placeholder="DS Division Level Target" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            }
+                        </div>
+                    </div>
+
+                    <br />
+
+                    
+                        <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="DS Division" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="@ds" Style="margin-bottom:10px;font-size:0.9em;" Disabled/>
+                                </div>
+                            </div>
+                            <br />
+
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Officer Name" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@item._DepartmentUnitPositions._SystemUser.Name" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        
+
+                        @*@foreach (var i in listUser.Where(u => u.DepartmentUnitId == selectedDistrict))
+                        {
+                            depUnitPId = @i.DepartmetUnitPossitionsId;
+                        }
+                    }
+                    else
+                    {
+                            <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Officer Name" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Data="@listUser.Where(u => u.DepartmentUnitId == selectedDSDivision)"
+                                            ValueProperty="SystemUserId" TextProperty="_SystemUser.Name" @bind-Value="selectedOfficer" Name="Officer" />
+                                <RadzenRequiredValidator Component="Officer" Text="OfficerName is required" Style="position: absolute" />
+                            </div>
+                        </div>
+                        <br />
+                        @foreach (var i in listUser.Where(u => u.DepartmentUnitId == selectedDSDivision))
+                        {
+                            depUnitPId = @i.DepartmetUnitPossitionsId;
+                        }
+
+                    }*@
+                    </div>
+                </div>
+                }
+
+                <br /><br />
+
+
+
+
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Program Type" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@prop._ProgramType.ProgramTypeName" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Program" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@prop._Program.ProgramName" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Start Date" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@prop.StartDate.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="End Date" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@prop.EndDate.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                    </div>
+
+                    @*----------------------------*@
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Instructions" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextArea Class="w-100" Placeholder="@prop.Instractions" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Description" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextArea Class="w-100" Placeholder="@prop.Description" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Vote" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@prop.VoteNumber" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+
+
+                    </div>
+                </div>
+                <br/>
+
+            @foreach (var i in monthTable.Where(u => u.monthNumber == prop.TargetMonth))
+            {
+                monthName = i.monthName;
+            }
+
+                <div class="row">
+                    <div class="col-6">
+                        <h4 style="font-weight:bold;">Target: physical / financial : </h4><br /><br/>
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Month" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox Class="w-100" Placeholder="@monthName" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Physical Count" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox Class="w-100" Placeholder="@prop.NoOfProjects.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Financial Count" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox Class="w-100" Placeholder="@prop.EstimatedAmount.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                <div class="col-6">
+                    <h4 style="font-weight:bold;">Expected Output :  </h4><br />
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Output" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@prop.Output.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Outcome" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Class="w-100" Placeholder="@prop.Outcome.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                            </div>
+                        </div>
+                        <br /><br/>
+
+                    </div>
+                </div>
+
+                <br /><br />
+
+            <div class="row">
+                <div class="col-2">
+                    <a href="/planning/annualTargets">
+                         <RadzenButton ButtonType="ButtonType.Submit" Text="Back" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
+                    </a>
+                </div>
+                
+                @if(prop.IsRecommended == 1)
+                {
+                        <div class="col-2">
+                                <RadzenButton ButtonType="ButtonType.Submit" Text="Update" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;" Disabled></RadzenButton>
+                        </div>
+                        <div class="col-2">
+                            <RadzenButton Text="Pending Recommondation.." ButtonStyle="ButtonStyle.Warning" Style="width:260px;" />
+                        </div>
+                }
+                    else if (prop.IsRecommended == 2)
+                {
+                        <div class="col-2">
+                                <RadzenButton ButtonType="ButtonType.Submit" Text="Update" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;" Disabled></RadzenButton>
+                        </div>
+                        <div class="col-2">
+                                <RadzenButton Text="Recommended" Icon="check_circle" ButtonStyle="ButtonStyle.Success" Style="width:230px;" />
+                        </div>
+                }
+                else if (prop.IsRecommended == 3)
+                {
+                        <div class="col-2">
+                            <a href="@($"/planning/annualTargets/updateTarget/{prop.ProgramTargetId}")">
+                                <RadzenButton ButtonType="ButtonType.Submit" Text="Update" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
+                            </a>
+                        </div>
+                        <div class="col-2">
+                            <RadzenButton Text="Send to Recommondation"  ButtonStyle="ButtonStyle.Warning" Style="width:230px;" Disabled/>
+                        </div>
+                }
+                else
+                {
+                        <div class="col-2">
+                            <a href="@($"/planning/annualTargets/updateTarget/{prop.ProgramTargetId}")">
+                                <RadzenButton ButtonType="ButtonType.Submit" Text="Update" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
+                            </a>
+                        </div>
+                     <div class="col-2">
+                         <input onclick="document.getElementById('id01').style.display='block'" type="button" class="rdzn-btn" value="Send to Recommondation" style="width:230px;"/>
+                    </div>
+                }
+
+            </div>
+            <br />
+        </div>
+        }
+
+        @*---------------- Dialog box -----------------------*@
+
+        <div class="w3-container">
+
+            <div id="id01" class="w3-modal">
+                <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:40%;">
+
+                    <div class="w3-center">
+                        <br>
+                        <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-xlarge w3-display-topright" title="Close Modal">&times;</span>
+                        <h2>Recommondation</h2>
+                    </div>
+
+                    <form class="w3-container" action="/action_page.php" style="padding:70px">
+                        <div class="w3-section">
+                            <label><b>Recommondation Type</b></label>
+                            <select class="form-select" aria-label="Default select example" required>
+                                <option selected>Open this select menu</option>
+                                <option value="1">Send to recommondation</option>
+                                <option value="2">Send to approval</option>
+                            </select>
+
+                            <br /><br />
+
+                            <label><b>Officer Name</b></label>
+                            <select class="form-select" aria-label="Default select example" required>
+                                <option selected>Open this select menu</option>
+                                <option value="1">Mr. R Fernando</option>
+                                <option value="2">Mrs. A Abhesinghe</option>
+                            </select>
+                        </div>
+                    </form>
+
+                    <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                        <div class="row justify-content-evenly">
+                            <div class="col-4">
+                                <input onclick="document.getElementById('id01').style.display='none'" type="button" class="red-btn" value="Cancel" style="width:160px;" />
+                            </div>
+                            <div class="col-4">
+                                <RadzenButton Click="onClick_send" Icon="send" Text="Send" ButtonStyle="ButtonStyle.Info" Shade="Shade.Darker" Style="width:100px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        @*---------------------------------------*@
+
+    </RadzenCard>
+</div>
+
+
+
+
+
+@code {
+
+    string[] year = { "2022", "2023" };
+
+    [Parameter]
+    public string ProgramId { get; set; }
+
+    List<Month> monthTable = new List<Month>();
+
+    string[] arrVote = { "328-02-01-02-2509", "428-02-01-02-2509", "528-02-01-02-2509", "628-02-01-02-2509" };
+
+    string[] user;
+    private string district;
+    private string ds;
+
+
+
+    private bool isChecked = false;
+    private bool isUpdated = false;
+    private int selectedDistrict;
+    private int selectedDSDivision;
+    private int selectedProgramID;
+    private string selectedProgram;
+    private int selectedDesignation;
+    private int selectedOfficer;
+    private string OfficerName;
+    private int month;
+    private string monthName;
+    private int depUnitPId;
+    private int radioSelection;
+
+
+    private string selectedYear;
+    private int programType;
+    private string pInstruct = "";
+    private string vote = "";
+    private string description = "";
+
+    private string phyCount;
+    private string finCount;
+
+    private string output;
+    private string outcome;
+
+    private DateTime sDate = DateTime.Now;
+    private DateTime eDate = DateTime.Now;
+
+    ProgramTarget programTarget = new ProgramTarget();
+    List<ProgramTarget> searchTarget = new List<ProgramTarget>();
+    ProgramAssignee programAssignee = new ProgramAssignee();
+    List<DepartmentUnit> listDistrict = new List<DepartmentUnit>();
+    List<DepartmentUnit> listDSDivision = new List<DepartmentUnit>();
+    List<Designation> listDesignation = new List<Designation>();
+    List<ProgramType> listProgramType = new List<ProgramType>();
+    List<DepartmentUnitPositions> listUser = new List<DepartmentUnitPositions>();
+    List<SystemUser> listUsers = new List<SystemUser>();
+    List<ManPowerCore.Domain.Program> program = new List<ManPowerCore.Domain.Program>();
+    List<ProgramTarget> programTargetsList = new List<ProgramTarget>();
+    List<ProgramAssignee> assignees = new List<ProgramAssignee>();
+
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        monthTable.Add(new Month() { monthName = "January", monthNumber = 1 });
+        monthTable.Add(new Month() { monthName = "February", monthNumber = 2 });
+        monthTable.Add(new Month() { monthName = "March", monthNumber = 3 });
+        monthTable.Add(new Month() { monthName = "April", monthNumber = 4 });
+        monthTable.Add(new Month() { monthName = "May", monthNumber = 5 });
+        monthTable.Add(new Month() { monthName = "June", monthNumber = 6 });
+        monthTable.Add(new Month() { monthName = "July", monthNumber = 7 });
+        monthTable.Add(new Month() { monthName = "August", monthNumber = 8 });
+        monthTable.Add(new Month() { monthName = "September", monthNumber = 9 });
+        monthTable.Add(new Month() { monthName = "October", monthNumber = 10 });
+        monthTable.Add(new Month() { monthName = "November", monthNumber = 11 });
+        monthTable.Add(new Month() { monthName = "December", monthNumber = 12 });
+
+        DepartmentUnitTypeController _DepartmentUnitTypeController = ControllerFactory.CreateDepartmentUnitTypeController();
+        listDistrict = _DepartmentUnitTypeController.GetDepartmentUnitType(2, true)._DepartmentUnit;
+        listDSDivision = _DepartmentUnitTypeController.GetDepartmentUnitType(3, true)._DepartmentUnit;
+
+        DesignationController designationController = ControllerFactory.CreateDesignationController();
+        listDesignation = designationController.GetAllDesignation(true, false);
+
+        SystemUserController systemUserController = ControllerFactory.CreateSystemUserController();
+        listUsers = systemUserController.GetAllSystemUser(true, false, false);
+
+        ProgramTypeController programTypeController = ControllerFactory.CreateProgramTypeController();
+        listProgramType = programTypeController.GetAllProgramType(false);
+
+        DepartmentUnitPositionsController unitPositionsController = ControllerFactory.CreateDepartmentUnitPositionsController();
+        listUser = unitPositionsController.GetAllDepartmentUnitPositions(false, false, true, false, true);
+
+        ProgramController programController = ControllerFactory.CreateProgramController();
+        program = programController.GetAllProgram(false);
+
+        ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
+        programTargetsList = programTargetController.GetAllProgramTarget(true, true, true, true);
+
+        ProgramAssigneeController programAssigneeController = ControllerFactory.CreateProgramAssigneeController();
+        assignees = programAssigneeController.GetAllProgramAssignee(true,true,true);
+
+    }
+
+    async void onClick_send()
+    {
+
+        ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
+
+        foreach (var prop in programTargetsList.Where(u => u.IsRecommended == 0 && u.ProgramTargetId == int.Parse(ProgramId)))
+        {
+            programTargetController.UpdateProgramTargetApproval(prop.ProgramTargetId, 1);
+        }
+
+        await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Sent to Reccomendation..");
+        NavigationManager.NavigateTo("/planning/annualTargets", true);
+    }
+
+}
+

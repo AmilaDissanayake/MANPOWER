@@ -1,0 +1,90 @@
+﻿@inherits LayoutComponentBase
+
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+@using Radzen
+@using System.Text.Json
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@using ManPowerCore.Domain
+@using ManPowerCore.Common
+@using ManPowerCore.Controller
+@using ManPowerCore.Infrastructure
+
+
+<NavMenu />
+
+<div class="main">
+    <div class="top-row">
+        <div class="col-9">
+            <img src="../header2.png" style="height:94%; width:30em" />
+        </div>
+        <div class="col-1">
+            <RadzenButton Style="color:white;" Icon="person" Shade="Shade.Lighter" Click="GetUserInformatin"></RadzenButton>
+
+        </div>
+        @if (isClicked == true)
+        {
+            <div class="col-2">
+                @if (userRegistationDetailsList != null)
+                {
+                    name = "Log Out " + @userRegistationDetailsList.Name;
+                }
+                <RadzenButton Click="LogOutUser" Shade="Shade.Lighter" Text=@name ButtonStyle="ButtonStyle.Danger" />
+            </div>
+        }
+
+
+        @*<img src="../profile-user.png" style="height:2em; width:2em; margin-left:800px; margin-top:5px" @onclick="GetUserInformatin" />
+
+
+        @if (userRegistationDetailsList != null)
+        {
+        <RadzenButton style=" margin-left:30px; margin-top:0px" Click="LogOutUser" Shade="Shade.Darker" Text="Log Out" ButtonStyle="ButtonStyle.Primary" />
+
+        <p style="margin-left:1240px; margin-top:-20px; font-size:smaller; color:aliceblue">@userRegistationDetailsList.Name</p>
+        }
+        </div>*@
+    </div>
+
+    <div class="content px-4">
+
+        @* <button style="margin-left:1020px" class="btn btn-success" @onclick="GetUserInformatin">User Info</button>*@
+
+        @Body
+
+    </div>
+</div>
+
+
+
+
+@code {
+
+    private string name;
+    private bool isClicked = false;
+
+    public SystemUser userRegistationDetailsList;
+
+    public async Task GetUserInformatin()
+    {
+        isClicked = true;
+        userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+    }
+
+    public void LogOutUser()
+    {
+        sessionStorage.ClearAsync();
+        userRegistationDetailsList = new SystemUser();
+        NavigationManager.NavigateTo("/login");
+    }
+
+    //protected override async void OnInitialized()
+    //{
+    //    base.OnInitialized();
+    //    userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+    //}
+
+
+}

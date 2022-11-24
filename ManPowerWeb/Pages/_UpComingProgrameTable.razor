@@ -1,0 +1,19 @@
+﻿ <tr>
+            <td>@Target.StartDate</td>
+            <td>@Target.</td>
+            <td>@Target.</td>
+            <td>@Target.</td>
+            <td>@Target.</td>
+            <td>@Target.ProgramId</td>
+            <td>@Target.ProgramTypeId</td>  
+            <td>
+                <a href="/CompletedPrograms/ViewCompletedProgram/{item.ProgramTargetId}">
+                   <input type="button" class="primary-btn table-button" value="View" />
+                </a>
+            </td>
+        </tr>
+
+@code {
+    [Parameter]
+    public ProgramTarget Target { get; set; }
+}

@@ -1,0 +1,99 @@
+﻿@page "/planning/EntrepreneurRegSearch"
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+@inject NavigationManager NavigationManager
+
+<div id="main">
+       
+            <div class="wizard-heading">Registerd Entrepreneurs</div>
+            <div class="form-floating mb-3">
+             <RadzenCard>
+                <div class="row">
+                 
+                    <div class="col-5">
+                    <label>Bussiness Registration Number:</label>
+                    <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Placeholder=" " Data="@EntrepreneurList" Name="Entrepreneur_List"
+                    SelectedItem="selectedBrn"  ValueProperty="Brn" TextProperty="Brn" @bind-Value="selectedBrn" Style="margin-bottom:10px;"></RadzenDropDown>
+                    </div>
+                    @*<div class="col-5" style="margin-right:100px;">
+                    <label>District : </label>
+                    <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Placeholder=" " Data="@listDistrict" Name="district"
+                                    SelectedItem="selecteddistrict" @bind-Value="selecteddistrict" ValueProperty="DepartmentUnitId" TextProperty="Name" Style="margin-bottom:10px;"></RadzenDropDown>
+                    </div>*@
+
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="button" class="primary-btn" value="Search" @onclick="onClick_Search" />
+                        </div>
+                    </div>
+                    <br />                    
+
+                </div>
+            </RadzenCard>
+            </div>
+
+            <a href="/entrpreneurReg">
+                <RadzenButton Shade="Shade.Darker" Text="New Registartion" ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Style="width:200px;" />
+            </a>
+            <br />
+            <br /><br />
+               
+            <RadzenCard>
+
+    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+        Data="@searchBrnList" TItem="Entrepreneur" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+        @*<EmptyTemplate>
+                    <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+        </EmptyTemplate>*@
+        <Columns>
+            <RadzenDataGridColumn TItem="Entrepreneur" Property="Brn" Title="BRN" Frozen="true" Width="160px" />
+            <RadzenDataGridColumn TItem="Entrepreneur" Property="Email" Title="Email" Width="160px"/>
+            <RadzenDataGridColumn TItem="Entrepreneur" Property="ContactNumber" Title="ContactNumber" Width="200px" />
+            <RadzenDataGridColumn TItem="Entrepreneur" Property="BusinessTypeId" Title="Business Type" Width="120px" />
+            <RadzenDataGridColumn TItem="Entrepreneur" Title="Action" Width="100px" >
+                        <Template Context="EntrepreneurList">
+                            <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(EntrepreneurList.BenificiaryId)"  @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+                        </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+
+            </RadzenCard>
+</div>
+
+@code {
+
+    private string selectedBrn;
+    //private string selecteddistrict;
+
+    List<DepartmentUnit> listDistrict = new List<DepartmentUnit>();
+    List<Entrepreneur> EntrepreneurList = new List<Entrepreneur>();
+    List<Entrepreneur> searchBrnList = new List<Entrepreneur>();
+
+
+    protected override void OnInitialized()
+    {
+        DepartmentUnitTypeController _DepartmentUnitTypeController = ControllerFactory.CreateDepartmentUnitTypeController();
+        listDistrict = _DepartmentUnitTypeController.GetDepartmentUnitType(2, true)._DepartmentUnit;
+
+        EntrepreneurController entrepreneurController = ControllerFactory.CreateEntrepreneurController();
+        EntrepreneurList = entrepreneurController.GetAllEntrepreneur();
+
+        //EntrepreneurController entrepreneurController = ControllerFactory.CreateEntrepreneurController();
+        searchBrnList = entrepreneurController.GetAllEntrepreneur();
+
+    }
+
+    async Task navigateToView(int BenificiaryId)
+    {
+        NavigationManager.NavigateTo($"/Entrepreneur/ViewEntrepreneur/{BenificiaryId}");
+    }
+    
+    private void onClick_Search()
+    {
+        Entrepreneur entrepreneur = new Entrepreneur();
+        EntrepreneurController entrepreneurController = ControllerFactory.CreateEntrepreneurController();
+
+        searchBrnList = entrepreneurController.GetAllEntrepreneur(selectedBrn);
+    }
+}

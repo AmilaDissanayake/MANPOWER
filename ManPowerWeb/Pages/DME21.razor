@@ -1,0 +1,726 @@
+﻿@page "/addDme21"
+
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+@inject IJSRuntime JSRuntime
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@using System.Text.RegularExpressions
+@using Radzen
+@using System.Text.Json
+
+<div id="main">
+    <RadzenCard Style="padding-left:40px;">
+        <div class="wizard-heading">DME 21</div>
+        <RadzenTemplateForm TItem="TaskAllocation" Data=@taskAllocation Submit=@OnSubmit InvalidSubmit="OnInvalidSubmit">
+            @if (edit == false)
+            {
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Date" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenDatePicker Style="display: block" Name="date" @bind-Value=@value DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" />
+                        <RadzenRequiredValidator Component="date" Text="Date is required" Popup=@popup Style="position: absolute" />
+                        @foreach (var i in taskAllocationDetails)
+                        {
+                            if (i.StartTime == value)
+                            {
+                                <RadzenRequiredValidator Component="date" Text="Project already assigned for this date" Popup=@popup Style="position: absolute" />
+                            }
+                        }
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Work Type" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Data="@taskTypes" Name="work" ValueProperty="TaskTypeId"
+                                    TextProperty="TaskTypeName" @bind-Value="workType" Style="display: block" />
+                        <RadzenRequiredValidator Component="work" Text="Work Type is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+
+                <br />
+
+                @if (workType == 1)
+                {
+                    <div class="row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Program Name" />
+                        </div>
+                        <div class="col-5">
+                            <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Data="@programObj" Name="programName"
+                                    @bind-Value="pId" Style="display: block" ValueProperty="ProgramId" TextProperty="ProgramName" />
+                            <RadzenRequiredValidator Component="programName" Text="This Feild is required" Popup=@popup Style="position: absolute" />
+                            <br />
+                            <input onclick="document.getElementById('id01').style.display='block'" type="button" class="primary-btn" value="View Instructions" style="width:160px;" />
+                        </div>
+                    </div>
+
+                    @foreach (var prop in programObj.Where(u => u.ProgramId == pId))
+                    {
+                        pName = prop.ProgramName;
+                    }
+
+                    <br />
+                }
+
+                @if (workType == 3)
+                {
+                    <div class="row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Remarks" />
+                        </div>
+                        <div class="col-5">
+                            <RadzenTextArea Style="display: block" Name="Remarks" Class="w-100" @bind-Value="remarks" />
+                            <RadzenRequiredValidator Component="Remarks" Text="Remarks is required" Popup=@popup Style="position: absolute" />
+                        </div>
+                    </div>
+
+                    <br />
+                }
+
+                @if (workType == 2)
+                {
+                    <div class="row">
+                        <div class="col-3">
+                        </div>
+                        <div class="col-5">
+                            <a href="/addSpecialTarget">
+                                <RadzenButton Shade="Shade.Darker" Text="Fill The Form" ButtonStyle="ButtonStyle.Secondary" Style="width:180px;" />
+                            </a>
+                        </div>
+                    </div>
+
+                    <br />
+                }
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Performed Duty" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextArea Style="display: block" Name="duty" @bind-Value=@duty Class="w-100" />
+                        <RadzenRequiredValidator Component="duty" Text="Performed Duty is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Work Attended Place" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox Style="display: block" Name="place" @bind-Value=@place Class="w-100" />
+                        <RadzenRequiredValidator Component="place" Text="Attended Place is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+
+                <br />
+
+                <br />
+                <center>
+                    <div class="row">
+                        <div class="col-2">
+                            <RadzenButton Shade="Shade.Darker" Text="Clear" ButtonStyle="ButtonStyle.Secondary" Style="width:130px;" />
+                        </div>
+                        <div class="col-2">
+                            <RadzenButton ButtonType="ButtonType.Submit" Text="Add" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;" />
+                            @*<RadzenButton Text="Add" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Style="width:130px;"/>*@
+                        </div>
+                    </div>
+                </center>
+
+                <br />
+
+                <br />
+            }
+
+            @*------------------------- single row edit form -----------------------------*@
+
+            else
+            {
+                @foreach (var prop in programObj.Where(u => u.ProgramId == single.TaskTypeId))
+                {
+                    pName = prop.ProgramName;
+                }
+
+                @foreach (var i in taskTypes.Where(u => u.TaskTypeId == single.TaskTypeId))
+                                {
+                                    taskName = i.TaskTypeName;
+                                }
+
+                value = @single.StartTime;
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Date" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenDatePicker Placeholder="@single.StartTime.ToString()" @bind-Value=@value DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="display: block" />
+                        <RadzenRequiredValidator Component="date" Text="Date is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Work Type" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenDropDown Style="display: block" AllowClear="true" TValue="int" Class="w-100" Placeholder="@taskName" Data="@taskTypes" Name="type" ValueProperty="TaskTypeId"
+                                    TextProperty="TaskTypeName" @bind-Value="workType" />
+                        <RadzenRequiredValidator Component="type" Text="Work Type is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+
+                <br />
+
+                @if (workType == 1)
+                {
+                    <div class="row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Program Name" />
+                        </div>
+                        <div class="col-5">
+                            <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="@pName" Data="@programObj" Name="programName"
+                                    @bind-Value="pId" Style="display: block" ValueProperty="ProgramId" TextProperty="ProgramName" />
+                            <RadzenRequiredValidator Component="programName" Text="Program Name is required" Popup=@popup Style="position: absolute" />
+                            <br />
+                            <input onclick="document.getElementById('id01').style.display='block'" type="button" class="primary-btn" value="View Instructions" style="width:160px;" />
+                        </div>
+                    </div>
+
+                    @foreach (var prop in programObj.Where(u => u.ProgramId == pId))
+                    {
+                        pName = prop.ProgramName;
+                    }
+
+                    <br />
+
+                }
+
+                @if (workType == 3)
+                {
+                    <div class="row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Remarks" />
+                        </div>
+                        <div class="col-5">
+                            <RadzenTextArea style="display: block" Name="remarks" Class="w-100" @bind-Value="remarks" />
+                            <RadzenRequiredValidator Component="remarks" Text="Remarks is required" Popup=@popup Style="position: absolute" />
+                        </div>
+                    </div>
+
+                    <br />
+                }
+
+                @if (workType == 2)
+                {
+                    <div class="row">
+                        <div class="col-3">
+                        </div>
+                        <div class="col-5">
+                            <a href="/addSpecialTarget">
+                                <RadzenButton Shade="Shade.Darker" Text="Fill The Form" ButtonStyle="ButtonStyle.Secondary" Style="width:180px;" />
+                            </a>
+                        </div>
+                    </div>
+
+                    <br />
+                }
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Performed Duty" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextArea style="display: block" Name="duty" @bind-Value=@duty Class="w-100" Placeholder="@single.TaskDescription" />
+                        <RadzenRequiredValidator Component="duty" Text="Performed Duty is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Work Attended Place" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox style="display: block" Name="place" @bind-Value=@place Class="w-100" Placeholder="@single.WorkLocation" />
+                        <RadzenRequiredValidator Component="place" Text="Attended Place is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+
+                <br />
+
+                <br />
+                <center>
+                    <div class="row">
+                        <div class="col-2">
+                            <RadzenButton Shade="Shade.Darker" Text="Clear" ButtonStyle="ButtonStyle.Secondary" Style="width:130px;" />
+                        </div>
+                        <div class="col-2">
+                            <RadzenButton Text="Add New" ButtonStyle="ButtonStyle.Secondary" Click="() => edit = false" Style="width:130px;" />
+                        </div>
+                        <div class="col-2">
+                            <RadzenButton Text="Update Task" ButtonStyle="ButtonStyle.Secondary" Style="width:150px;" Click="() => update(single.TaskAllocationId,single.TaskAllocationDetailId)" />
+                        </div>
+                    </div>
+                </center>
+                <br />
+
+                <br />
+
+            }
+
+            @*Click="() => update(single.TaskAllocationDetailId)"*@
+
+            @*--------------------------------------*@
+
+            @if (myList.Count() != 0)
+            {
+                <RadzenDataGrid Style="width: 930px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                            Data="@myList" TItem="TaskAllocationDetail" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="StartTime.Date" Title="Start Date" Width="200px" TextAlign="TextAlign.Center" />
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Title="Program Type" Width="150px" TextAlign="TextAlign.Center">
+                            <Template Context="myList">
+                                @foreach (var i in taskTypes.Where(u => u.TaskTypeId == myList.TaskTypeId))
+                                {
+                                    task = i.TaskTypeName;
+                                }
+                                @task
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="TaskDescription" Title="Performed Duty" Width="200px" TextAlign="TextAlign.Center" />
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="WorkLocation" Title="Work Location" Width="200px" TextAlign="TextAlign.Center" />
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="" Title="Action" Width="200px" TextAlign="TextAlign.Center">
+                            <Template Context="myList">
+                                <RadzenButton Shade="Shade.Lighter" Icon="edit" ButtonStyle="ButtonStyle.Warning" Click="() => retrieve(myList.TaskAllocationDetailId)" />
+                                &nbsp;&nbsp;
+                                <RadzenButton Shade="Shade.Lighter" Icon="delete" ButtonStyle="ButtonStyle.Success" Click="() => delete(0, myList.TaskAllocationDetailId)" />
+                            </Template>
+                        </RadzenDataGridColumn>
+
+                    </Columns>
+                </RadzenDataGrid>
+            }
+            else
+            {
+                <RadzenDataGrid TItem="TaskAllocationDetail" Data="@taskAllocationDetails">
+                    <EmptyTemplate>
+                        <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+                    </EmptyTemplate>
+                    <Columns>
+                        <RadzenDataGridColumn TItem="DME21Model" Property="" Title="ID" Width="50px" TextAlign="TextAlign.Center" />
+                        <RadzenDataGridColumn TItem="DME21Model" Property="FirstName" Title="Program Type" />
+                        <RadzenDataGridColumn TItem="DME21Model" Property="LastName" Title="Work Place" />
+                        <RadzenDataGridColumn TItem="DME21Model" Property="Title" Title="Performed Duty" />
+                        <RadzenDataGridColumn TItem="DME21Model" Property="TitleOfCourtesy" Title="Date" />
+                    </Columns>
+                </RadzenDataGrid>
+            }
+
+            <br />
+            <div class="row justify-content-end">
+                <div class="col-2">
+                    <RadzenButton Shade="Shade.Darker" Text="Submit" ButtonStyle="ButtonStyle.Secondary" Style="width:130px;" Click="() => isClicked = true " />
+                </div>
+                <div class="col-3">
+                    @if (isClicked == true)
+                    {
+                        <input onclick="document.getElementById('id02').style.display='block'" type="button" class="rdzn-btn" value="Send to approval" style="width:170px;" />
+                    }
+                    else
+                    {
+                        <RadzenButton Shade="Shade.Darker" Text="Send to Approval" ButtonStyle="ButtonStyle.Secondary" Style="width:170px;" Disabled />
+                    }
+                </div>
+            </div>
+
+
+        </RadzenTemplateForm>
+    </RadzenCard>
+
+    @*---------------- Dialog box 1 -----------------------*@
+
+    <div class="w3-container">
+
+        <div id="id01" class="w3-modal">
+            <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:40%;">
+
+                <div class="w3-center">
+                    <br>
+                    <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-xlarge w3-display-topright" title="Close Modal">&times;</span>
+                    <h2>Program Instructions</h2>
+                </div>
+
+                <ul>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                    <li>Suspendsisse a lectus ac turpis rhoncus interdum sed sit amet lorem.</li>
+                    <li>Fusce pretium dolor non ligula, eu lacinia est vbjb ekgk.</li>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                    <li>Suspendsisse a lectus ac turpis rhoncus interdum sed sit amet lorem.</li>
+                    <li>Fusce pretium dolor non ligula, eu lacinia est vbjb ekgk.</li>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                    <li>Suspendsisse a lectus ac turpis rhoncus interdum sed sit amet lorem.</li>
+                    <li>Fusce pretium dolor non ligula, eu lacinia est vbjb ekgk.</li>
+                </ul>
+
+                <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                    <div class="row">
+                        <div class="col-3">
+                            <input onclick="document.getElementById('id01').style.display='none'" type="button" class="red-btn" value="Cancel" style="width:160px;" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @*---------------- Dialog box 2 -----------------------*@
+
+    <div class="w3-container">
+
+        <div id="id02" class="w3-modal">
+            <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:45%;">
+
+                <div class="w3-center">
+                    <br>
+                    <span onclick="document.getElementById('id02').style.display='none'" class="w3-button w3-xlarge w3-display-topright" title="Close Modal">&times;</span>
+                    <h2>Select the Officer</h2>
+                </div>
+                <br />
+                <center>
+                    <div class="row justify-content-center">
+                        <div class="col-3">
+                            <RadzenLabel Text="Officer Name" />
+                        </div>
+                        <div class="col-6">
+                            <RadzenDropDown AllowClear="true" TValue="string" TextProperty="Name" ValueProperty="Name" Class="w-100" Name="year" Data="@listUsers.Where(u => u.UserTypeId == 2)" @bind-Value="officer" Style="margin-bottom:10px;font-size:0.9em;" /><br />
+                            <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                </center>
+                <br />
+                <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                    <div class="row ">
+                        <div class="col-9" style="padding-left:30px;">
+                            <input onclick="document.getElementById('id02').style.display='none'" type="button" class="rdzn-btn" value="Cancel" style="width:130px;" />
+                        </div>
+                        <div class="col-3">
+                            <RadzenButton Click="onClick_send" Icon="send" Text="Send" ButtonStyle="ButtonStyle.Info" Shade="Shade.Darker" Style="width:100px;" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@code {
+
+    private int workType;
+    private int pId;
+    private int depId;
+    private string pName;
+    private string user;
+    private string officer;
+    private string task;
+    private string taskName;
+    private string place;
+    private string remarks = "";
+    private int radioSelection;
+    private string duty;
+    private bool isClicked = false;
+    private bool dateValidate1 = false;
+    private bool dateValidate2 = false;
+    private bool edit = false;
+    private int count = 0;
+    private int id;
+    private DateTime yearMonth = DateTime.Today;
+    private DateTime created = DateTime.Today;
+    private DateTime selectedMonth;
+
+    private string emptyText = "No Items to display!";
+
+    //private List<DME21Model> dme = new List<DME21Model> ();
+
+    List<ManPowerCore.Domain.Program> programObj = new List<ManPowerCore.Domain.Program>();
+    List<ProgramType> programTypes = new List<ProgramType>();
+    List<TaskType> taskTypes = new List<TaskType>();
+    List<TaskAllocationDetail> taskAllocationDetails = new List<TaskAllocationDetail>();
+    TaskAllocationDetail single = new TaskAllocationDetail();
+    List<TaskAllocation> taskAllocations = new List<TaskAllocation>();
+    List<TaskAllocation> approval = new List<TaskAllocation>();programObj
+    List<TaskAllocationDetail> myList = new List<TaskAllocationDetail>();
+    List<DepartmentUnitPositions> listUser = new List<DepartmentUnitPositions>();
+    public SystemUser userRegistationDetailsList;
+    List<SystemUser> listUsers = new List<SystemUser>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        DepartmentUnitPositionsController unitPositionsController = ControllerFactory.CreateDepartmentUnitPositionsController();
+        listUser = unitPositionsController.GetAllDepartmentUnitPositions(false, false, true, false, true);
+
+        ProgramController programController = ControllerFactory.CreateProgramController();
+        programObj = programController.GetAllProgram(true);
+
+        ProgramTypeController programTypeController = ControllerFactory.CreateProgramTypeController();
+        programTypes = programTypeController.GetAllProgramType(false);
+
+        TaskTypeController taskTypeController = ControllerFactory.CreateTaskTypeController();
+        taskTypes = taskTypeController.GetAllTaskType(false);
+
+        TaskAllocationDetailController aa = ControllerFactory.CreateTaskAllocationDetailController();
+        taskAllocationDetails = aa.GetAllTaskAllocationDetail(false, false, false);
+
+        TaskAllocationController taskAllocationController = ControllerFactory.CreateTaskAllocationController();
+        taskAllocations = taskAllocationController.GetAllTaskAllocation(true, true, true, true);
+
+        SystemUserController systemUserController = ControllerFactory.CreateSystemUserController();
+        listUsers = systemUserController.GetAllSystemUser(true, false, false);
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+            user = userRegistationDetailsList.Name;
+            foreach (var i in listUser.Where(u => u.SystemUserId == userRegistationDetailsList.SystemUserId))
+            {
+                depId = i.DepartmetUnitPossitionsId;
+            }
+
+            foreach (var j in taskAllocations.Where(u => u.StatusId == 1 && u.CreatedUser == user))
+            {
+                foreach (var i in taskAllocationDetails.Where(u => u.TaskAllocationId == j.TaskAllocationId))
+                {
+                    myList.Add(i);
+                }
+            }
+            StateHasChanged();
+        }
+        
+    }
+
+
+    //----------------------------- validator ------------------------------
+    bool popup;
+
+    TaskAllocation taskAllocation = new TaskAllocation();
+
+    void OnSubmit(TaskAllocation taskAllocation)
+    {
+        Console.WriteLine($"Submit: {JsonSerializer.Serialize(taskAllocation, new JsonSerializerOptions() { WriteIndented = true })}");
+
+        foreach (var j in taskAllocations.Where(u => u.CreatedUser == user))
+        {
+            foreach (var i in taskAllocationDetails.Where(u => u.TaskAllocationId == j.TaskAllocationId))
+            {
+                if (value.Date == i.StartTime.Date && value.Month == j.TaskYearMonth.Month)
+                {
+                    dateValidate1 = true;
+                }
+                else if (value.Month < i._TaskAllocation.TaskYearMonth.Month && i._TaskAllocation.StatusId != 1)
+                {
+                    dateValidate2 = true;
+                }
+            }
+        }
+
+        if (value == null)
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Please enter a Date");
+        }
+        else if (value < DateTime.Today || value.Month < DateTime.Today.Month)
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Please enter valid Date");
+        }
+        else if (dateValidate1 == true)
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Date already exist..Please enter a new Date");
+            dateValidate1 = false;
+        }
+        else if (dateValidate2 == true)
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "DME 21 is already submitted for this month");
+            dateValidate2 = false;
+        }
+        else
+        {
+
+            TaskAllocationController allocation = ControllerFactory.CreateTaskAllocationController();
+
+            taskAllocation.DepartmetUnitPossitionsId = depId;
+            taskAllocation.TaskYearMonth = value;
+            taskAllocation.CreatedDate = created;
+            taskAllocation.CreatedUser = userRegistationDetailsList.Name;
+            taskAllocation.StatusId = 1;
+            taskAllocation.RecommendedBy = "";
+            taskAllocation.RecommendedDate = DateTime.Today;
+            taskAllocation.ApprovedBy = "";
+            taskAllocation.ApprovedDate = "";
+
+            taskAllocation._TaskAllocationDetail.Add(new TaskAllocationDetail()
+                {
+                    TaskTypeId = workType,
+                    TaskDescription = duty,
+                    WorkLocation = place,
+                    Isconmpleated = 0,
+                    NotCompleatedReason = "",
+                    StartTime = value,
+                    EndTime = DateTime.Today,
+                    TaskRemarks = remarks,
+                    TaskAmendments = ""
+                });
+
+            int result = allocation.SaveTaskAllocation(taskAllocation);
+
+            if (result == 1)
+            {
+                JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Successfully added to the list");
+                NavigationManager.NavigateTo("/addDme21", true);
+            }
+            else
+            {
+                JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Something went wrong");
+                NavigationManager.NavigateTo("/addDme21", true);
+            }
+        }
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}");
+    }
+
+
+    private async Task delete(int allocationId, int detailId)
+    {
+        TaskAllocationDetailController details = ControllerFactory.CreateTaskAllocationDetailController();
+
+        var confirm = await JSRuntime.InvokeAsync<bool>("customConfirm", "Conformation", "Are you sure you want to delete ?", "Yes Delete it !");
+
+        if (confirm)
+        {
+            details.DeleteTaskAllocationDetail(allocationId, detailId);
+            await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Row Deleted");
+
+            NavigationManager.NavigateTo("/addDme21", true);
+
+        }
+    }
+
+    void retrieve(int id)
+    {
+        edit = true;
+        TaskAllocationDetailController details = ControllerFactory.CreateTaskAllocationDetailController();
+        single = details.GetTaskAllocationDetail(id, false, false, false);
+    }
+
+    async void update(int allocationId, int detailId)
+    {
+        //TaskAllocationController allocation = ControllerFactory.CreateTaskAllocationController();
+        //TaskAllocation taskAllocation = new TaskAllocation();
+
+        TaskAllocationDetailController details = ControllerFactory.CreateTaskAllocationDetailController();
+        TaskAllocationDetail task = new TaskAllocationDetail();
+
+        task.TaskAllocationDetailId = detailId;
+        task.TaskTypeId = workType;
+        task.TaskAllocationId = allocationId;
+        task.TaskDescription = duty;
+        task.WorkLocation = place;
+        task.Isconmpleated = 0;
+        task.NotCompleatedReason = "";
+        task.StartTime = value;
+        task.EndTime = DateTime.Today;
+        task.TaskRemarks = remarks;
+        task.TaskAmendments = "";
+
+        int result = details.UpdateTaskAllocationDetail(task);
+
+        if (result == 1)
+        {
+            await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Successfully updated the list");
+            NavigationManager.NavigateTo("/addDme21", true);
+        }
+        else
+        {
+            await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Something went wrong");
+            NavigationManager.NavigateTo("/addDme21", true);
+        }
+    }
+
+
+    async void onClick_send()
+    {
+
+        TaskAllocationController allocation = ControllerFactory.CreateTaskAllocationController();
+        TaskAllocation taskAllocation = new TaskAllocation();
+
+        var confirm = await JSRuntime.InvokeAsync<bool>("customConfirm", "Conformation", "Are you sure ?", "Confirm");
+
+        if (confirm)
+        {
+            foreach (var prop in taskAllocations.Where(u => u.StatusId == 1))
+            {
+                allocation.UpdateTaskAllocationApproval(prop.TaskAllocationId, 6, officer, "");
+            }
+            await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Sent to Approval..");
+        }
+
+        NavigationManager.NavigateTo("/addDme21", true);
+
+    }
+
+    //-------------- Date Picker handler --------------------//
+
+    DateTime value = DateTime.Today;
+
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+    }
+
+    void DateRenderSpecial(DateRenderEventArgs args)
+    {
+        if (dates.Contains(args.Date))
+        {
+            args.Attributes.Add("style", "background-color: #ff6d41; border-color: white;");
+        }
+    }
+
+    void DateRender(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || dates.Contains(args.Date);
+    }
+
+    void DateRenderNoWeekends(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || args.Date.DayOfWeek == DayOfWeek.Sunday || args.Date.DayOfWeek == DayOfWeek.Saturday;
+    }
+
+    void OnTodayClick()
+    {
+        value = DateTime.Today;
+    }
+
+}

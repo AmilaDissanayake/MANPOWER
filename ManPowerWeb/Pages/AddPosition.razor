@@ -1,0 +1,114 @@
+﻿
+
+@page "/AddPosition"
+
+@using ManPowerCore.Common
+@using ManPowerCore.Controller
+@using ManPowerCore.Domain
+@using ManPowerWeb.Model
+@using System.Text.Json
+@using Radzen
+
+
+@inject IJSRuntime JSRuntime
+@inject DialogService DialogService
+
+
+<div id="main">
+    <br />
+<br />
+<br />
+    <RadzenTemplateForm TItem="Model"  Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+        <RadzenCard Style="padding-left:45px;">
+            <div class="wizard-heading">Add Position</div> <br /><br />
+                <div class="row">
+                    <div class="col-6">
+
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Position" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-100" @bind-Value="model.position" Popup=@popup Name="Position"></RadzenTextBox>
+                            <RadzenRequiredValidator Component="Position" Text="Position is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+                    </div>
+                        </div>
+
+            <br /><br />
+            <div style="margin-left:650px">
+                <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" ButtonType="ButtonType.Submit" />
+                <RadzenButton Text="Clear" Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:70px" Click=@Clear />
+            </div>
+
+            <br /><br />
+
+         </RadzenCard>
+    </RadzenTemplateForm>
+    </div>
+
+@code {
+
+
+
+    class Model
+    {
+
+        public string position { get; set; } = "";
+
+    }
+
+    Model model = new Model();
+    bool popup;
+
+    protected override void OnInitialized()
+    {
+
+
+    }
+
+    List<Possitions> positionList = new List<Possitions>();
+
+    void OnSubmit(Model model)
+    {
+        PossitionsController possitionsController2 = ControllerFactory.CreatePossitionsController();
+        positionList = possitionsController2.GetAllPossitions(model.position);
+
+        if (positionList.Count() == 0)
+        {
+
+            Possitions possitions = new Possitions();
+            PossitionsController possitionsController = ControllerFactory.CreatePossitionsController();
+
+            possitions.PositionName = model.position;
+
+            possitionsController.SavePosition(possitions);
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added success");
+            Clear();
+
+        }
+        else
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "Error", "", "This Position Is Already Exist");
+
+        }
+
+    }
+
+    private void Clear()
+    {
+        model.position = "";
+
+    }
+
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+
+    }
+
+}

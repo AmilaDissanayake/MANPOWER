@@ -1,0 +1,465 @@
+﻿
+
+
+@page "/UserRegister"
+
+@using ManPowerCore.Common
+@using ManPowerCore.Controller
+@using ManPowerCore.Domain
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+@using Radzen
+@using System.Text.Json
+@using ManPowerWeb.Model
+
+
+
+
+<div id="main">
+    @*<div class="top-row">
+                <img src="../header2.png" style="height:94%; width:30em" />
+        </div>*@
+    <RadzenCard Style="padding-left:40px;">
+        <center><div class="wizard-heading">Register Form</div></center><br/>
+        <RadzenTemplateForm TItem="Model" Data=@model Submit=@OnSubmit InvalidSubmit="OnInvalidSubmit">
+            <div class="row">
+                <div class="col-6">
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Designation" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDropDown style="display: block" TValue="int" Data="@DesignationList" Class="w-100" Name="Designation" @bind-Value="model.designation" ValueProperty="DesignationId" TextProperty="DesigntionName" />
+                            <RadzenRequiredValidator Component="Designation" Text="Designation is required" Style="position: absolute"  />
+                        </div>
+                    </div>
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="User Type" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDropDown style="display: block" TValue="int" Data="@UserTypelist" Class="w-100" Name="Usertype" @bind-Value="model.userType" ValueProperty="UserTypeId" TextProperty="UserTypeName" />
+                            <RadzenRequiredValidator Component="Usertype" Text="User Type is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br /><br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Position" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDropDown style="display: block" TValue="int" Data="@PositionList" Class="w-100" Name="Position" @bind-Value="model.position" ValueProperty="PossitionId" TextProperty="PositionName" />
+                            <RadzenRequiredValidator Component="Position" Text="Position is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Department" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDropDown style="display: block" TValue="int" Data="@DipartmentList" Class="w-100" Name="Department" @bind-Value="model.department" ValueProperty="DepartmentUnitTypeId" TextProperty="Name" />
+                            <RadzenRequiredValidator Component="Department" Text="Department is required" Style="position: absolute" />
+                        </div>
+                    </div><br/>
+
+                    @if (model.department == 1)
+                    {
+                        ParentId = 1;
+                        headOffice = 1;
+
+                    }
+                     
+                    @if(model.department == 2)
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="District" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenDropDown AllowClear="true" Data="@listDistrict" TValue="int" Class="w-100" ValueProperty="DepartmentUnitId" TextProperty="Name" Placeholder="" Style="display: block" Name="Division" @bind-Value="District" />
+                            </div>
+                        </div>
+                        <br />
+                        @foreach (var item in DepLIst.Where(u => u.DepartmentUnitId == District && u.DepartmentUnitTypeId == model.department))
+                        {
+                            ParentId = item.ParentId;
+                        }
+                    }
+
+
+                    @if(model.department == 3)
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="District" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenDropDown AllowClear="true" Data="@listDistrict" TValue="int" Class="w-100" ValueProperty="DepartmentUnitId" TextProperty="Name" Placeholder="" Style="display: block" Name="Division" @bind-Value="District" />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="DS Division" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenDropDown AllowClear="true" TValue="int" Data="@listDSDivision.Where(u => u.ParentId == District)" ValueProperty="DepartmentUnitId" TextProperty="Name" Class="w-100" Placeholder="" Style="display: block" Name="Division" @bind-Value="DSDivision" />
+                            </div>
+                        </div>
+                        <br />
+                        @foreach (var item in DepLIst.Where(u => u.DepartmentUnitId == DSDivision && u.DepartmentUnitTypeId == model.department))
+                        {
+                            ParentId = item.ParentId;
+                        }
+                    }
+
+                    
+                    
+                    <br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Emp Number" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox style="display: block" Name="empnumber" @bind-Value="model.empNumber" Class="w-100" />
+                            <RadzenRequiredValidator Component="empnumber" Text="EmpNumber is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Create Password" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenPassword style="display: block" Name="pw1" @bind-Value="model.pw1" Class="w-100" />
+                            <RadzenRequiredValidator Component="pw1" Text="Create a Password" Style="position: absolute" />
+                            <RadzenRegexValidator Component="pw1" Text="Should have at least 1 uppercase letter, 1 lowercase letter, a number and a charactor (minimum 8 charactors)" Pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,32}$" Popup=@popup Style="position: absolute" />
+                        </div>
+                    </div>
+                    
+                    <br /><br />
+
+                </div>
+
+                @*----------------------------*@
+                <div class="col-6" style="padding-left:30px;">
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Date" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDatePicker Name="date" @bind-Value="model.date" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" />
+                            <RadzenRequiredValidator Component="date" Text="Date is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br /><br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Contact Number" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox style="display: block" Name="phone" @bind-Value="model.contactNumber" Class="w-100" />
+                            <RadzenRequiredValidator Component="phone" Text="Contact number is required" Style="position: absolute" />
+                            <RadzenRegexValidator Component="phone" Text="Invaid Number" Pattern="^\d{10}$" Popup=@popup Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br /><br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="User Name" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox style="display: block" Name="uName" @bind-Value="model.userName" Class="w-100" />
+                            <RadzenRequiredValidator Component="uName" Text="User Name is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Name" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox style="display: block" Name="name" @bind-Value="model.name" Class="w-100" />
+                            <RadzenRequiredValidator Component="name" Text="Name is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br /><br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Email" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox style="display: block" Name="email" @bind-Value="model.email" Class="w-100" />
+                            <RadzenRequiredValidator Component="email" Text="Email is required" Style="position: absolute" />
+                            <RadzenEmailValidator Component="email" Text="Invalid email address" Popup=@popup Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br /><br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Confirm Password" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenPassword style="display: block" Name="pw2" @bind-Value="pw2" Class="w-100" />
+                            <RadzenRequiredValidator Component="pw2" Text="Confirm Password" Style="position: absolute" />
+                            <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(pw2)) Value=@model.pw1 Component="pw2" Text="Passwords should be the same" Style="position: absolute" />
+                        </div>
+                    </div>
+                   
+                    <br /><br />
+
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                 <div class="col-2">
+                      <RadzenButton ButtonType="ButtonType.Submit" Text="Submit" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
+                  </div>
+                 <div class="col-2">
+                      <RadzenButton Shade="Shade.Lighter" Text="Clear" ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Style="width:130px;" Click="onClick_clear" />
+                 </div>
+            </div>
+            <br/>
+           
+        </RadzenTemplateForm>
+    </RadzenCard>
+</div>
+
+<br />
+<br />
+<br />
+
+@code {
+
+
+
+    class Model
+    {
+        public string empNumber { get; set; } = "";
+        public int designation { get; set; } 
+        public DateTime date { get; set; } = DateTime.Now;
+        public string name { get; set; } = "";
+        public string contactNumber { get; set; } = "";
+        public string email { get; set; } = "";
+        public string userName { get; set; } = "";
+        public string pw1 { get; set; } = "";
+        public int position { get; set; } 
+        public int department { get; set; }
+        public int userType { get; set; } 
+
+
+    }
+
+    Model model = new Model();
+    public string pw2 = "";
+
+
+    public void onClick_clear()
+    {
+        model.name = "";
+        model.email = "";
+        model.contactNumber = "";
+        model.userName = "";
+        model.designation = 0;
+        model.pw1 = "";
+        pw2 = "";
+        model.position = 0;
+        model.empNumber = "";
+        model.userType = 0;
+        model.department = 0;
+
+    }
+
+
+    //------------------ validator ----------------------//
+
+    bool popup;
+
+
+    List<SystemUser> ValidateUser = new List<SystemUser>();
+
+    List<UserType> UserTypelist = new List<UserType>();
+    List<Designation> DesignationList = new List<Designation>();
+    List<Possitions> PositionList = new List<Possitions>();
+    // List<DepartmentUnitPositions> PositionList = new List<DepartmentUnitPositions>();
+    List<DepartmentUnitType> DipartmentList = new List<DepartmentUnitType>();
+    List<DepartmentUnit> listDistrict = new List<DepartmentUnit>();
+    List<DepartmentUnit> listDSDivision = new List<DepartmentUnit>();
+    List<DepartmentUnit> DepLIst = new List<DepartmentUnit>();
+
+
+
+    protected override void OnInitialized()
+    {
+
+        UserTypeController userTypeController = ControllerFactory.CreateUserTypeController();
+        UserTypelist = userTypeController.GetAllUserType(false);
+
+        DesignationController designationController = ControllerFactory.CreateDesignationController();
+        DesignationList = designationController.GetAllDesignation(false,false);
+
+        //DepartmentUnitPositionsController departmentUnitPositionsController = ControllerFactory.CreateDepartmentUnitPositionsController();
+        //PositionList = departmentUnitPositionsController.GetAllDepartmentUnitPositions(false, false, false, true, false);
+
+        PossitionsController possitionsController = ControllerFactory.CreatePossitionsController();
+        PositionList = possitionsController.GetAllPossitions(false);
+
+        DepartmentUnitTypeController departmentUnitTypeController = ControllerFactory.CreateDepartmentUnitTypeController();
+        DipartmentList = departmentUnitTypeController.GetAllDepartmentUnitType(false);
+
+
+        DepartmentUnitController departmentUnitController = ControllerFactory.CreateDepartmentUnitController();
+        DepLIst = departmentUnitController.GetAllDepartmentUnit(false,false);
+
+        DepartmentUnitTypeController _DepartmentUnitTypeController = ControllerFactory.CreateDepartmentUnitTypeController();
+        listDistrict = _DepartmentUnitTypeController.GetDepartmentUnitType(2, true)._DepartmentUnit;
+        listDSDivision = _DepartmentUnitTypeController.GetDepartmentUnitType(3, true)._DepartmentUnit;
+
+
+    }
+
+    int DSDivision;
+    int District;
+    int ParentId;
+    int headOffice;
+
+    void OnSubmit(Model model)
+    {
+        Console.WriteLine($"Submit: {JsonSerializer.Serialize(model, new JsonSerializerOptions() { WriteIndented = true })}");
+
+
+
+
+        SystemUserController systemUserController2 = ControllerFactory.CreateSystemUserController();
+        ValidateUser = systemUserController2.GetAllSystemUser(model.userName, model.email, int.Parse(model.empNumber), int.Parse(model.contactNumber));
+
+
+
+        if (ValidateUser.Count == 0)
+        {
+
+
+            SystemUser systemUser = new SystemUser();
+            SystemUserController systemUserController = ControllerFactory.CreateSystemUserController();
+
+
+            systemUser.SystemUserId = 1;
+            systemUser.DesignationId = model.designation;
+            systemUser.UserTypeId = model.userType;
+            systemUser.EmpNumber = int.Parse(model.empNumber);
+            systemUser.Name = model.name;
+            systemUser.ContactNumber = int.Parse(model.contactNumber);
+            systemUser.Email = model.email;
+            systemUser.UserName = model.userName;
+            systemUser.UserPwd = model.pw1;
+            systemUser.CreatedDate = DateTime.Today;
+
+
+
+            int SUID =  systemUserController.SaveSystemUser(systemUser);
+
+
+            DepartmentUnitPositions departmentUnitPositions = new DepartmentUnitPositions();
+            DepartmentUnitPositionsController departmentUnitPositionsController = ControllerFactory.CreateDepartmentUnitPositionsController();
+
+            departmentUnitPositions.SystemUserId = SUID;
+            departmentUnitPositions.PossitionsId = model.position;
+
+            if (model.department == 1)
+            {
+                departmentUnitPositions.DepartmentUnitId = headOffice;
+            }
+
+            if (model.department == 2)
+            {
+                departmentUnitPositions.DepartmentUnitId = District;
+            }
+            else if (model.department == 3)
+            {
+                departmentUnitPositions.DepartmentUnitId = DSDivision;
+
+            }
+            departmentUnitPositions.ParentId = ParentId;
+
+            departmentUnitPositionsController.SaveDepartmentUnitPositions(departmentUnitPositions);
+
+
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added success");
+
+            onClick_clear();
+
+        }
+        else
+        {
+
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "Error", "", "This Account is Already Exist ");
+
+        }
+
+
+
+    }
+
+    List<Designation> desigList = new List<Designation>();
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}");
+
+    
+
+    
+    }
+
+
+
+
+
+
+
+
+
+    //-------------- Date Picker hander --------------------//
+
+
+
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+    }
+
+    void DateRenderSpecial(DateRenderEventArgs args)
+    {
+        if (dates.Contains(args.Date))
+        {
+            args.Attributes.Add("style", "background-color: #ff6d41; border-color: white;");
+        }
+    }
+
+    void DateRender(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || dates.Contains(args.Date);
+    }
+
+    void DateRenderNoWeekends(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || args.Date.DayOfWeek == DayOfWeek.Sunday || args.Date.DayOfWeek == DayOfWeek.Saturday;
+    }
+
+    void OnTodayClick()
+    {
+        model.date = DateTime.Now;
+    }
+
+}
+
