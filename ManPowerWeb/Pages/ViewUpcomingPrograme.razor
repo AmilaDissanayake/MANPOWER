@@ -1,0 +1,74 @@
+﻿@page "/UpcommingProgramme/ViewUpcommingProgramme/{ProgramTargetId}"
+
+<div id="main">
+<div class="primary-container">
+        
+        @foreach (var prop in programTargetsList.Where(u => u.ProgramTargetId == Convert.ToInt32(ProgramTargetId)))
+        {
+            <div class="wizard-heading">Approve Programs @prop.ProgramTargetId</div>
+            <RadzenCard>
+            <div class="row">
+                <div class="col-5" style="margin-right:100px;">
+
+                    <label class="label">Date</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.StartDate.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Program Catogery</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.ProgramTypeId.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Program</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop._Program.ProgramName" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Program Type</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop._ProgramType.ProgramTypeName" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Work Attended Place</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Expected Duty</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Output</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.Output.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Outcome</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.Outcome.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                   @* @prop.Outcome.ToString()*@
+
+            </div>
+            <a href="/planning/UpcommingProgramme">
+                 <input type="button" class="primary-btn" value="Back" style="width:220px;" />
+               </a>
+            </div>
+            </RadzenCard>
+        }
+    </div>
+    </div>
+
+@code {
+    [Parameter]
+    public string ProgramTargetId { get; set; }
+
+    //[Parameter]
+    //public ProgramTarget Target { get; set; }
+
+    private List<ProgramTarget> programTargetsList = new List<ProgramTarget>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+         ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
+        programTargetsList = programTargetController.GetAllProgramTarget(false,false,false,false);
+
+    }
+}

@@ -1,0 +1,232 @@
+﻿@page "/resourcePerson"
+@inject IJSRuntime JSRuntime
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@using System.Text.RegularExpressions
+@using Radzen
+@using System.Text.Json
+
+<div id="main">
+    <div class="container" Style="Width:85%;">
+        <center>
+            <RadzenCard>
+            <RadzenTemplateForm TItem="ResourcePerson" Data=@resourcePerson Submit=@OnSubmit InvalidSubmit="OnInvalidSubmit">
+                <div class="row">
+                        <div class="wizard-heading">Add Resource Person</div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="Resource Person Type" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox style="display: block" Name="ResourcePersonType" @bind-Value="type" Class="w-100" />
+                        <RadzenRequiredValidator Component="ResourcePersonType" Text="Type is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="NIC" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox style="display: block" Name="NIC" @bind-Value="nic" Class="w-100" />
+                        <RadzenRequiredValidator Component="NIC" Text="NIC is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="Name" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox Class="w-100" Name="Name" @bind-Value="name" style="display: block" />
+                        <RadzenRequiredValidator Component="Name" Text="Name is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="Designation" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox Class="w-100" Name="d" @bind-Value="designation" style="display: block" />
+                        <RadzenRequiredValidator Component="d" Text="Designation is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="Work Place" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox Class="w-100" Name="work" @bind-Value="workplace" style="display: block"/>
+                        <RadzenRequiredValidator Component="work" Text="Work Place is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="Qualifications" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox Class="w-100" Name="q" @bind-Value="qualification" style="display: block" />
+                        <RadzenRequiredValidator Component="q" Text="Qualification is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="Address" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextArea Class="w-100" Name="address" @bind-Value="address" style="display: block" />
+                            <RadzenRequiredValidator Component="address" Text="Address is required" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+                <br />
+
+                 <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="Contact Number" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox Class="w-100" Name="phone1" @bind-Value="phoneNumber1" style="display: block"/>
+                        <RadzenRequiredValidator Component="phone1" Text="Contact Number is required" Popup=@popup Style="position: absolute" />
+                        <RadzenRegexValidator Component="phone1" Text="Invaid Number" Pattern="^\d{10}$" Popup=@popup Style="position: absolute" />
+                     </div>
+                </div>
+                <br />
+
+                 <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="WhatsApp Number" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox Class="w-100" Name="phone2" @bind-Value="phoneNumber2" style="display: block" />
+                        <RadzenRequiredValidator Component="phone2" Text="WhatsApp Number is required" Popup=@popup Style="position: absolute" />
+                        <RadzenLengthValidator Component="phone2" Max="10" Text="Invaid Number" Style="position: absolute" />
+                        <RadzenRegexValidator Component="phone2" Text="Invaid Number" Pattern="\d{10}" Popup=@popup Style="position: absolute" />
+                    </div>
+                </div>
+                <br />
+
+                <div class="row">
+                    <div class="col-5">
+                        <RadzenLabel Text="Email" />
+                    </div>
+                    <div class="col-5">
+                        <RadzenTextBox Class="w-100" Name="email" @bind-Value="email" style="display: block" />
+                        <RadzenRequiredValidator Component="email" Text="Email is required" Popup=@popup Style="position: absolute" />
+                        <RadzenEmailValidator Component="email" Text="Invalid email address" Popup=@popup Style="position: absolute" />
+                        </div>
+                </div>
+                <br /><br/>
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                            <RadzenButton ButtonType="ButtonType.Submit" Text="Save" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
+                        </div>
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Clear" ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Style="width:130px;" Click="onClick_Clear" />
+                        </div>
+                            
+                </div>
+            </RadzenTemplateForm>
+            </RadzenCard>
+        </center>
+    </div>
+</div>
+
+
+@code{
+    private string[] RPType = { "DME", "Other" };
+    private string type;
+    private string nic;
+    private string name;
+    private string designation;
+    private string workplace;
+    private string qualification;
+    private string address;
+    private string phoneNumber1;
+    private string phoneNumber2;
+    private string email;
+
+
+
+    private void onClick_Clear()
+    {
+        type = "";
+        nic = "";
+        name = "";
+        designation = "";
+        workplace = "";
+        qualification = "";
+        address = "";
+        phoneNumber1 = "";
+        phoneNumber2 = "";
+        email = "";
+
+    }
+
+    //----------------------------- validator ------------------------------
+    bool popup;
+
+    ResourcePerson resourcePerson = new ResourcePerson();
+
+    void OnSubmit(ResourcePerson resourcePerson)
+    {
+        Console.WriteLine($"Submit: {JsonSerializer.Serialize(resourcePerson, new JsonSerializerOptions() { WriteIndented = true })}");
+
+        ResourcePersonController resourcePersonController = ControllerFactory.CreateResourcePersonController();
+
+        resourcePerson.ResourcePersonType = type;
+        resourcePerson.NIC = nic;
+        resourcePerson.Name = name;
+        resourcePerson.Designation = designation;
+        resourcePerson.WorkPlace = workplace;
+        resourcePerson.Qualifications = qualification;
+        resourcePerson.Address = address;
+        resourcePerson.ContactNumber = phoneNumber1;
+        resourcePerson.WhatsappNumber = phoneNumber2;
+        resourcePerson.Email = email;
+
+        int TargetResponse = resourcePersonController.SaveResourcePerson(resourcePerson);
+
+        type = "";
+        nic = "";
+        name = "";
+        designation = "";
+        workplace = "";
+        qualification = "";
+        address = "";
+        phoneNumber1 = "";
+        phoneNumber2 = "";
+        email = "";
+
+        if (TargetResponse == 1)
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Successfully Added");
+        }
+        else
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Something went wrong");
+        }
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}");
+    }
+
+
+}

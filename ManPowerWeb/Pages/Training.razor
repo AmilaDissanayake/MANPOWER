@@ -1,0 +1,156 @@
+﻿@page "/training"
+
+@using ManPowerCore.Common
+@using ManPowerCore.Controller
+@using ManPowerCore.Domain
+@using ManPowerWeb.Model
+@using System.Text.Json
+@using Radzen
+
+@inject IJSRuntime JSRuntime
+@inject DialogService DialogService
+
+<div id="main">
+
+    <RadzenCard>
+        <div class="wizard-heading">Trainings</div>
+
+
+        <div class="row" style="margin-left:6px">
+            <div class="col-6">
+                <div class="row">
+                    <div class = "col-md-6 row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Date" />
+                        </div>
+                        <div class="col-7">
+                                <RadzenDatePicker @bind-Value="fromDate" DateFormat="d" Class="w-100 " Style="margin-bottom:10px;font-size:0.9em; display: block"/>
+                                <RadzenRequiredValidator Component="fromDate" Text="Date is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <div class = "col-md-6 row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Program" />
+                        </div>
+                        <div class="col-7">
+                                <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                                <RadzenDropDown AllowClear="true" TValue="int" Data=@allPrograms TextProperty="shortCode" ValueProperty="id" Class="w-100" @bind-Value="programId"  Style="margin-bottom:10px;font-size:0.9em; display: block"/>
+                        </div>
+                    </div>
+                    <div class = "col-md-6 row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Status" />
+                        </div>
+                        <div class="col-7">
+                                <RadzenTextBox Class="w-100" @bind-Value="year" Placeholder="" Name="year" Style="margin-bottom:10px;font-size:0.9em; display: block"> </RadzenTextBox>
+                                <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class = "col-md-6 row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Employee No" />
+                        </div>
+                        <div class="col-7">
+                                <RadzenTextBox Class="w-100" @bind-Value="year" Placeholder="" Name="year" Style="margin-bottom:10px;font-size:0.9em; display: block"> </RadzenTextBox>
+                                <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <div class = "col-md-6 row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Employee Name" />
+                        </div>
+                        <div class="col-7">
+                                <RadzenTextBox Class="w-100" @bind-Value="year" Placeholder="" Name="year" Style="margin-bottom:10px;font-size:0.9em; display: block"> </RadzenTextBox>
+                                <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                </div>
+                @*<div class="row">
+                    <div class = "col-md-6 row">
+                        <div class="col-3">
+                            <RadzenLabel Text="Status" />
+                        </div>
+                        <div class="col-7">
+                                <RadzenTextBox Class="w-100" @bind-Value="year" Placeholder="" Name="year" Style="margin-bottom:10px;font-size:0.9em; display: block"> </RadzenTextBox>
+                                <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                </div>*@
+                <br />
+            </div>
+        </div>
+
+        <br />
+
+        <RadzenButton Shade="Shade.Darker" Text="Search" ButtonStyle="ButtonStyle.Secondary" Click="() => Search(Institute, year)" />
+
+        <br /><br /><br /><br />
+
+
+
+            <RadzenDataGrid Style="width: 1000px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                        Data="@allRequests" TItem="Training_Request" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+                
+                <Columns>
+                    <RadzenDataGridColumn TItem="Training_Request" Property="ProgramDate" Filterable="false" Title="Date" Frozen="true" Width="150px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="Training_Request" Property="ProgramId" Title="Employee No" Frozen="true" Width="220px" />
+                    <RadzenDataGridColumn TItem="Training_Request" Property="TrainingRequestName" Title="Employee Name" Width="160px" />
+                </Columns>
+
+            </RadzenDataGrid>
+
+        <br /><br />
+
+    </RadzenCard>
+
+</div>
+
+
+
+
+
+@code {
+
+
+
+
+    public string year = "";
+    public string Institute = "";
+    private DateTime? fromDate { get; set; } = null;//DateTime.Now.Date.AddDays(-1);
+    private DateTime? toDate { get; set; } = null;//DateTime.Now;
+    public int programId = 0;
+
+    List<ManPowerCore.Domain.Program> allPrograms { get; set; } = new List<ManPowerCore.Domain.Program>();
+
+    List<Training_Request> allRequests { get; set; } = new List<Training_Request>();
+
+    List<ResourceProvisionProgress> cc = new List<ResourceProvisionProgress>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            allRequests = new List<Training_Request>();
+        }
+    }
+
+    void Search(string I, string Y)
+    {
+        ResourceProvisionProgress resourceProvisionProgress = new ResourceProvisionProgress();
+        ResourceProvisionProgressController resourceProvisionProgressController = ControllerFactory.CreateResourceProvisionProgressController();
+
+        cc = resourceProvisionProgressController.GetAllResourceProvisionProgress(I, Y);
+
+    }
+
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        // console.Log($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+
+}
+

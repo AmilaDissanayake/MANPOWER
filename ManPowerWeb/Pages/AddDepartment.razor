@@ -1,0 +1,290 @@
+﻿@page "/AddDepartment"
+
+
+
+@using ManPowerCore.Common
+@using ManPowerCore.Controller
+@using ManPowerCore.Domain
+@using ManPowerWeb.Model
+@using System.Text.Json
+@using Radzen
+
+
+@inject IJSRuntime JSRuntime
+@inject DialogService DialogService
+
+<div id="main">
+    <br />
+<br />
+<br />
+    <RadzenTemplateForm TItem="Model"  Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+        <RadzenCard Style="padding-left:45px;">
+            <div class="wizard-heading">Add District/DS Division</div> <br /><br />
+                <div class="row">
+                    <div class="col-6">
+
+
+                        <div class="row">
+                          <div class="col-4">
+                                    <RadzenLabel Text="Select Department" />
+                                </div>
+                                <div class="col-7">
+                                        <RadzenDropDown style="display: block" TValue="int" Data="@DipartmentList" Class="w-100" Name="Department" @bind-Value="model.department" ValueProperty="DepartmentUnitTypeId" TextProperty="Name" />
+                            <RadzenRequiredValidator Component="Department" Text="Department is required" Style="position: absolute" />
+                                </div>
+                          </div>
+                            <br />
+
+                          @if(model.department == 2)
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="District" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-100" @bind-Value="model.name" Popup=@popup Name="District"></RadzenTextBox>
+                                <RadzenRequiredValidator Component="District" Text="District is required" Style="position: absolute" />
+                            </div>
+                        </div>
+                        <br />
+                        @*@foreach (var item in DepLIst.Where(u => u.DepartmentUnitId == District && u.DepartmentUnitTypeId == model.department))
+                        {
+                            ParentId = item.ParentId;
+                        }*@
+
+                        ParentId = 1;
+                       
+                    }
+
+
+                    @if(model.department == 3)
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="District" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenDropDown AllowClear="true" Data="@listDistrict" TValue="int" Class="w-100" ValueProperty="DepartmentUnitId" TextProperty="Name" Placeholder="" Style="display: block" Name="Division" @bind-Value="District" />
+                            </div>
+                        </div>
+                        <br /> 
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="DS Division" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-100" @bind-Value="model.name" Popup=@popup Name="dsDivision"></RadzenTextBox>
+                                <RadzenRequiredValidator Component="dsDivision" Text="dsDivision is required" Style="position: absolute" />
+
+                                @* <RadzenDropDown AllowClear="true" TValue="int" Data="@listDSDivision.Where(u => u.ParentId == District)" ValueProperty="DepartmentUnitId" TextProperty="Name" Class="w-100" Placeholder="" Style="display: block" Name="Division" @bind-Value="DSDivision" />*@
+                            </div>
+                        </div>
+
+                        <br />
+
+                        ParentId = District;
+                       
+                       @* @foreach (var item in DepLIst.Where(u => u.DepartmentUnitId == DSDivision && u.DepartmentUnitTypeId == model.department))
+                        {
+                            ParentId = item.ParentId;
+                        }*@
+                    }
+                        
+                        <br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Email" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-100" @bind-Value="model.email" Popup=@popup Name="Email"></RadzenTextBox>
+                            <RadzenRequiredValidator Component="Email" Text="Email is required" Style="position: absolute" />
+                            <RadzenEmailValidator Component="Email" Text="Provide a valid email address" Popup=@popup Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Fax" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-100" @bind-Value="model.fax" Popup=@popup Name="Fax"></RadzenTextBox>
+                            <RadzenRequiredValidator Component="Fax" Text="Fax is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+
+
+                     </div>
+
+                     @*-------------------------------------------------------------------------------------*@
+
+                        <div class="col-6">
+
+                            <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Address Line 01" />
+                                </div>
+                                <div class="col-7">
+                            <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-100" @bind-Value="model.addressOne" Popup=@popup Name="AddressOne"></RadzenTextBox>
+                            <RadzenRequiredValidator Component="AddressOne" Text="Address Line 01 is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                            <br />
+                            <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Address Line 02" />
+                            </div>
+                            <div class="col-7">
+                            <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-100" @bind-Value="model.addressTwo" Popup=@popup Name="AddressTwo"></RadzenTextBox>
+                            <RadzenRequiredValidator Component="AddressTwo" Text="Address Line 02 is required" Style="position: absolute" />
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Address Line 03" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-100" @bind-Value="model.addressThree" Popup=@popup Name="AddressThree"></RadzenTextBox>
+                            <RadzenRequiredValidator Component="AddressThree" Text="Address Line 03 is required" Style="position: absolute" />
+                        </div>
+                    </div>
+
+                    <br />
+                    <br />
+
+                        </div>
+                
+                </div>
+            <br /><br />
+                <div style="margin-left:650px">
+                <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" ButtonType="ButtonType.Submit" />
+                <RadzenButton  Text="Clear" Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:70px" Click=@Clear />
+                </div>
+
+            <br /><br />
+
+        </RadzenCard>
+
+        </RadzenTemplateForm>
+
+</div>
+
+<br />
+<br />
+<br />
+
+@code{
+
+
+    int DSDivision;
+    int District;
+    int ParentId;
+
+    class Model
+    {
+
+        public int department { get; set; } = 0; 
+        public string district { get; set; } = ""; 
+        public string dsDivision { get; set; } = "";
+        public string name { get; set; } = "";
+        public string email { get; set; } = "";
+        public string fax { get; set; } = ""; 
+        public string addressOne { get; set; } = "";
+        public string addressTwo { get; set; } = "";
+        public string addressThree { get; set; } = "";
+
+
+    }
+
+    bool popup;
+
+    Model model = new Model();
+
+
+    List<DepartmentUnitType> DipartmentList = new List<DepartmentUnitType>();
+    List<DepartmentUnit> listDistrict = new List<DepartmentUnit>();
+    List<DepartmentUnit> DepLIst = new List<DepartmentUnit>();
+
+    protected override void OnInitialized()
+    {
+        DepartmentUnitTypeController departmentUnitTypeController = ControllerFactory.CreateDepartmentUnitTypeController();
+        DipartmentList = departmentUnitTypeController.GetAllDepartmentUnitType(false);
+
+        DepartmentUnitController departmentUnitController = ControllerFactory.CreateDepartmentUnitController();
+        DepLIst = departmentUnitController.GetAllDepartmentUnit(false, false);
+
+        DepartmentUnitTypeController _DepartmentUnitTypeController = ControllerFactory.CreateDepartmentUnitTypeController();
+        listDistrict = _DepartmentUnitTypeController.GetDepartmentUnitType(2, true)._DepartmentUnit;
+
+    }
+
+
+    List<DepartmentUnit> CheckDepartmentUnitList = new List<DepartmentUnit>();
+
+    void OnSubmit(Model model)
+    {
+
+        DepartmentUnitController departmentUnitController2 = ControllerFactory.CreateDepartmentUnitController();
+        CheckDepartmentUnitList = departmentUnitController2.GetAllDepartmentUnit(model.name, model.department, ParentId);
+
+        if (CheckDepartmentUnitList.Count == 0)
+        {
+
+
+
+            DepartmentUnit departmentUnit = new DepartmentUnit();
+            DepartmentUnitController departmentUnitController = ControllerFactory.CreateDepartmentUnitController();
+
+
+            departmentUnit.DepartmentUnitId = 1;
+            departmentUnit.DepartmentUnitTypeId = model.department;
+            departmentUnit.Name = model.name;
+            departmentUnit.Email = model.email;
+            departmentUnit.Fax = model.fax;
+            departmentUnit.AddressLine1 = model.addressOne;
+            departmentUnit.AddressLine2 = model.addressTwo;
+            departmentUnit.AddressLine3 = model.addressThree;
+            departmentUnit.ParentId = ParentId;
+
+            departmentUnitController.SaveDepartmentUnit(departmentUnit);
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added success");
+            Clear();
+
+        }
+
+        else
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "Error", "", "This Department Is Already Exist");
+
+        }
+    }
+
+    public void Clear()
+    {
+
+        model.department = 0;
+        model.name = "";
+        model.email = "";
+        model.fax = "";
+        model.addressOne = "";
+        model.addressTwo = "";
+        model.addressThree = "";
+        ParentId = 0;
+    }
+
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}");
+
+    }
+}
