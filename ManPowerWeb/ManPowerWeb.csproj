@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<StartupObject>ManPowerWeb.Program</StartupObject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Remove="Pages\ViewTarget.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
+		<PackageReference Include="Blazored.SessionStorage" Version="2.2.0" />
+		<PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.3.0" />
+		<PackageReference Include="Radzen.Blazor" Version="4.3.8" />
+		<PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<UpToDateCheckInput Remove="Pages\ViewTarget.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<_ContentIncludedByDefault Remove="Pages\ViewTarget.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ManPowerCore\ManPowerCore.csproj" />
+	</ItemGroup>
+
+</Project>
