@@ -1,0 +1,562 @@
+﻿
+
+@page "/DME37"
+
+@using ManPowerCore.Common
+@using ManPowerCore.Controller
+@using ManPowerCore.Domain
+@using ManPowerWeb.Model
+@using System.Text.Json
+@using Radzen
+
+
+@inject IJSRuntime JSRuntime
+@inject DialogService DialogService
+
+  <div id="main">
+
+                 @* <div class="row" style="margin-top:30px; margin-left:80px; font-size:20px ">
+                                <div class="col-4">
+                                    <h6 style=" font-size:30px "><b>DME 37</b></h6>
+                                </div>
+                                
+                              </div>*@
+
+         
+  <RadzenCard Style="margin-top:50px">
+
+        
+                              <div class="wizard-heading" style="margin-top:20px; margin-left:50px;" >DME 37</div>
+
+    <RadzenTemplateForm TItem="Model"  Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+    
+              <div class="row" style="margin-top:65px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Date:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    
+                                    @*<RadzenDatePicker @bind-Value=@model.date  Popup=@popup  DateFormat="yyyy/mm/dd" Class="w-50" Name="dates" Style="display: block"/>*@
+                                    <RadzenDatePicker @bind-Value=@model.date DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-50" />
+                                   
+
+                                </div>
+                              </div>
+
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Address:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.address" Popup=@popup Name="Address"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="Address" Text="Address is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+
+
+                  <div class="row" style="margin-top:10px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Website Link:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.websiteLink" Popup=@popup Name="website"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="website" Text="Web site link is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+                              
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Business Registation Number:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.BRN" Popup=@popup Name="brnumber"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="brnumber" Text="Business Registation Number is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+                              
+                    
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Vacancy Type / JobPosition:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.vacancyTOrJobP" Popup=@popup Name="vtype"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="vtype" Text="Vacancy Type / JobPosition is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+
+
+                <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Career Path/Achived Hightest Position:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                     <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Placeholder=""  Style="display: block" @bind-Value="model.selectedDropCPorHP" Popup=@popup Name="cpath" Data="@dropcareer"/>
+                                     <RadzenRequiredValidator Component="cpath" Text="Career Path/Achived Hightest Position is required" Style="position: absolute"/>
+                               </div>
+
+                                 <div class="col">
+                                        <input onclick="document.getElementById('id01').style.display='block'" type="button" class="primary-btn" value="View Instructions" style="width:160px;" />
+                                </div>
+                        </div>
+
+                            <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Level:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                     <RadzenDropDown AllowClear="true" TValue="string" Class="w-50" Placeholder=""  Style="display: block" @bind-Value="model.level" Popup=@popup Name="levels" Data="@levels"/>
+
+                                      
+                               </div>
+
+                            </div>
+                             
+
+                                <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Salary Level:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px;  display: block " Class="w-50"  @bind-Value="model.salaryLevel" Popup=@popup Name="salaryL"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="salaryL" Text="Career Path/Achived Hightest Position is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+                           <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Number Of Vacancies:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50"  @bind-Value="model.numberOfVacan" Popup=@popup Name="NOV"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="NOV" Text="Number Of Vacancies is required" Style="position: absolute"/>
+                                </div>
+
+                              </div>
+
+
+
+
+     
+
+
+                 <div class="row" style="margin-top:30px; margin-left:120px ">
+                                <div class="col-4">
+                                    <h6><b>Contact Person Details</b></h6><br/><br/>
+                                </div>
+                                
+                              </div>
+
+
+
+
+                   <div class="row" style="margin-top:30px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Name:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50"  @bind-Value="model.name" Popup=@popup Name="name"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="name" Text="Name is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Position:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.position" Popup=@popup Name="Position"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="Position" Text="Position is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+                              
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Contact Number:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                     <RadzenTextBox Placeholder=" EX: 0771234560" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.contactNumber" Popup=@popup Name="contactNumber"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="contactNumber" Text="Contact Number is required" Style="position: absolute"/>
+                                    <RadzenRegexValidator Component="contactNumber" Text="Contact Number must be 10 digits" Pattern="\d{10}" Popup=@popup Style="position: absolute" />
+                                     
+                                 </div>
+                              </div>
+                              
+                    
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Whatsapp Number:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="EX: 0771234560" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.whatsappNumber" Popup=@popup Name="whatsappNumber"></RadzenTextBox>
+                                      <RadzenRequiredValidator Component="whatsappNumber" Text="Whatsapp Number is required" Style="position: absolute"/>
+                                     <RadzenRegexValidator Component="whatsappNumber" Text="Whatsapp Number must be 10 digits" Pattern="\d{10}" Popup=@popup Style="position: absolute" />
+                                </div>
+                              </div>
+
+
+                 <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Email:"></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-100" @bind-Value="model.email" Name="email" Popup=@popup></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="email" Text="Email is required" Style="position: absolute" />
+                                    <RadzenEmailValidator Component="email" Text="Provide a valid email address" Popup=@popup Style="position: absolute" />
+                                </div>
+
+                                 <div class="col">
+                                     <RadzenButton Text="ADD" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:50px"  Click="AddData"/>
+                                </div>
+
+
+                              </div> <br/><br/><br/>
+
+
+             <RadzenDataGrid Style="width: 1000px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+             Data="@vacancyRegistaionDetails" TItem="VacancyRegistaionDetails" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+
+                 <Columns>
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="Date" Filterable="false" Title="Date" Frozen="true" Width="150px" TextAlign="TextAlign.Center" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="Address" Title="Address" Frozen="true" Width="200px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="WebsiteLink" Title="WebsiteLink" Width="160px"/>
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="BRN" Title="BRN" Width="120px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="VacancyTOrJobP" Title="JobPosition" Width="170px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="DropCPorHP" Title="Career Path" FormatString="{0:d}" Width="150px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="Level" Title="Level" FormatString="{0:d}" Width="100px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="SalaryLevel" Title="SalaryLevel" Width="150px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="NumberOfVacan" Title="Number Of Vacancy" Width="200px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="Name" Title="Name" Width="200px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="Position" Title="Position" Width="150px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="ContactNumber" Title="Contact Number" Width="180px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="WhatsappNumber" Title="Whatsapp Number" Width="180px" />
+            <RadzenDataGridColumn TItem="VacancyRegistaionDetails" Property="Email" Title="Email" Width="220px" />
+           
+        </Columns>
+        </RadzenDataGrid>
+
+       
+           @*  <RadzenGrid AllowFiltering="false" AllowPaging="true" PageSize="2" AllowSorting="false" Data="@vacancyRegistaionDetails"
+             TItem="VacancyRegistaionDetails" PagerHorizontalAlign="HorizontalAlign.Left" Style="width:1500px; font-size:0.1px; margin-left:100px;">
+            <Columns>
+            
+            <RadzenGridColumn Width="150px" TItem="VacancyRegistaionDetails" Property="Date" Title="Date"/>
+            <RadzenGridColumn Width="150px" TItem="VacancyRegistaionDetails" Property="Address" Title="Address"/>
+            <RadzenGridColumn Width="150px" TItem="VacancyRegistaionDetails" Property="WebsiteLink" Title="Website Link" />
+            <RadzenGridColumn Width="150px" TItem="VacancyRegistaionDetails" Property="BRN" Title="BRN" />
+            <RadzenGridColumn Width="150px" TItem="VacancyRegistaionDetails" Property="VacancyTOrJobP" Title="JobPosition" />
+            <RadzenGridColumn Width="150px" TItem="VacancyRegistaionDetails" Property="DropCPorHP" Title="Career Path" />
+            <RadzenGridColumn Width="150px" TItem="VacancyRegistaionDetails" Property="Level" Title="Level" />
+            <RadzenGridColumn Width="150px" TItem="VacancyRegistaionDetails" Property="SalaryLevel" Title="Salary Level" />
+            <RadzenGridColumn Width="150px" TItem="VacancyRegistaionDetails" Property="NumberOfVacan" Title="No Of Vacancies" />
+
+            <RadzenGridColumn TItem="VacancyRegistaionDetails" Title="Personal Details">
+                <Template Context="order">
+                    <RadzenGrid AllowFiltering="false" AllowPaging="true" AllowSorting="false"  TItem="VacancyRegistaionDetails" Data="@vacancyRegistaionDetails" Style="width:600px; font-size:0.2em">
+                        <Columns>
+                            <RadzenGridColumn Width="80px" TItem="VacancyRegistaionDetails" Property="Name" Title="Name" />
+                            <RadzenGridColumn Width="50px" TItem="VacancyRegistaionDetails" Property="Position" Title="Position" />
+                            <RadzenGridColumn Width="50px" TItem="VacancyRegistaionDetails" Property="ContactNumber" Title="Contact No"/>
+                            <RadzenGridColumn Width="50px" TItem="VacancyRegistaionDetails" Property="WhatsappNumber" Title="Whatsapp No" />
+                            <RadzenGridColumn Width="60px" TItem="VacancyRegistaionDetails" Property="Email" Title="Email"/>
+                         
+                           
+                        </Columns>
+                    </RadzenGrid>
+                </Template>
+            </RadzenGridColumn>
+        </Columns>
+    </RadzenDataGrid>   *@
+
+
+       <div class="row" style="margin-top:60px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenButton Text="Save" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" />
+                                </div>
+                                    <div class="col">
+                                    <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" ButtonType="ButtonType.Submit"/>
+                                </div>
+
+                                 <div class="col">
+                                     <RadzenButton Text="Clear" Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" Click=@Clear/>
+                                </div>
+
+
+                              </div>   <br/><br/><br/><br/> 
+
+  </RadzenTemplateForm>
+
+        </RadzenCard>  <br/><br/><br/>
+
+         @*---------------- Dialog box -----------------------*@
+
+        <div class="w3-container">
+
+            <div id="id01" class="w3-modal">
+                <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:40%;">
+
+                    <div class="w3-center">
+                        <br>
+                        <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-xlarge w3-display-topright" title="Close Modal">&times;</span>
+                        <h2>Program Instructions</h2>
+                    </div>
+
+                    <ul>
+                        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                        <li>Suspendsisse a lectus ac turpis rhoncus interdum sed sit amet lorem.</li>
+                        <li>Fusce pretium dolor non ligula, eu lacinia est vbjb ekgk.</li>
+                        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                        <li>Suspendsisse a lectus ac turpis rhoncus interdum sed sit amet lorem.</li>
+                        <li>Fusce pretium dolor non ligula, eu lacinia est vbjb ekgk.</li>
+                        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                        <li>Suspendsisse a lectus ac turpis rhoncus interdum sed sit amet lorem.</li>
+                        <li>Fusce pretium dolor non ligula, eu lacinia est vbjb ekgk.</li>
+                    </ul>
+
+                    <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                        <div class="row">
+                            <div class="col-3">
+                                <input onclick="document.getElementById('id01').style.display='none'" type="button" class="red-btn" value="Cancel" style="width:160px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+          
+</div>   
+
+
+
+
+
+
+@code {
+
+
+    DateTime? value = DateTime.Now;
+
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
+
+    
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+        
+    }
+
+
+    async Task ShowInlineDialog()
+    {
+     var result = await DialogService.OpenAsync("Simple Dialog", ds =>
+    @<div>
+                                        <p class="mb-4">Confirm Order ID</p>
+                                        <div class="row">
+                                            <div class="col">
+                                                <RadzenButton Text="Ok" Click="() => ds.Close(true)" Class="me-1" Style="width: 80px;" />
+                                                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Light" Class="me-1" />
+                                                
+                                            </div>
+                                        </div>
+           </div>
+       );
+    }
+
+    string[] dropcareer = { "Management","Skilled","Non-Skilled","Technical","Non-Technical" };
+    string[] levels = { "Top Level","Middle Level","Lower Level" };
+
+
+    class Model
+    {
+        public DateTime date { get; set; } = DateTime.Today;
+        public string address { get; set; }= "";
+        public string websiteLink { get; set; }= "";
+        public string BRN { get; set; }= "";
+        public string vacancyTOrJobP { get; set; }= "";
+        public string selectedDropCPorHP { get; set; }= "";
+        public string salaryLevel { get; set; }= "";
+
+        public string level { get; set; } = "";
+        public string numberOfVacan { get; set; }= "";
+
+        public string name { get; set; }= "";
+        public string position { get; set; }= "";
+        public string contactNumber { get; set; }= "";
+        public string whatsappNumber { get; set; }= "";
+        public string email { get; set; }= "";
+
+    }
+
+    bool popup;
+
+    Model model = new Model();
+
+    void  OnSubmit(Model model)
+    {
+
+
+
+        CompanyVecansyRegistationDetails companyVecansyRegistationDetails = new CompanyVecansyRegistationDetails();
+        CompanyVecansyRegistationDetailsController companyVecansyRegistationDetailsController = ControllerFactory.CreateCompanyVecansyRegistationDetailsController();
+
+
+        companyVecansyRegistationDetails.CompanyVacansyRegistationDetailsId = 1;
+        companyVecansyRegistationDetails.Date = model.date;
+        companyVecansyRegistationDetails.Address = model.address;
+        companyVecansyRegistationDetails.WebSiteLink = model.websiteLink;
+        companyVecansyRegistationDetails.BusinessRegistationNumber = model.BRN;
+        companyVecansyRegistationDetails.JobPosition = model.vacancyTOrJobP;
+        companyVecansyRegistationDetails.CareerPath = model.selectedDropCPorHP;
+        companyVecansyRegistationDetails.SalaryLevel = model.salaryLevel;
+        companyVecansyRegistationDetails.NumberOfVacancy = int.Parse(model.numberOfVacan);
+        companyVecansyRegistationDetails.Name = model.name;
+        companyVecansyRegistationDetails.Position = model.position;
+        companyVecansyRegistationDetails.ContactNumber = model.contactNumber;
+        companyVecansyRegistationDetails.WhatsappNumber = model.whatsappNumber;
+        companyVecansyRegistationDetails.Levels = model.level;
+        companyVecansyRegistationDetails.Email = model.email;
+
+
+        companyVecansyRegistationDetailsController.SaveCompanyVecansyRegistationDetails(companyVecansyRegistationDetails);
+
+        JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added success");
+
+        Clear();
+
+
+        //   console.Log($"Submit: {JsonSerializer.Serialize(model, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        // console.Log($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+
+
+    IEnumerable<VacancyRegistaionDetails> vacancyRegistaionDetails;
+
+    private void AddData()
+    {
+
+        VacancyRegistaionDetails vacancyRegistaionDetailsObj = new VacancyRegistaionDetails();
+
+
+
+
+
+        vacancyRegistaionDetailsObj.Date = model.date;
+        vacancyRegistaionDetailsObj.Address = model.address;
+        vacancyRegistaionDetailsObj.WebsiteLink = model.websiteLink;
+        vacancyRegistaionDetailsObj.BRN = model.BRN;
+        vacancyRegistaionDetailsObj.VacancyTOrJobP = model.vacancyTOrJobP;
+        vacancyRegistaionDetailsObj.DropCPorHP = model.selectedDropCPorHP;
+        vacancyRegistaionDetailsObj.SalaryLevel = model.salaryLevel;
+        vacancyRegistaionDetailsObj.Level = model.level;
+        vacancyRegistaionDetailsObj.NumberOfVacan = model.numberOfVacan;
+        vacancyRegistaionDetailsObj.Name = model.name;
+        vacancyRegistaionDetailsObj.Position = model.position;
+        vacancyRegistaionDetailsObj.ContactNumber = model.contactNumber;
+        vacancyRegistaionDetailsObj.WhatsappNumber = model.whatsappNumber;
+        vacancyRegistaionDetailsObj.Email = model.email;
+
+
+        vacancyRegistaionDetails = new VacancyRegistaionDetails[] { vacancyRegistaionDetailsObj };
+
+    }
+
+
+    private void Clear()
+    {
+
+        model.address = "";
+        model.websiteLink = "";
+        model.websiteLink= "";
+        model.BRN = "";
+        model.vacancyTOrJobP ="";
+        model.selectedDropCPorHP ="";
+        model.selectedDropCPorHP ="";
+        model.salaryLevel ="";
+        model.level ="";
+        model.numberOfVacan ="";
+        model.name ="";
+        model.position ="";
+        model.contactNumber ="";
+        model.whatsappNumber ="";
+        model.whatsappNumber ="";
+        model.email ="";
+
+        VacancyRegistaionDetails vacancyRegistaionDetailsObj = new VacancyRegistaionDetails();
+
+       
+        vacancyRegistaionDetailsObj.Date = model.date;
+        vacancyRegistaionDetailsObj.Address = "";
+        vacancyRegistaionDetailsObj.WebsiteLink = "";
+        vacancyRegistaionDetailsObj.BRN = "";
+        vacancyRegistaionDetailsObj.VacancyTOrJobP = "";
+        vacancyRegistaionDetailsObj.DropCPorHP = "";
+        vacancyRegistaionDetailsObj.SalaryLevel = "";
+        vacancyRegistaionDetailsObj.Level = "";
+        vacancyRegistaionDetailsObj.NumberOfVacan = "";
+        vacancyRegistaionDetailsObj.Name = "";
+        vacancyRegistaionDetailsObj.Position = "";
+        vacancyRegistaionDetailsObj.ContactNumber = "";
+        vacancyRegistaionDetailsObj.WhatsappNumber = "";
+        vacancyRegistaionDetailsObj.Email = "";
+
+
+        vacancyRegistaionDetails = new VacancyRegistaionDetails[] { vacancyRegistaionDetailsObj };
+  
+
+    }
+
+    private async void Submit()
+    {
+
+
+        CompanyVecansyRegistationDetails companyVecansyRegistationDetails = new CompanyVecansyRegistationDetails();
+        CompanyVecansyRegistationDetailsController companyVecansyRegistationDetailsController = ControllerFactory.CreateCompanyVecansyRegistationDetailsController();
+
+
+        companyVecansyRegistationDetails.CompanyVacansyRegistationDetailsId = 1;
+        companyVecansyRegistationDetails.Date = model.date;
+        companyVecansyRegistationDetails.Address = model.address;
+        companyVecansyRegistationDetails.WebSiteLink = model.websiteLink;
+        companyVecansyRegistationDetails.BusinessRegistationNumber = model.BRN;
+        companyVecansyRegistationDetails.JobPosition = model.vacancyTOrJobP;
+        companyVecansyRegistationDetails.CareerPath = model.selectedDropCPorHP;
+        companyVecansyRegistationDetails.SalaryLevel = model.salaryLevel;
+        companyVecansyRegistationDetails.Levels = model.level;
+         companyVecansyRegistationDetails.NumberOfVacancy = int.Parse(model.numberOfVacan);
+        companyVecansyRegistationDetails.Name = model.name;
+        companyVecansyRegistationDetails.Position = model.position;
+        companyVecansyRegistationDetails.ContactNumber = model.contactNumber;
+        companyVecansyRegistationDetails.WhatsappNumber = model.whatsappNumber;
+        companyVecansyRegistationDetails.Email = model.email;
+
+
+       companyVecansyRegistationDetailsController.SaveCompanyVecansyRegistationDetails(companyVecansyRegistationDetails);
+
+       await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added success");
+
+
+    }  
+
+
+
+     
+
+}

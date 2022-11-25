@@ -1,0 +1,506 @@
+﻿@page "/approvalView/{index}"
+
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+@using Radzen
+@using System.Text.Json
+
+<div id="main">
+    <center>
+        <RadzenCard Style="padding-left:40px;">
+
+            @foreach (var p in taskAllocations.Where(u => u.TaskAllocationId == Convert.ToInt32(index)))
+            {
+                @foreach (var prop in monthTable.Where(u => u.monthNumber == p.TaskYearMonth.Month))
+                {
+                    month = @prop.monthName;
+                }
+            }
+            <div class="wizard-heading">Approval Requests for Month - @month</div><br/>
+            <h5></h5>
+            <RadzenDataGrid Style="width: 930px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                        Data="@myList" TItem="TaskAllocationDetail" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or" >    
+                <Columns>
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="StartTime.Date" Title="Start Date" Width="200px" TextAlign="TextAlign.Center" />
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="EndTime.Date" Title="End Date" Width="200px" TextAlign="TextAlign.Center" />
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Title="Program Type" Width="150px" TextAlign="TextAlign.Center" >
+                        <Template Context="myList">
+                            @foreach (var i in taskTypes.Where(u => u.TaskTypeId == myList.TaskTypeId))
+                            {
+                                task = i.TaskTypeName;
+                            }
+                            @task
+                        </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="TaskDescription" Title="Performed Duty" Width="200px" TextAlign="TextAlign.Center" />
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="WorkLocation" Title="Work Location" Width="200px" TextAlign="TextAlign.Center" />
+                        <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="TaskRemarks" Title="Remarks" Width="200px" TextAlign="TextAlign.Center" />
+                </Columns>
+            </RadzenDataGrid>
+
+            @foreach (var i in taskAllocations.Where(u => u.TaskYearMonth.Month == Convert.ToInt32(index)))
+            {
+                id = i.TaskAllocationId;
+            }
+            <br/>
+
+            <h4>Add Remarks</h4>
+            @*<div class="row">
+                <div class="col-5">
+                     <RadzenLabel Text="Remarks" />
+                </div>
+            </div>*@
+            <div class="row justify-content-center">
+                <div class="col-6">
+                    <br/>
+                    <RadzenTextArea Style="display: block" Name="duty" @bind-Value=@remarks Class="w-100" Rows="5" />
+                    <RadzenRequiredValidator Component="duty" Text="Performed Duty is required" Style="position: absolute" />
+                </div>
+            </div>
+
+            <br/><br/>
+
+            <div class="row justify-content-center">
+                <div class="col-2">
+                    <a href="/dme21Approval">
+                        <RadzenButton Text="Back" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;" />
+                    </a>
+                </div>
+                <div class="col-2">
+                    <RadzenButton Shade="Shade.Darker" ButtonStyle="ButtonStyle.Success" Text="Accept" Size="ButtonSize.Medium" Click="() => onClick_accept(Convert.ToInt32(index))" @onclick:stopPropagation="true" Style="width:130px;"> </RadzenButton>
+                </div>
+                <div class="col-2">
+                    <RadzenButton Shade="Shade.Darker" ButtonStyle="ButtonStyle.Danger" Text="Reject" Size="ButtonSize.Medium" Click="() => onClick_reject(Convert.ToInt32(index))" @onclick:stopPropagation="true" Style="width:130px;"> </RadzenButton>
+                </div>
+            </div>
+
+        </RadzenCard>
+    </center>
+</div>
+
+
+@code{
+
+    [Parameter]
+    public string index { get; set; }
+
+    private string emptyText = "No Items to display!";
+    private string status;
+    private string task;
+    private string remarks;
+    private string pName;
+    private string month;
+    private string monthName;
+    private string officer;
+    private int id;
+
+    List<TaskAllocationDetail> taskAllocationDetails = new List<TaskAllocationDetail>();
+    List<TaskAllocation> taskAllocations = new List<TaskAllocation>();
+    List<TaskAllocation> myList2 = new List<TaskAllocation>();
+    TaskAllocation single = new TaskAllocation();
+    List<TaskType> taskTypes = new List<TaskType>();
+    List<ProjectStatus> pStatus = new List<ProjectStatus>();
+    List<Month> monthTable = new List<Month>();
+    List<TaskAllocationDetail> myList = new List<TaskAllocationDetail>();
+    public SystemUser userRegistationDetailsList;
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        monthTable.Add(new Month() { monthName = "January", monthNumber = 1 });
+        monthTable.Add(new Month() { monthName = "February", monthNumber = 2 });
+        monthTable.Add(new Month() { monthName = "March", monthNumber = 3 });
+        monthTable.Add(new Month() { monthName = "April", monthNumber = 4 });
+        monthTable.Add(new Month() { monthName = "May", monthNumber = 5 });
+        monthTable.Add(new Month() { monthName = "June", monthNumber = 6 });
+        monthTable.Add(new Month() { monthName = "July", monthNumber = 7 });
+        monthTable.Add(new Month() { monthName = "August", monthNumber = 8 });
+        monthTable.Add(new Month() { monthName = "September", monthNumber = 9 });
+        monthTable.Add(new Month() { monthName = "October", monthNumber = 10 });
+        monthTable.Add(new Month() { monthName = "November", monthNumber = 11 });
+        monthTable.Add(new Month() { monthName = "December", monthNumber = 12 });
+
+        TaskAllocationController taskAllocationList = ControllerFactory.CreateTaskAllocationController();
+        taskAllocations = taskAllocationList.GetAllTaskAllocation(true, false,true,true);
+
+        TaskAllocationDetailController aa = ControllerFactory.CreateTaskAllocationDetailController();
+        taskAllocationDetails = aa.GetAllTaskAllocationDetail(false, false, true);
+
+        ProjectStatusController projectStatus = ControllerFactory.CreateProjectStatusController();
+        pStatus = projectStatus.GetAllProjectStatus(false);
+
+        TaskTypeController taskTypeController = ControllerFactory.CreateTaskTypeController();
+        taskTypes = taskTypeController.GetAllTaskType(false);
+
+        foreach (var j in taskAllocations.Where(u => u.TaskAllocationId == Convert.ToInt32(index)))
+        {
+            foreach (var i in taskAllocationDetails.Where(u => u.TaskAllocationId == j.TaskAllocationId))
+            {
+                myList.Add(i);
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+            officer = userRegistationDetailsList.Name;
+        }
+        StateHasChanged();
+    }
+
+    async void onClick_accept(int id)
+    {
+        TaskAllocationController allocation = ControllerFactory.CreateTaskAllocationController();
+        TaskAllocation taskAllocation = new TaskAllocation();
+
+        var confirm = await JSRuntime.InvokeAsync<bool>("customConfirm", "Conformation", "Are you sure you want to Accept ?", "Yes Accept it !");
+
+        if (confirm)
+        {
+            if(String.IsNullOrWhiteSpace(remarks))
+            {
+                remarks = "Accepted";
+            }
+
+            allocation.UpdateTaskAllocationApproval(id, 5, officer, remarks);
+
+            await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Recommended..");
+            NavigationManager.NavigateTo($"/dme21Approval", true);
+        }
+    }
+
+    async void onClick_reject(int id)
+    {
+        if(String.IsNullOrWhiteSpace(remarks))
+        {
+            await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Please Provide The Reason to Reject");
+        }
+        else
+        {
+            var confirm = await JSRuntime.InvokeAsync<bool>("customConfirm", "Conformation", "Are you sure you want to Reject ?", "Yes Reject it !");
+
+            if (confirm)
+            { 
+                TaskAllocationController allocation = ControllerFactory.CreateTaskAllocationController();
+                TaskAllocation taskAllocation = new TaskAllocation();
+
+                allocation.UpdateTaskAllocationApproval(id, 7, officer, remarks);
+
+                await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Rejected..");
+                NavigationManager.NavigateTo($"/dme21Approval", true);
+            }
+        }
+        
+    }
+    
+    //-------------- Date Picker handler --------------------//
+
+    DateTime? value = DateTime.Now;
+
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
+
+
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+    }
+
+    void DateRenderSpecial(DateRenderEventArgs args)
+    {
+        if (dates.Contains(args.Date))
+        {
+            args.Attributes.Add("style", "background-color: #ff6d41; border-color: white;");
+        }
+    }
+
+    void DateRender(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || dates.Contains(args.Date);
+    }
+
+    void DateRenderNoWeekends(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || args.Date.DayOfWeek == DayOfWeek.Sunday || args.Date.DayOfWeek == DayOfWeek.Saturday;
+    }
+
+    void OnTodayClick()
+    {
+        value = DateTime.Now;
+    }
+
+}
+
+            
+            @*<RadzenCard Style="padding-left:40px;">
+
+                @foreach (var prop in monthTable.Where(u => u.monthNumber == Convert.ToInt32(index)))
+                {
+                    month = @prop.monthName;
+                }
+
+                <div class="wizard-heading">DME 21 - Projects for @month</div>
+
+                <table class="table primary-table">
+                    <thead class="table-active">
+                        <tr>
+                            <th scope="col">Year</th>
+                            <th scope="col">Program Type</th>
+                            <th scope="col">Work Place</th>
+                            <th scope="col">Performed Duty</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in taskAllocationDetails.Where(u => u.StartTime.Month == int.Parse(index)))
+                        {
+                            @foreach (var prop in taskAllocations.Where(u => u.TaskYearMonth.Month == Convert.ToInt32(index)))
+                            {
+                                s = @prop.StatusId;
+                            }
+                            @foreach (var i in pStatus.Where(u => u.ProjectStatusId == s))
+                            {
+                                status = i.ProjectStatusName;
+                            }
+
+                            @foreach (var i in taskTypes.Where(u => u.TaskTypeId == item.TaskTypeId))
+                            {
+                                pName = i.TaskTypeName;
+                            }
+
+                            <tr @key="@item">
+                                <td>@item.StartTime.Year</td>
+                                <td>@pName</td>
+                                <td>@item.WorkLocation</td>
+                                <td>@item.TaskDescription</td>
+                                <td>@item.StartTime.Date</td>
+                                <td>
+                                    <div class="row justify-content-center">
+                                        <div class="col-2">
+                                            <RadzenButton ButtonType="ButtonType.Submit" Text="Approve" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;" Click="onClick_approve" />
+                                        </div>
+                                        <div class="col-2">
+                                            <RadzenButton Shade="Shade.Darker" Text="Reject" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Submit" Style="width:130px;" Click="onClick_reject" />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        }
+                    </tbody>
+                </table>
+                <a href="/dme21">
+                    <RadzenButton Text="Back" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;" />
+                </a>*@
+
+            
+        @*<center>
+            <RadzenCard>
+                @foreach (var prop in taskAllocations.Where(u => u.TaskAllocationId == Convert.ToInt32(index)))
+                {
+                    <div class="row">
+                        <div class="wizard-heading">DME 21 - Project Id @prop.TaskAllocationId</div>
+                    </div>
+
+                    <br />
+
+                    @foreach (var item in taskAllocationDetails.Where(u => u.TaskAllocationId == int.Parse(index)))
+                    {
+                        @foreach (var i in pStatus.Where(u => u.ProjectStatusId == prop.StatusId))
+                        {
+                            status = i.ProjectStatusName;
+                        }
+
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Status" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="@status" Class="w-100" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Approved by " />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="@prop.ApprovedBy" Class="w-100" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Approved Date" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="@prop.ApprovedDate" Class="w-100" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Recommonded By" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="@prop.RecommendedBy" Class="w-100" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Recommonded Date" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="@prop.RecommendedDate.ToString()" Class="w-100" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        @foreach (var i in taskTypes.Where(u => u.TaskTypeId == item.TaskTypeId))
+                        {
+                            task = i.TaskTypeName;
+                        }
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Work Type" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="@task" Class="w-100" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        @if (item.TaskTypeId == 1)
+                        {
+                            <div class="row">
+                                <div class="col-4">
+                                    RadzenLabel Text="Program Name" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenTextBox AllowClear="true" TValue="string" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Program Type" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenTextBox AllowClear="true" TValue="string" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Output" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenTextBox style="display: block" Name="place" Class="w-100" />
+                                </div>
+                            </div>
+
+                            <br />
+
+
+                            <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Program Link" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenTextBox style="display: block" Name="place" Class="w-100" />
+                                </div>
+                            </div>
+
+                            <br />
+
+                            <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Outcome" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenTextBox style="display: block" Name="place" Class="w-100" />
+                                </div>
+                            </div>
+
+                            <br />
+
+                            <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Outcome" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenTextBox style="display: block" Name="place" Class="w-100" />
+                                </div>
+                            </div>
+
+                            <br />
+
+
+
+
+                        }
+
+                        @if (item.TaskTypeId == 2)
+                        {
+                            <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Remarks" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenTextArea style="display: block" Name="place" Class="w-100" Placeholder="@item.TaskRemarks" Disabled />
+                                </div>
+                            </div>
+
+                            <br />
+                        }
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Performed Duty" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextArea style="display: block" Name="place" Placeholder="@item.TaskDescription" Class="w-100" Disabled />
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Work Attended Place" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox style="display: block" Name="place" Placeholder="@item.WorkLocation" Class="w-100" Disabled />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row justify-content-center">
+                            <div class="col-3">
+                                <RadzenButton ButtonType="ButtonType.Submit" Text="Approve" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;" Click="onClick_approve"/>
+                            </div>
+                            <div class="col-3">
+                                <RadzenButton Shade="Shade.Darker" Text="Reject" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Submit" Style="width:130px;" Click="onClick_reject" />
+                            </div>
+                        </div>
+                    }
+                }
+
+                
+            </RadzenCard>*@

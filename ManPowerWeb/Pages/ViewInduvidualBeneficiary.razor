@@ -1,0 +1,93 @@
+﻿@page "/InduvidualBeneficiary/ViewInduvidualBeneficiary/{BenificiaryId}"
+
+<div id="main">
+    <div class="primary-container">
+        
+        @foreach (var prop in InduvidualBeneficiarylist.Where(u => u.BenificiaryId == Convert.ToInt32(BenificiaryId)))
+        {
+            <div class="wizard-heading">Induvidual Beneficiary details @prop.BenificiaryId</div>
+            <RadzenCard>
+            <div class="row">
+                <div class="col-5" style="margin-right:100px;">
+
+                    <label class="label">NIC</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.Nic.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Name</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.InduvidualBeneficiaryName.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Gender</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.Gender.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Date Of Birth</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.DateOfBirth.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Personal Address</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.PersonalAddress.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Email</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.Email.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Job preference</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.JobPreference.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Contact Number</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.ContactNumber.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Whatsapp Number</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.WhatsappNumber.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">School Name</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.SchoolName.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Address of School</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.AddressOfSchool.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Grade</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.Grade.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Parent NIC</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.ParentNic.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+            </div>
+            <a href="/planning/Registration">
+                 <input type="button" class="primary-btn" value="Back" style="width:220px;" />
+               </a>
+            </div>
+
+            </RadzenCard>           
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string BenificiaryId { get; set; }
+
+    [Parameter]
+    public InduvidualBeneficiary InduvidualBeneficiary { get; set; }
+
+    List<InduvidualBeneficiary> InduvidualBeneficiarylist = new List<InduvidualBeneficiary>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        InduvidualBeneficiaryController induvidualBeneficiaryController = ControllerFactory.CreateInduvidualBeneficiaryController();
+        InduvidualBeneficiarylist = induvidualBeneficiaryController.GetAllInduvidualBeneficiary();
+
+    }
+}

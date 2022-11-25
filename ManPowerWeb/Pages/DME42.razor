@@ -1,0 +1,469 @@
+﻿
+
+@page "/DME42"
+
+@using ManPowerCore.Common
+@using ManPowerCore.Controller
+@using ManPowerCore.Domain
+@using ManPowerWeb.Model
+@using System.Text.Json
+@using Radzen
+
+
+@inject IJSRuntime JSRuntime
+@inject DialogService DialogService
+
+
+<div id="main">
+
+
+                
+ <RadzenCard Style="margin-top:50px">
+
+<RadzenTemplateForm TItem="Model"  Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+
+
+                        <div class="wizard-heading">DME 42</div>
+
+                 <div class="row" style="margin-top:55px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Date:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    
+                                    <RadzenDatePicker @bind-Value=@model.date DateFormat="d" Popup=@popup   Class="w-50" Name="dates" Style="display: block"/>
+                                    
+
+                                </div>
+                              </div>
+
+                 <div class="row" style="margin-top:20px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Name of the Program :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.nameOfTheProgram" Popup=@popup Name="nameOfTheProgram"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="nameOfTheProgram" Text="Name Of TheProgram is required" Style="position: absolute"/>
+                                </div>
+                              </div>   
+
+
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Institute :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.institute" Popup=@popup Name="institute"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="institute" Text="Institute is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Address :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.address" Popup=@popup Name="address"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="address" Text="Address is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+                              
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Subject Area / Topic :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.subjectAreaOrTopic" Popup=@popup Name="subjectAreaOrTopic"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="subjectAreaOrTopic" Text="Subject Area Or Topic is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+                              
+                    
+                  
+
+
+
+                    <div class="row" style="margin-top:20px; margin-left:120px ">
+                                <div class="col">
+                                    <h6><b>If Service Provided to External Organization</b></h6><br/>
+                                </div>
+                                
+                              </div> 
+
+
+
+                           <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Name of the Organization :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px;  display: block " Class="w-50"  @bind-Value="model.nameOfTheOrganization" Popup=@popup Name="nameOfTheOrganization"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="nameOfTheOrganization" Text="NameOfTheOrganization is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+              
+
+                            <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Organization Type :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                         <RadzenDropDown AllowClear="true" TValue="string" Class="w-50" Placeholder=""  Style="display: block" @bind-Value="model.organizationType" Popup=@popup Name="organizationType" Data="@SelectedOrganizationType"/>
+                                    @*<RadzenTextBox Placeholder="" Style="margin-bottom:10px;  display: block " Class="w-50"  @bind-Value="model.organizationType" Popup=@popup Name="organizationType"></RadzenTextBox>*@
+                                     <RadzenRequiredValidator Component="organizationType" Text="Organization Type is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+                             
+
+                                <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="DS :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px;  display: block " Class="w-50"  @bind-Value="model.ds" Popup=@popup Name="ds"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="ds" Text="DS is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+                           <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Address :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50"  @bind-Value="model.organizationAddress" Popup=@popup Name="organizationAddress"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="organizationAddress" Text="Organization Address is required" Style="position: absolute"/>
+                                </div>
+
+                              </div>
+
+
+
+
+     
+
+
+                 <div class="row" style="margin-top:30px; margin-left:120px ">
+                                <div class="col-4">
+                                    <h6><b>Contact Person Details</b></h6><br/><br/>
+                                </div>
+                                
+                              </div>
+
+
+
+
+                   <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Name:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50"  @bind-Value="model.name" Popup=@popup Name="name"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="name" Text="Name is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Position:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.position" Popup=@popup Name="Position"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="Position" Text="Position is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+                              
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Contact Number:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                     <RadzenTextBox Placeholder="EX: 0771234560" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.contactNumber" Popup=@popup Name="contactNumber"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="contactNumber" Text="Contact Number is required" Style="position: absolute"/>
+                                    <RadzenRegexValidator Component="contactNumber" Text="Contact Number must be 10 digits" Pattern="\d{10}" Popup=@popup Style="position: absolute" />
+                                     
+                                 </div>
+                              </div>
+                              
+                    
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Whatsapp Number:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="EX: 0771234560" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.whatsappNumber" Popup=@popup Name="whatsappNumber"></RadzenTextBox>
+                                      <RadzenRequiredValidator Component="whatsappNumber" Text="Whatsapp Number is required" Style="position: absolute"/>
+                                     <RadzenRegexValidator Component="whatsappNumber" Text="Whatsapp Number must be 10 digits" Pattern="\d{10}" Popup=@popup Style="position: absolute" />
+                                </div>
+                              </div>
+
+
+                 <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Email:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.email" Name="email" Popup=@popup></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="email" Text="Email is required" Style="position: absolute" />
+                                    <RadzenEmailValidator Component="email" Text="Provide a valid email address" Popup=@popup Style="position: absolute" />
+                                </div>
+
+
+                              </div> 
+
+
+                 <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Details of the Provided Service :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    
+                                    <RadzenTextArea Change=@(args => OnChange(args, "TextArea")) Class="w-100" Style="margin-bottom:10px; display: block" @bind-Value="model.detailsOfTheProvidedService" Name="detailsOfTheProvidedService" Popup=@popup/>
+                                    <RadzenRequiredValidator Component="detailsOfTheProvidedService" Text="Details Of The Provided Service is required" Style="position: absolute" />
+                                   
+                                </div>
+
+                                 <div class="col">
+                                     <RadzenButton Text="ADD" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:50px"  Click="AddData"/>
+                                </div>
+
+
+                              </div> <br/><br/><br/>
+
+                               
+ 
+
+        <RadzenDataGrid Style="width: 1000px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+        Data="@resourceProProgress" TItem="ResourceProProgress" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+
+                 <Columns>
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="Date" Filterable="false" Title="Date" Frozen="true" Width="150px" TextAlign="TextAlign.Center" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="NameOfTheProgram" Title="Name of the Program" Frozen="true" Width="220px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="Institute" Title="Institute" Width="160px"/>
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="Address" Title="Address" Width="120px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="SubjectAreaOrTopic" Title="Subject Area" Width="170px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="NameOfTheOrganization" Title="Name of the Organization" FormatString="{0:d}" Width="230px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="OrganizationType" Title="Organization Type" FormatString="{0:d}" Width="200px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="Ds" Title="DS" Width="150px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="OrganizationAddress" Title="Address" Width="200px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="Name" Title="Name" Width="200px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="Position" Title="Position" Width="150px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="ContactNumber" Title="Contact Number" Width="180px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="WhatsappNumber" Title="Whatsapp Number" Width="180px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="Email" Title="Email" Width="220px" />
+            <RadzenDataGridColumn TItem="ResourceProProgress" Property="DetailsOfTheProvidedService" Title="Details of the Provided Service" Width="320px" />
+           
+           
+        </Columns>
+        </RadzenDataGrid>
+
+       
+
+
+       <div class="row" style="margin-top:60px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenButton Text="Save" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" />
+                                </div>
+                                    <div class="col">
+                                    <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" ButtonType="ButtonType.Submit"/>
+                                </div>
+
+                                 <div class="col">
+                                     <RadzenButton Text="Clear" Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" Click=@Clear/>
+                                </div>
+
+
+                              </div>   <br/><br/><br/><br/> 
+
+  </RadzenTemplateForm>
+
+  </RadzenCard>
+          
+</div>   
+
+
+
+@code {
+
+
+
+
+    string value;
+
+    void OnChange(string value, string name)
+    {
+
+    }
+
+
+    string[] SelectedOrganizationType = { "Private","Public" };
+
+
+    class Model
+    {
+        public DateTime date { get; set; } = DateTime.Today;
+        public string nameOfTheProgram { get; set; }= "";
+        public string institute { get; set; }= "";
+        public string address { get; set; }= "";
+        public string subjectAreaOrTopic { get; set; }= "";
+        public string nameOfTheOrganization { get; set; }= "";
+        public string organizationType { get; set; }= "";
+        public string ds { get; set; } = "";
+        public string organizationAddress { get; set; }= "";
+
+        public string name { get; set; }= "";
+        public string position { get; set; }= "";
+        public string contactNumber { get; set; }= "";
+        public string whatsappNumber { get; set; }= "";
+        public string email { get; set; }= "";
+        public string detailsOfTheProvidedService { get; set; }= "";
+
+    }
+
+    public string year = "";
+
+    bool popup;
+
+    Model model = new Model();
+
+    List<ResourceProvisionProgress>resourceProvisionProgressValidate = new List<ResourceProvisionProgress>();
+
+    void  OnSubmit(Model model)
+    {
+
+        
+
+
+
+
+        ResourceProvisionProgress resourceProvisionProgress = new ResourceProvisionProgress();
+        ResourceProvisionProgressController resourceProvisionProgressController = ControllerFactory.CreateResourceProvisionProgressController();
+
+
+        resourceProvisionProgress.ResourceProvisionProgressId = 1;
+        resourceProvisionProgress.Date = model.date;
+        resourceProvisionProgress.NameOfTheProgram = model.nameOfTheProgram;
+        resourceProvisionProgress.Institute = model.institute;
+        resourceProvisionProgress.Address = model.address;
+        resourceProvisionProgress.SubjectAreaOrTopic = model.subjectAreaOrTopic;
+        resourceProvisionProgress.NameOfTheOrganization = model.nameOfTheOrganization;
+        resourceProvisionProgress.OrganizationType = model.organizationType;
+        resourceProvisionProgress.Ds = model.ds;
+        resourceProvisionProgress.OrganizationAddress = model.organizationAddress;
+        resourceProvisionProgress.Name = model.name;
+        resourceProvisionProgress.Position = model.position;
+        resourceProvisionProgress.ContactNumber = model.contactNumber;
+        resourceProvisionProgress.WhatsappNumber = model.whatsappNumber;
+        resourceProvisionProgress.Email = model.email;
+        resourceProvisionProgress.DetailsOfTheProvidedService = model.detailsOfTheProvidedService;
+
+
+        resourceProvisionProgressController.SaveResourceProvisionProgress(resourceProvisionProgress);
+
+        JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added success");
+
+        Clear();
+
+
+        //   console.Log($"Submit: {JsonSerializer.Serialize(model, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        // console.Log($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+
+
+    IEnumerable<ResourceProProgress> resourceProProgress;
+
+    private void AddData()
+    {
+
+        ResourceProProgress resourceProProgressObj = new ResourceProProgress();
+
+
+
+        resourceProProgressObj.Date = model.date;
+        resourceProProgressObj.NameOfTheProgram = model.nameOfTheProgram;
+        resourceProProgressObj.Institute = model.institute;
+        resourceProProgressObj.Address = model.address;
+        resourceProProgressObj.SubjectAreaOrTopic = model.subjectAreaOrTopic;
+        resourceProProgressObj.NameOfTheOrganization = model.nameOfTheOrganization;
+        resourceProProgressObj.OrganizationType = model.organizationType;
+        resourceProProgressObj.Ds = model.ds;
+        resourceProProgressObj.OrganizationAddress = model.organizationAddress;
+        resourceProProgressObj.Name = model.name;
+        resourceProProgressObj.Position = model.position;
+        resourceProProgressObj.ContactNumber = model.contactNumber;
+        resourceProProgressObj.WhatsappNumber = model.whatsappNumber;
+        resourceProProgressObj.Email = model.email;
+        resourceProProgressObj.DetailsOfTheProvidedService = model.detailsOfTheProvidedService;
+
+
+        resourceProProgress = new ResourceProProgress[] { resourceProProgressObj };
+
+    }
+
+
+    private void Clear()
+    {
+
+        model.nameOfTheProgram = "";
+        model.institute = "";
+        model.address= "";
+        model.subjectAreaOrTopic = "";
+        model.nameOfTheOrganization ="";
+        model.organizationType ="";
+        model.ds ="";
+        model.organizationAddress ="";
+        model.name ="";
+        model.position ="";
+        model.name ="";
+        model.position ="";
+        model.contactNumber ="";
+        model.whatsappNumber ="";
+        model.whatsappNumber ="";
+        model.email ="";
+        model.detailsOfTheProvidedService ="";
+
+        ResourceProProgress resourceProProgressObj = new ResourceProProgress();
+
+       
+        resourceProProgressObj.Date = model.date;
+        resourceProProgressObj.NameOfTheProgram = "";
+        resourceProProgressObj.Institute = "";
+        resourceProProgressObj.Address = "";
+        resourceProProgressObj.SubjectAreaOrTopic = "";
+        resourceProProgressObj.NameOfTheOrganization = "";
+        resourceProProgressObj.OrganizationType = "";
+        resourceProProgressObj.Ds = "";
+        resourceProProgressObj.OrganizationAddress = "";
+        resourceProProgressObj.Name = "";
+        resourceProProgressObj.Position = "";
+        resourceProProgressObj.ContactNumber = "";
+        resourceProProgressObj.WhatsappNumber = "";
+        resourceProProgressObj.Email = "";
+        resourceProProgressObj.DetailsOfTheProvidedService = "";
+
+
+        resourceProProgress = new ResourceProProgress[] { resourceProProgressObj };
+  
+
+    }
+
+    
+
+     }
+ }
