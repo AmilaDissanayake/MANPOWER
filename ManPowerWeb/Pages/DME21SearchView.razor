@@ -47,28 +47,28 @@
             </div>
         </div>
 
-        <br /><br/>
+        <br /><br />
 
-        
-        
+
+
 
         @*--------------------------- table ----------------------------*@
 
-       @if (myList.Count() != 0 && month == 0 && String.IsNullOrWhiteSpace(selectedYear))
-            {
-                 <RadzenDataGrid Style="width: 900px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+        @if (myList.Count() != 0 && month == 0 && String.IsNullOrWhiteSpace(selectedYear))
+        {
+            <RadzenDataGrid Style="width: 900px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                         Data="@myList" TItem="TaskAllocation" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or">
                 <Columns>
                     <RadzenDataGridColumn TItem="TaskAllocation" Property="TaskYearMonth.Year" Title="Year" Width="200px" TextAlign="TextAlign.Center" />
-                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Month" Width="200px" TextAlign="TextAlign.Center" >
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Month" Width="200px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
                             @foreach (var i in monthTable.Where(u => u.monthNumber == myList.TaskYearMonth.Month))
-                                {
-                                    monthName = i.monthName;
-                                }
-                                @monthName
-                            </Template>
-                        </RadzenDataGridColumn>
+                            {
+                                monthName = i.monthName;
+                            }
+                            @monthName
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="TaskAllocation" Title="Status" Width="200px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
                             @foreach (var i in pStatus.Where(u => u.ProjectStatusId == myList.StatusId))
@@ -77,20 +77,20 @@
                             }
                             @status
                         </Template>
-                    </RadzenDataGridColumn>                    
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="TaskAllocation" Title="Action" Width="220px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
-                           <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+                            <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
                             &nbsp;
-                            @if(myList.StatusId == 1)
+                            @if (myList.StatusId == 1)
                             {
                                 <a href="/addDme21">
-                                      <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;"> </RadzenButton>
+                                    <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;"> </RadzenButton>
                                 </a>
                             }
                             else if (myList.StatusId == 7)
                             {
-                                 <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Click="() => navigateToUpdate(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+                                <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Click="() => navigateToUpdate(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
                             }
                             else
                             {
@@ -98,48 +98,48 @@
                             }
                         </Template>
                     </RadzenDataGridColumn>
-                    </Columns>
-                </RadzenDataGrid>
-            }
-           
+                </Columns>
+            </RadzenDataGrid>
+        }
 
-            else if (!String.IsNullOrWhiteSpace(selectedYear) && month == 0)
-            {
-                <RadzenDataGrid Style="width: 900px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+
+        else if (!String.IsNullOrWhiteSpace(selectedYear) && month == 0)
+        {
+            <RadzenDataGrid Style="width: 900px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                         Data="@myList.Where(u => u.TaskYearMonth.Year == int.Parse(selectedYear) && u.CreatedUser == user)" TItem="TaskAllocation" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="TaskAllocation" Property="TaskYearMonth.Year" Title="Year" Width="200px" TextAlign="TextAlign.Center" />
-                        <RadzenDataGridColumn TItem="TaskAllocation" Title="Month" Width="200px" TextAlign="TextAlign.Center">
+                <Columns>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Property="TaskYearMonth.Year" Title="Year" Width="200px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Month" Width="200px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
                             @foreach (var i in monthTable.Where(u => u.monthNumber == myList.TaskYearMonth.Month))
-                                {
-                                    monthName = i.monthName;
-                                }
-                                @monthName
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="TaskAllocation" Title="Status" Width="200px" TextAlign="TextAlign.Center">
-                            <Template Context="myList">
-                            @foreach (var i in pStatus.Where(u => u.ProjectStatusId == myList.StatusId))
-                                {
-                                    status = i.ProjectStatusName;
-                                }
-                                @status
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="TaskAllocation" Title="Action" Width="220px" TextAlign="TextAlign.Center">
+                            {
+                                monthName = i.monthName;
+                            }
+                            @monthName
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Status" Width="200px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
-                           <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+                            @foreach (var i in pStatus.Where(u => u.ProjectStatusId == myList.StatusId))
+                            {
+                                status = i.ProjectStatusName;
+                            }
+                            @status
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Action" Width="220px" TextAlign="TextAlign.Center">
+                        <Template Context="myList">
+                            <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
                             &nbsp;
-                            @if(myList.StatusId == 1)
+                            @if (myList.StatusId == 1)
                             {
                                 <a href="/addDme21">
-                                      <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;"> </RadzenButton>
+                                    <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;"> </RadzenButton>
                                 </a>
                             }
                             else if (myList.StatusId == 7)
                             {
-                                 <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Click="() => navigateToUpdate(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+                                <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Click="() => navigateToUpdate(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
                             }
                             else
                             {
@@ -147,105 +147,105 @@
                             }
                         </Template>
                     </RadzenDataGridColumn>
-                    </Columns>
-                </RadzenDataGrid>
+                </Columns>
+            </RadzenDataGrid>
         }
 
         else if (month != 0 && String.IsNullOrWhiteSpace(selectedYear))
         {
-                <RadzenDataGrid Style="width: 900px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+            <RadzenDataGrid Style="width: 900px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                         Data="@myList.Where(u => u.TaskYearMonth.Month == month && u.CreatedUser == user)" TItem="TaskAllocation" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="TaskAllocation" Property="TaskYearMonth.Year" Title="Year" Width="200px" TextAlign="TextAlign.Center" />
-                        <RadzenDataGridColumn TItem="TaskAllocation" Title="Month" Width="200px" TextAlign="TextAlign.Center">
+                <Columns>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Property="TaskYearMonth.Year" Title="Year" Width="200px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Month" Width="200px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
                             @foreach (var i in monthTable.Where(u => u.monthNumber == myList.TaskYearMonth.Month))
-                                {
-                                    monthName = i.monthName;
-                                }
-                                @monthName
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="TaskAllocation" Title="Status" Width="200px" TextAlign="TextAlign.Center">
+                            {
+                                monthName = i.monthName;
+                            }
+                            @monthName
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Status" Width="200px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
                             @foreach (var i in pStatus.Where(u => u.ProjectStatusId == myList.StatusId))
-                                {
-                                    status = i.ProjectStatusName;
-                                }
-                                @status
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="TaskAllocation" Title="Action" Width="220px" TextAlign="TextAlign.Center">
+                            {
+                                status = i.ProjectStatusName;
+                            }
+                            @status
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Action" Width="220px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
                             <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
                             &nbsp;
-                            @if(myList.StatusId == 1)
+                            @if (myList.StatusId == 1)
                             {
                                 <a href="/addDme21">
-                                      <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;"> </RadzenButton>
+                                    <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;"> </RadzenButton>
                                 </a>
                             }
                             else if (myList.StatusId == 7)
                             {
-                                 <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Click="() => navigateToUpdate(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+                                <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Click="() => navigateToUpdate(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
                             }
                             else
                             {
                                 <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;" Disabled> </RadzenButton>
                             }
                         </Template>
-                        </RadzenDataGridColumn>
-                    </Columns>
-                </RadzenDataGrid>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
         }
 
         else if (month != 0 && !String.IsNullOrWhiteSpace(selectedYear))
         {
 
-                <RadzenDataGrid Style="width: 900px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+            <RadzenDataGrid Style="width: 900px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                         Data="@myList.Where(u => u.TaskYearMonth.Month == month && u.TaskYearMonth.Year == int.Parse(selectedYear) &&u.CreatedUser == user)" TItem="TaskAllocation" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="TaskAllocation" Property="TaskYearMonth.Year" Title="Year" Width="200px" TextAlign="TextAlign.Center" />
-                        <RadzenDataGridColumn TItem="TaskAllocation" Title="Month" Width="200px" TextAlign="TextAlign.Center">
+                <Columns>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Property="TaskYearMonth.Year" Title="Year" Width="200px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Month" Width="200px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
                             @foreach (var i in monthTable.Where(u => u.monthNumber == myList.TaskYearMonth.Month))
-                                {
-                                    monthName = i.monthName;
-                                }
-                                @monthName
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="TaskAllocation" Title="Status" Width="200px" TextAlign="TextAlign.Center">
+                            {
+                                monthName = i.monthName;
+                            }
+                            @monthName
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Status" Width="200px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
                             @foreach (var i in pStatus.Where(u => u.ProjectStatusId == myList.StatusId))
-                                {
-                                    status = i.ProjectStatusName;
-                                }
-                                @status
-                            </Template>
-                        </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="TaskAllocation" Title="Action" Width="220px" TextAlign="TextAlign.Center">
+                            {
+                                status = i.ProjectStatusName;
+                            }
+                            @status
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Action" Width="220px" TextAlign="TextAlign.Center">
                         <Template Context="myList">
                             <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
                             &nbsp;
-                            @if(myList.StatusId == 1)
+                            @if (myList.StatusId == 1)
                             {
                                 <a href="/addDme21">
-                                      <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;"> </RadzenButton>
+                                    <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;"> </RadzenButton>
                                 </a>
                             }
                             else if (myList.StatusId == 7)
                             {
-                                 <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Click="() => navigateToUpdate(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+                                <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Click="() => navigateToUpdate(myList.TaskAllocationId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
                             }
                             else
                             {
                                 <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Primary" Text="Update" Size="ButtonSize.Medium" Style="width:80px;" Disabled> </RadzenButton>
                             }
                         </Template>
-                        </RadzenDataGridColumn>
-                    </Columns>
-                </RadzenDataGrid>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
         }
         else
         {
@@ -268,7 +268,7 @@
 
 @code {
 
-    string[] year = { "2021","2022","2023" };
+    string[] year = { "2021", "2022", "2023" };
     List<Month> monthTable = new List<Month>();
     private string selectedYear;
     private string user;
@@ -319,7 +319,7 @@
         taskAllocationDetails = aa.GetAllTaskAllocationDetail(false, false, false);
 
         TaskAllocationController taskAllocationList = ControllerFactory.CreateTaskAllocationController();
-        taskAllocations = taskAllocationList.GetAllTaskAllocation(true,false,true,true);
+        taskAllocations = taskAllocationList.GetAllTaskAllocation(true, false, true, true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -329,7 +329,7 @@
             userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
             user = userRegistationDetailsList.Name;
 
-            @foreach (var i in taskAllocations.Where(u => u.CreatedUser == user && (u.StatusId == 1 || u.StatusId == 5 || u.StatusId == 6 || u.StatusId ==7)))
+            @foreach (var i in taskAllocations.Where(u => u.CreatedUser == user && (u.StatusId == 1 || u.StatusId == 5 || u.StatusId == 6 || u.StatusId == 7)))
             {
                 myList.Add(i);
             }
