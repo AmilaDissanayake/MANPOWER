@@ -98,7 +98,7 @@ namespace ManPowerCore.Controller
                     SystemUserDAO _SystemUserDAO = DAOFactory.CreateSystemUserDAO();
                     foreach (var item in list)
                     {
-                        item._SystemUser = _SystemUserDAO.GetSystemUser(item.DepartmetUnitPossitionsId, dBConnection);
+                        item._SystemUser = _SystemUserDAO.GetSystemUser(item.SystemUserId, dBConnection);
                     }
                 }
 
@@ -168,7 +168,7 @@ namespace ManPowerCore.Controller
             try
             {
                 DepartmentUnitPositionsDAO DAO = DAOFactory.CreateDepartmentUnitPositionsDAO();
-                 DepartmentUnitPositions _DepartmentUnitPositions = DAO.GetDepartmentUnitPositions(id, dbConnection);
+                DepartmentUnitPositions _DepartmentUnitPositions = DAO.GetDepartmentUnitPositions(id, dbConnection);
 
                 if (withProgramAssignee)
                 {
@@ -211,7 +211,7 @@ namespace ManPowerCore.Controller
             }
         }
 
-       
+
 
 
     }
