@@ -111,8 +111,8 @@
     public class Model
     {
 
-        public string userName { get; set; } = "";
-        public string pw { get; set; } = "";
+        public string userName { get; set; } = "Roshan";
+        public string pw { get; set; } = "Roshan123@#";
 
     }
 
@@ -178,9 +178,9 @@
 
                 }
 
-                
 
-                await sessionStorage.SetItemAsync("myFlag", "Green");  
+
+                await sessionStorage.SetItemAsync("myFlag", "Green");
 
                 await LocalStore.SetItemAsync("UserDetails", userRegistationDetailsList.FirstOrDefault());
                 await LocalStore.SetItemAsync("Position", positionList.FirstOrDefault());
