@@ -16,6 +16,7 @@
 		<PackageReference Include="Radzen.Blazor" Version="4.3.8" />
 		<PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
+		<PackageReference Include="Syncfusion.Blazor" Version="20.3.0.58" />
 	</ItemGroup>
 
 	<ItemGroup>
