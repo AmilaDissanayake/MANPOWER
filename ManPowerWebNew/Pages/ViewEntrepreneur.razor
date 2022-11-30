@@ -1,0 +1,70 @@
+﻿@page "/Entrepreneur/ViewEntrepreneur/{BenificiaryId}"
+
+<div id="main">
+    <div class="primary-container">
+        
+        @foreach (var prop in EntrepreneurList.Where(u => u.BenificiaryId == Convert.ToInt32(BenificiaryId)))
+        {
+            <div class="wizard-heading">Entrepreneur details @prop.BenificiaryId</div>
+            <RadzenCard>
+            <div class="row">
+                <div class="col-5" style="margin-right:100px;">
+
+                    <label class="label">ContactNumber</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.ContactNumber.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Brn</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.Brn.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Email</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.Email.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">NatureOfBusiness</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.NatureOfBusiness.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">BusinessStartDate</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.BusinessStartDate.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">AvgMonthlyIncome</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.AvgMonthlyIncome.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">NumberOfWorkers</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="@prop.NumberOfWorkers.ToString()" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />      
+
+
+            </div>
+            <a href="/planning/EntrepreneurRegSearch">
+                 <input type="button" class="primary-btn" value="Back" style="width:220px;" />
+               </a>
+            </div>
+
+            </RadzenCard>           
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string BenificiaryId { get; set; }
+
+    [Parameter]
+    public Entrepreneur Entrepreneur { get; set; }
+
+    List<Entrepreneur> EntrepreneurList = new List<Entrepreneur>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        EntrepreneurController entrepreneurController = ControllerFactory.CreateEntrepreneurController();
+        EntrepreneurList = entrepreneurController.GetAllEntrepreneur();
+
+    }
+}

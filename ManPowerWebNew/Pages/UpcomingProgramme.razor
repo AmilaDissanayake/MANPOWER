@@ -1,0 +1,224 @@
+﻿@page "/planning/UpcommingProgramme"
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+@inject NavigationManager NavigationManager
+
+<div id="main">
+       
+            <div class="wizard-heading">Upcoming Programs</div>
+            <div class="form-floating mb-3">
+            <RadzenCard>
+                <div class="row">
+                    <div class="col-5">
+                    <label>Date</label>
+                    <RadzenDatePicker @bind-Value=@startDate DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Name="date" />
+                    </div>
+
+                    <div class="col-5" style="margin-right:100px;">
+                    <label>Programe Type:</label>
+                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder=" " Data="@listProgramType" Name="programe_type"
+                    SelectedItem="selectedProgrameType"  ValueProperty="ProgramTypeId" TextProperty="ProgramTypeName" @bind-Value="selectedProgrameType" Style="margin-bottom:10px;"></RadzenDropDown>
+                    </div>
+
+                    <div class="row">
+
+                    <div class="col-5" style="margin-right:100px;">
+
+                    <label>District : </label>
+                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder=" " Data="@listDistrict" Name="district"
+                                    SelectedItem="selecteddistrict" @bind-Value="selecteddistrict" ValueProperty="DepartmentUnitId" TextProperty="Name" Style="margin-bottom:10px;"></RadzenDropDown>
+                    </div>                                  
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="button" class="primary-btn" value="Search" @onclick="onClick_Search" />
+                        </div>
+                    </div>
+                    <br />                    
+
+                </div>
+            </RadzenCard>
+            </div>  
+         
+            <RadzenCard>
+
+               <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@asignee" TItem="ProgramAssignee" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="ProgramAssignee" Title="Officer Name" Frozen="true" Width="160px" >
+                            <Template Context="asignee">
+                                @foreach (var i in unitPositions.Where(u => u.DepartmetUnitPossitionsId == asignee.DepartmentUnitPossitionsId))
+                                {
+                                    @foreach(var k in user.Where(u => u.SystemUserId == i.SystemUserId))
+                                    {
+                                            officer = k.Name;
+                                    }
+                                }
+                                @officer
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="ProgramAssignee" Title="District" Width="160px">
+                             <Template Context="asignee">
+                        @foreach (var i in unitPositions.Where(u => u.DepartmetUnitPossitionsId == asignee.DepartmentUnitPossitionsId))
+                                {
+                                    @foreach(var j in listDistrict.Where(u => u.DepartmentUnitId == i.DepartmentUnitId))
+                                    {
+                                        district = j.Name;
+                                    }
+                                }
+                                @district
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="ProgramAssignee" Title="DS Office" Width="160px">
+                             <Template Context="asignee">
+                                @foreach (var i in unitPositions.Where(u => u.DepartmetUnitPossitionsId == asignee.DepartmentUnitPossitionsId))
+                                {
+                                    @foreach(var j in listDistrict.Where(u => u.DepartmentUnitId == i.DepartmentUnitId))
+                                    {
+                                        ds = j.Name;
+                                    }
+                                }
+                                @ds
+                            </Template>
+                        </RadzenDataGridColumn>
+                         @*<RadzenDataGridColumn TItem="ProgramAssignee" Title="Program Name" Width="160px">
+                             <Template Context="asignee">
+                                @foreach (var i in program.Where(u => u.ProgramId == asignee._ProgramTarget.ProgramId))
+                                {
+                                    pName = i.ProgramName;
+                                }
+                                @pName
+                            </Template>
+                        </RadzenDataGridColumn>*@
+                        <RadzenDataGridColumn TItem="ProgramAssignee" Property=" asignee._ProgramTarget.StartDate" Title="Program Date" Width="120px" />
+                        <RadzenDataGridColumn TItem="ProgramAssignee" Property=" asignee._ProgramTarget.Description" Title="Program Date" Width="120px" />
+                         <RadzenDataGridColumn TItem="ProgramAssignee" Title="Program Name" Width="160px">
+                             <Template Context="asignee">
+                                @foreach (var i in listProgramType.Where(u => u.ProgramTypeId == asignee._ProgramTarget.ProgramTypeId))
+                                {
+                                    pTypeName = i.ProgramTypeName;
+                                }
+                                @pTypeName
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="ProgramAssignee" Title="Action" Width="100px">
+                        <Template Context="programTargetsList">
+                            <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(programTargetsList.ProgramTargetId)"  @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+                        </Template>
+                        </RadzenDataGridColumn>
+                     </Columns>
+               </RadzenDataGrid>
+
+            </RadzenCard>
+
+</div>
+
+@code {
+
+    private int selectedProgrameType;
+    private int selecteddistrict;
+    private string officer;
+    private string district;
+    private string ds;
+    private string pName;
+    private string pTypeName;
+    //private DateTime date;
+
+    //private string emptyText = "No Items to display!";
+    //private List<Upcommingmodel> Upcomming = new List<Upcommingmodel> ();
+
+    private List<ProgramTarget> programTargetsList = new List<ProgramTarget>();
+    private List<ProgramTarget> myList = new List<ProgramTarget>();
+    private List<ProgramAssignee> asignee = new List<ProgramAssignee>();
+    private List<DepartmentUnitPositions> unitPositions = new List<DepartmentUnitPositions>();
+    private List<SystemUser> user = new List<SystemUser>();
+    List<DepartmentUnit> listDistrict = new List<DepartmentUnit>();
+    List<DepartmentUnitType> unitType = new List<DepartmentUnitType>();
+    List<ProgramType> listProgramType = new List<ProgramType>();
+    List<ManPowerCore.Domain.Program> program = new List<ManPowerCore.Domain.Program>();
+
+
+    protected override void OnInitialized()
+    {
+        DepartmentUnitPositionsController unitPositionsController = ControllerFactory.CreateDepartmentUnitPositionsController();
+        unitPositions = unitPositionsController.GetAllDepartmentUnitPositions(false, false, true, false, true);
+
+        SystemUserController systemUserController = ControllerFactory.CreateSystemUserController();
+        user = systemUserController.GetAllSystemUser(true, false, false);
+
+        DepartmentUnitController unit = ControllerFactory.CreateDepartmentUnitController();
+        listDistrict = unit.GetAllDepartmentUnit(false, false);
+
+        DepartmentUnitTypeController aa = ControllerFactory.CreateDepartmentUnitTypeController();
+        unitType = aa.GetAllDepartmentUnitType(true);
+
+        ProgramTypeController programTypeController = ControllerFactory.CreateProgramTypeController();
+        listProgramType = programTypeController.GetAllProgramType(false);
+
+        ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
+        programTargetsList = programTargetController.GetAllProgramTarget(false,false,true,false);
+
+        ProgramAssigneeController programAssigneeController = ControllerFactory.CreateProgramAssigneeController();
+        asignee = programAssigneeController.GetAllProgramAssignee(true, true, true);
+
+        ProgramController programController = ControllerFactory.CreateProgramController();
+        program = programController.GetAllProgram(false);
+
+    }
+
+
+
+    async Task navigateToView(int ProgramTargetId)
+    {
+        NavigationManager.NavigateTo($"/UpcommingProgramme/ViewUpcommingProgramme/{ProgramTargetId}");
+    }
+    List<ProgramTarget> ProgramTrgetList = new List<ProgramTarget>();
+    private void onClick_Search()
+    {
+        
+        ProgramTarget programTarget = new ProgramTarget();
+        ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
+
+        ProgramTrgetList = programTargetController.GetAllProgramTarget(selectedProgrameType);
+    }
+
+
+        //-------------- Date Picker handler --------------------//
+
+    DateTime? startDate = DateTime.Today;
+    DateTime? date = DateTime.Today;
+
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
+
+
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+    }
+
+    void DateRenderSpecial(DateRenderEventArgs args)
+    {
+        if (dates.Contains(args.Date))
+        {
+            args.Attributes.Add("style", "background-color: #ff6d41; border-color: white;");
+        }
+    }
+
+    void DateRender(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || dates.Contains(args.Date);
+    }
+
+    void DateRenderNoWeekends(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || args.Date.DayOfWeek == DayOfWeek.Sunday || args.Date.DayOfWeek == DayOfWeek.Saturday;
+    }
+
+    void OnTodayClick()
+    {
+        startDate = DateTime.Today;
+        date = DateTime.Today;
+    }
+}

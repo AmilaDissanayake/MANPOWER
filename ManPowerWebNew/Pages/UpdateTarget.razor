@@ -1,0 +1,648 @@
+﻿@page "/planning/annualTargets/updateTarget/{ProgramId}"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager navigationManager
+@using System.Text.RegularExpressions
+@using Radzen
+@using System.Text.Json
+
+
+<div id="main">
+    <RadzenTemplateForm TItem="ProgramTarget" Data=@programTarget Submit=@OnSubmit InvalidSubmit="OnInvalidSubmit">
+        <RadzenCard Style="padding-left:45px;">
+
+        @foreach (var prop in programTargetsList.Where(u => u.ProgramTargetId == Convert.ToInt32(ProgramId)))
+        {
+            <div class="wizard-heading" style="align-content:center;">Update Target</div>
+
+            @foreach (var item in assignees.Where(u => u.ProgramTargetId == prop.ProgramTargetId))
+            {
+
+                @*district ;
+                 ds;
+                isChecked = false;
+                isUpdated = false;
+                selectedDistrict;
+                selectedDSDivision;
+                selectedProgramID;
+                selectedProgram;
+                selectedDesignation;
+                selectedOfficer;
+                OfficerName;
+                month;
+                monthName;
+                depUnitPId;
+                radioSelection;
+                selectedYear;
+                programType;
+                pInstruct = "";
+                vote = "";
+                description = "";
+                phyCount;
+                finCount;
+                output;
+                outcome;*@
+            <div class="row">
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Year" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Placeholder="@prop.TargetYear.ToString()" Data="@year" Name="year"
+                                    SelectedItem="selectedYear" @bind-Value="selectedYear" Style="display: block" /><br />
+                            <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+                    @foreach (var i in assignees.Where(u => u._DepartmentUnitPositions._DepartmentUnit.DepartmentUnitTypeId == 2))
+                        {
+                            district = i._DepartmentUnitPositions._DepartmentUnit.Name;
+                        }
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="District" />
+                        </div>
+                        <div class="col-7">
+                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="@district" Style="display: block" Name="District"
+                                            Data="@listDistrict" ValueProperty="DepartmentUnitId" TextProperty="Name" @bind-Value="selectedDistrict" />
+                                    <RadzenRequiredValidator Component="District" Text="District is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Designation" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="@item._Designation.DesigntionName" Data="@listDesignation" Style="display: block"
+                                            ValueProperty="DesignationId" TextProperty="DesigntionName" @bind-Value="selectedDesignation" Name="Designation" />
+                            <RadzenRequiredValidator Component="Designation" Text="Designation is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+                </div>
+
+                @*----------------------------*@
+                <div class="col-6">
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Target" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenRadioButtonList Orientation="Orientation.Horizontal" @bind-Value=@radioSelection TValue="int">
+                                <Items>
+                                    <RadzenRadioButtonListItem Text="District level" Value="1" TValue="int" />
+                                    <RadzenRadioButtonListItem Text="DS Devision level" Value="2" TValue="int" />
+                                </Items>
+                            </RadzenRadioButtonList>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    @foreach (var i in listUsers.Where(u => u.SystemUserId == selectedOfficer))
+                    {
+                        OfficerName = i.Name;
+                    }
+
+                    @if (radioSelection == 1)
+                    {
+                            <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="DS Division" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Style="display: block" Name="Division"Disabled/>
+                                </div>
+                            </div>
+                            <br/>
+                    }
+                    else
+                    {
+                            <div class="row">
+                                <div class="col-4">
+                                    <RadzenLabel Text="DS Division" />
+                                </div>
+                                <div class="col-7">
+                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Style="display: block" Name="Division"
+                                            Data="@listDSDivision.Where(u => u.ParentId == selectedDistrict)" ValueProperty="DepartmentUnitId" TextProperty="Name" @bind-Value="selectedDSDivision" />
+                                    <RadzenRequiredValidator Component="Division" Text="Division is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                            <br />
+                    }
+
+                    @if (radioSelection == 1)
+                    {
+                             <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Officer Name" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Data="@listUser.Where(u => u.DepartmentUnitId == selectedDistrict)"
+                                            ValueProperty="SystemUserId" TextProperty="_SystemUser.Name" @bind-Value="selectedOfficer" Name="Officer" />
+                                <RadzenRequiredValidator Component="Officer" Text="OfficerName is required" Style="position: absolute" />
+                            </div>
+                        </div>
+                        <br />
+
+                        @foreach (var i in listUser.Where(u => u.DepartmentUnitId == selectedDistrict))
+                        {
+                            depUnitPId = @i.DepartmetUnitPossitionsId;
+                        }
+                    }
+                    else
+                    {
+                            <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Officer Name" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Data="@listUser.Where(u => u.DepartmentUnitId == selectedDSDivision)"
+                                            ValueProperty="SystemUserId" TextProperty="_SystemUser.Name" @bind-Value="selectedOfficer" Name="Officer" />
+                                <RadzenRequiredValidator Component="Officer" Text="OfficerName is required" Style="position: absolute" />
+                            </div>
+                        </div>
+                        <br />
+                        @foreach (var i in listUser.Where(u => u.DepartmentUnitId == selectedDSDivision))
+                        {
+                            depUnitPId = @i.DepartmetUnitPossitionsId;
+                        }
+
+                    }
+
+
+
+                </div>
+            </div>
+            }
+
+        <br /><br />
+
+
+            @*-------------------------- end of asignee details ------------------------*@
+
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Program Type" />
+                        </div>
+                        <div class="col-7">
+                                <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Name="Type" Data="@listProgramType" Placeholder="@prop._ProgramType.ProgramTypeName"
+                                            ValueProperty="ProgramTypeId" TextProperty="ProgramTypeName" @bind-Value="programType" Style="display: block" />
+                            <RadzenRequiredValidator Component="Type" Text="Type is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Program" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Name="Program" Data="@program" Placeholder="@prop._Program.ProgramName"
+                                            ValueProperty="ProgramId" TextProperty="ProgramName" @bind-Value="selectedProgramID" Style="display: block" />
+                            <RadzenRequiredValidator Component="Program" Text="Program is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+                    @foreach (var i in program.Where(u => u.ProgramId == selectedProgramID))
+                    {
+                        selectedProgram = i.ProgramName;
+                    }
+
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Start Date" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDatePicker Placeholder="@prop.StartDate.ToString()" Name="Start" @bind-Value="sDate" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="margin-bottom:10px;" />
+                            <RadzenRequiredValidator Component="Start" Text="Start Date is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="End Date" />
+                        </div>
+                        <div class="col-7">
+                                <RadzenDatePicker Placeholder="@prop.EndDate.ToString()" @bind-Value="eDate" Name="End" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="margin-bottom:10px;" />
+                            <RadzenRequiredValidator Component="End" Text="End Date is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+                </div>
+
+                @*----------------------------*@
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Instructions" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextArea Placeholder="@prop.Instractions" @bind-Value="pInstruct" Class="w-100" Style="display: block" Name="Instructions" />
+                            <RadzenRequiredValidator Component="Instructions" Text="Instruction is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Description" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextArea Placeholder="@prop.Description" @bind-Value="description" Class="w-100" Style="display: block" Name="Description" />
+                            <RadzenRequiredValidator Component="Description" Text="Description is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Vote" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Name="Vote" Data="@arrVote" Placeholder="@prop.VoteNumber"
+                                             @bind-Value="vote" Style="display: block" />
+                            <RadzenRequiredValidator Component="Vote" Text="Vote is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+
+
+
+                </div>
+            </div>
+            <br/>
+            @foreach(var i in monthTable.Where(u => u.monthNumber == prop.TargetMonth))
+            {
+                monthName = i.monthName;
+            }
+
+                <div class="row">
+                    <div class="col-6">
+                        <h4 style="font-weight:bold;">Target: physical / financial : </h4><br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Month" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenDropDown Placeholder="@monthName" AllowClear="true" TValue="int" Class="w-100" Data="@monthTable" Name="Month"
+                                            ValueProperty="monthNumber" TextProperty="monthName" @bind-Value="month" Style="display: block" />
+                            <RadzenRequiredValidator Component="Month" Text="Month is required" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Physical Count" />
+                        </div>
+                        <div class="col-7">
+                            <RadzenTextBox Placeholder="@prop.NoOfProjects.ToString()" @bind-Value="phyCount" Class="w-100" Style="display: block" Name="count1" />
+                            <RadzenRequiredValidator Component="count1" Text="Physical Count is required" Style="position: absolute" />
+                            <RadzenRegexValidator Component="count1" Text="Physical Count must be numeric" Pattern="\d[0-9]" Style="position: absolute" />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-4">
+                            <RadzenLabel Text="Financial Count" />
+                        </div>
+                        <div class="col-7">
+                                <RadzenTextBox @bind-Value="@finCount" Placeholder="@prop.EstimatedAmount.ToString()" Class="w-100" Style="display: block" Name="finCount" />
+                                <RadzenRequiredValidator Component="finCount" Text="Financial Count is required" Style="position: absolute" />
+                                <RadzenRegexValidator Component="finCount" Text="Financial Count must be numeric" Pattern="\d[0-9]" Style="position: absolute" />
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <br />
+
+             
+
+                <br /><br />
+
+                <div class="row">
+                <div class="col-6">
+                    <h4 style="font-weight:bold;">Expected Output :  </h4><br />
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Output" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="@prop.Output.ToString()" @bind-Value="output" Class="w-100" Style="display: block" Name="output" />
+                                <RadzenRequiredValidator Component="output" Text="Description is required" Style="position: absolute" />
+                                <RadzenRegexValidator Component="output" Text="Output must be numeric" Pattern="\d[0-9]"  Style="position: absolute" />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div class="row">
+                            <div class="col-4">
+                                <RadzenLabel Text="Outcome" />
+                            </div>
+                            <div class="col-7">
+                                <RadzenTextBox Placeholder="@prop.Outcome.ToString()" @bind-Value="outcome" Class="w-100" Style="display: block" Name="outcome" />
+                                <RadzenRequiredValidator Component="outcome" Text="Description is required" Style="position: absolute" />
+                                <RadzenRegexValidator Component="outcome" Text="Outcome must be numeric" Pattern="\d[0-9]" Style="position: absolute" />
+                            </div>
+                        </div>
+                        <br />
+
+                    </div>
+                </div>
+                <br/><br/>
+
+            <div class="row">
+                <div class="col-2">
+                    <RadzenButton ButtonType="ButtonType.Submit" Text="Save" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
+                </div>
+                <div class="col-2">
+                    <RadzenButton ButtonType="ButtonType.Button" Text="Clear" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
+                </div>
+                <div class="col-2">
+                    <input onclick="document.getElementById('id01').style.display='block'" type="button" class="rdzn-btn" value="Send to Recommondation" style="width:230px;" />
+                </div>
+            </div>
+            <br />
+            }
+
+        </RadzenCard>
+
+    </RadzenTemplateForm>
+
+    @*---------------- Dialog box -----------------------*@
+
+        <div class="w3-container">
+
+            <div id="id01" class="w3-modal">
+                <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:40%;">
+
+                    <div class="w3-center">
+                        <br>
+                        <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-xlarge w3-display-topright" title="Close Modal">&times;</span>
+                        <h2>Recommondation</h2>
+                    </div>
+
+                    <form class="w3-container" action="/action_page.php" style="padding:70px">
+                        <div class="w3-section" >
+                            <label><b>Recommondation Type</b></label>
+                            <select class="form-select" aria-label="Default select example" required>
+                                <option selected>Open this select menu</option>
+                                <option value="1">Send to recommondation</option>
+                                <option value="2">Send to approval</option>
+                            </select>
+
+                            <br/><br/>
+
+                            <label><b>Officer Name</b></label>
+                            <select class="form-select" aria-label="Default select example" required>
+                                <option selected>Open this select menu</option>
+                                <option value="1">Mr. R Fernando</option>
+                                <option value="2">Mrs. A Abhesinghe</option>
+                            </select>
+                        </div>
+                    </form>
+
+                    <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                        <div class="row justify-content-evenly">
+                            <div class="col-4">
+                                <input onclick="document.getElementById('id01').style.display='none'" type="button" class="red-btn" value="Cancel"  style="width:160px;" />
+                            </div>
+                            <div class="col-4">
+                                <RadzenButton Click="onClick_send" Icon="send" Text="Send" ButtonStyle="ButtonStyle.Info" Shade="Shade.Darker" Style="width:100px;" />
+                            </div>
+                        </div>
+                   </div>
+
+                </div>
+            </div>
+        </div>
+
+    @*---------------------------------------*@
+
+</div>
+
+
+
+
+
+@code {
+
+    string[] year = { "2022", "2023" };
+    [Parameter]
+    public string ProgramId { get; set; }
+
+    List<Month> monthTable = new List<Month>();
+
+    string[] arrVote = { "328-02-01-02-2509", "428-02-01-02-2509", "528-02-01-02-2509", "628-02-01-02-2509" };
+
+    string[] user;
+
+
+    private string district;
+    private string ds;
+    private bool isChecked = false;
+    private int selectedDistrict;
+    private int selectedDSDivision;
+    private int selectedProgramID;
+    private string selectedProgram;
+    private int selectedDesignation;
+    private int selectedOfficer;
+    private string OfficerName;
+    private int month;
+    private string monthName;
+    private int depUnitPId;
+    private int radioSelection;
+
+
+    private string selectedYear;
+    private int programType;
+    private string pInstruct = "";
+    private string vote = "";
+    private string description = "";
+
+    private string phyCount;
+    private string finCount;
+
+    private string output;
+    private string outcome;
+
+    private DateTime sDate = DateTime.Now;
+    private DateTime eDate = DateTime.Now;
+
+    ProgramTarget programTarget = new ProgramTarget();
+    List<ProgramTarget> searchTarget = new List<ProgramTarget>();
+    ProgramAssignee programAssignee = new ProgramAssignee();
+    List<DepartmentUnit> listDistrict = new List<DepartmentUnit>();
+    List<DepartmentUnit> listDSDivision = new List<DepartmentUnit>();
+    List<Designation> listDesignation = new List<Designation>();
+    List<ProgramType> listProgramType = new List<ProgramType>();
+    List<DepartmentUnitPositions> listUser = new List<DepartmentUnitPositions>();
+    List<SystemUser> listUsers = new List<SystemUser>();
+    List<ManPowerCore.Domain.Program> program = new List<ManPowerCore.Domain.Program>();
+    List<ProgramTarget> programTargetsList = new List<ProgramTarget>();
+    List<ProgramAssignee> assignees = new List<ProgramAssignee>();
+
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        monthTable.Add(new Month() { monthName = "January", monthNumber = 1 });
+        monthTable.Add(new Month() { monthName = "February", monthNumber = 2 });
+        monthTable.Add(new Month() { monthName = "March", monthNumber = 3 });
+        monthTable.Add(new Month() { monthName = "April", monthNumber = 4 });
+        monthTable.Add(new Month() { monthName = "May", monthNumber = 5 });
+        monthTable.Add(new Month() { monthName = "June", monthNumber = 6 });
+        monthTable.Add(new Month() { monthName = "July", monthNumber = 7 });
+        monthTable.Add(new Month() { monthName = "August", monthNumber = 8 });
+        monthTable.Add(new Month() { monthName = "September", monthNumber = 9 });
+        monthTable.Add(new Month() { monthName = "October", monthNumber = 10 });
+        monthTable.Add(new Month() { monthName = "November", monthNumber = 11 });
+        monthTable.Add(new Month() { monthName = "December", monthNumber = 12 });
+
+        DepartmentUnitTypeController _DepartmentUnitTypeController = ControllerFactory.CreateDepartmentUnitTypeController();
+        listDistrict = _DepartmentUnitTypeController.GetDepartmentUnitType(2, true)._DepartmentUnit;
+        listDSDivision = _DepartmentUnitTypeController.GetDepartmentUnitType(3, true)._DepartmentUnit;
+
+        DesignationController designationController = ControllerFactory.CreateDesignationController();
+        listDesignation = designationController.GetAllDesignation(true, false);
+
+        SystemUserController systemUserController = ControllerFactory.CreateSystemUserController();
+        listUsers = systemUserController.GetAllSystemUser(true, false, false);
+
+        ProgramTypeController programTypeController = ControllerFactory.CreateProgramTypeController();
+        listProgramType = programTypeController.GetAllProgramType(false);
+
+        DepartmentUnitPositionsController unitPositionsController = ControllerFactory.CreateDepartmentUnitPositionsController();
+        listUser = unitPositionsController.GetAllDepartmentUnitPositions(false, false, true, false, true);
+
+        ProgramController programController = ControllerFactory.CreateProgramController();
+        program = programController.GetAllProgram(false);
+
+        ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
+        programTargetsList = programTargetController.GetAllProgramTarget(true, true, true, true);
+
+        ProgramAssigneeController programAssigneeController = ControllerFactory.CreateProgramAssigneeController();
+        assignees = programAssigneeController.GetAllProgramAssignee(true,true,true);
+
+    }
+
+    //----------------------------- validator ------------------------------//
+
+    void OnSubmit(ProgramTarget programTarget)
+    {
+        Console.WriteLine($"Submit: {JsonSerializer.Serialize(programTarget, new JsonSerializerOptions() { WriteIndented = true })}");
+        ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
+        ProgramAssigneeController programAssigneeController = ControllerFactory.CreateProgramAssigneeController();
+
+        programTarget.ProgramTypeId = programType;
+        programTarget.ProgramId = selectedProgramID;
+        programTarget.Title = selectedProgram;
+        programTarget.Description = description;
+        programTarget.Instractions = pInstruct;
+        programTarget.StartDate = sDate;
+        programTarget.EndDate = eDate;
+        programTarget.VoteNumber = vote;
+        programTarget.NoOfProjects = int.Parse(phyCount);
+        programTarget.EstimatedAmount = float.Parse(finCount);
+        programTarget.TargetYear = int.Parse(selectedYear);
+        programTarget.TargetMonth = month;
+        programTarget.Output = int.Parse(output);
+        programTarget.Outcome = int.Parse(outcome);
+        programTarget.IsRecommended = 0;
+        programTarget.RecommendedBy = "";
+        programTarget.RecommendedDate = DateTime.Now;
+
+        programTarget._ProgramAssignee.Add(new ProgramAssignee()
+            {
+                DesignationId = selectedDesignation,
+                ProgramAssigneeId = selectedOfficer,
+                DepartmentUnitPossitionsId = depUnitPId,
+            });
+
+        int TargetResponse = programTargetController.SaveProgramTarget(programTarget);
+        programTarget = new ProgramTarget();
+
+        if (TargetResponse != 0)
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "validate success");
+            navigationManager.NavigateTo("https://localhost:44326/planning/annualTargets");
+        }
+        else
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Something went wrong", "");
+        }
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}");
+    }
+
+
+    async void onClick_send()
+    {
+
+        ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
+
+        foreach (var prop in programTargetsList.Where(u => u.IsRecommended == 0 && u.ProgramTargetId == int.Parse(ProgramId)))
+        {
+            programTargetController.UpdateProgramTargetApproval(prop.ProgramTargetId, 1);
+        }
+
+        await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Sent to Approval..");
+
+    }
+
+    //-------------- Date Picker hander --------------------//
+
+    DateTime value1 = DateTime.Now;
+    DateTime value2 = DateTime.Now;
+
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
+
+
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+    }
+
+    void DateRenderSpecial(DateRenderEventArgs args)
+    {
+        if (dates.Contains(args.Date))
+        {
+            args.Attributes.Add("style", "background-color: #ff6d41; border-color: white;");
+        }
+    }
+
+    void DateRender(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || dates.Contains(args.Date);
+    }
+
+    void DateRenderNoWeekends(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || args.Date.DayOfWeek == DayOfWeek.Sunday || args.Date.DayOfWeek == DayOfWeek.Saturday;
+    }
+
+    void OnTodayClick()
+    {
+        value1 = DateTime.Now;
+    }
+}

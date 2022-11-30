@@ -1,0 +1,203 @@
+﻿@layout PublicLayout
+
+@page "/"
+@page "/login"
+
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+@using Radzen
+@using System.Text.Json
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@using ManPowerCore.Domain
+@using ManPowerCore.Common
+@using ManPowerCore.Controller
+@using ManPowerCore.Infrastructure
+
+
+
+
+
+
+<div id="main">
+    <RadzenCard Style="margin:auto;width:60%;margin-top:100px;">
+        <center><div class="wizard-heading">Login</div></center><br />
+        <RadzenTemplateForm TItem="Model" Data=@model Submit=@OnSubmit InvalidSubmit="OnInvalidSubmit">
+            <center>
+                <div class="row">
+                    <div class="col-4">
+                        <RadzenLabel Text="User Name" />
+                    </div>
+                    <div class="col-7">
+                        <RadzenTextBox style="display: block" Name="uName" @bind-Value="model.userName" Class="w-100" />
+                        <RadzenRequiredValidator Component="uName" Text="User Name is required" Style="position: absolute" />
+                    </div>
+                </div>
+                <br /><br />
+
+                <div class="row">
+                    <div class="col-4">
+                        <RadzenLabel Text="Password" />
+                    </div>
+                    <div class="col-7">
+
+                        <RadzenPassword style="display: block" Name="pw" @bind-Value="model.pw" Class="w-100" />
+                        <RadzenRequiredValidator Component="pw" Text="Password is required" Style="position: absolute" />
+                        @*<RadzenRegexValidator Component="pw" Text="Should have at least 1 uppercase letter, 1 lowercase letter, a number and a charactor (minimum 8 charactors)" Pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,32}$" Popup=@popup Style="position: absolute" />*@
+                    </div>
+                </div>
+                <br />
+
+
+                @if (ViewBag == "enableUsarname")
+                {
+
+                    <div class="row">
+                        <div class="col-4">
+                        </div>
+                        <div class="col-7">
+
+
+                            <RadzenText style="color:red">User Name is Invalid </RadzenText>
+
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+                }
+
+                @if (ViewBag == "enablePassword")
+                {
+
+                    <div class="row">
+                        <div class="col-4">
+                        </div>
+                        <div class="col-7">
+
+
+                            <RadzenText style="color:red">Password is Invalid </RadzenText>
+
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+                }
+                <div class="row justify-content-center">
+                    <div class="col-2">
+                        <RadzenButton ButtonType="ButtonType.Submit" Text="Login" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
+                    </div>
+                </div>
+                <br />
+
+            </center>
+        </RadzenTemplateForm>
+    </RadzenCard>
+</div>
+<br />
+<br />
+
+
+
+@code {
+
+
+    //------------------ validator ----------------------//
+
+    public class Model
+    {
+
+        public string userName { get; set; } = "";
+        public string pw { get; set; } = "";
+
+    }
+
+
+    bool popup;
+
+    Model model = new Model();
+
+    // ----------------------------------------------------------------//
+    string ViewBag;
+
+    List<SystemUser> userRegistationDetailsList = new List<SystemUser>();
+    List<SystemUser> userRegistationDetailsList2 = new List<SystemUser>();
+
+    List<DepartmentUnitPositions> departmentUnitPosition = new List<DepartmentUnitPositions>();
+    List<Possitions> positionList = new List<Possitions>();
+
+    public async void OnSubmit(Model model)
+    {
+
+
+        SystemUser systemUser = new SystemUser();
+        SystemUserController systemUserController = ControllerFactory.CreateSystemUserController();
+
+        userRegistationDetailsList = systemUserController.GetAllSystemUser(model.userName);
+
+        if (userRegistationDetailsList.Count == 0)
+        {
+            ViewBag = "enableUsarname";
+        }
+        else
+        {
+            userRegistationDetailsList2 = systemUserController.GetAllSystemUser(model.userName, model.pw);
+
+
+            if (userRegistationDetailsList2.Count == 0)
+            {
+                ViewBag = "enablePassword";
+            }
+
+            else
+            {
+                int systemUserId;
+
+                foreach (var item in userRegistationDetailsList)
+                {
+                    systemUserId = item.SystemUserId;
+
+
+
+                    DepartmentUnitPositionsController departmentUnitPositionsController = ControllerFactory.CreateDepartmentUnitPositionsController();
+                    departmentUnitPosition = departmentUnitPositionsController.GetAllDepartmentUnitPositions(systemUserId);
+                }
+
+                int positionId;
+
+                foreach (var item2 in departmentUnitPosition)
+                {
+                    positionId = item2.PossitionsId;
+
+                    PossitionsController possitionsController = ControllerFactory.CreatePossitionsController();
+                    positionList = possitionsController.GetAllPossitions(positionId);
+
+                }
+
+                
+
+                await sessionStorage.SetItemAsync("myFlag", "Green");  
+
+                await LocalStore.SetItemAsync("UserDetails", userRegistationDetailsList.FirstOrDefault());
+                await LocalStore.SetItemAsync("Position", positionList.FirstOrDefault());
+                await sessionStorage.SetItemAsync("UserDetails", userRegistationDetailsList.FirstOrDefault());
+                await sessionStorage.SetItemAsync("Position", positionList.FirstOrDefault());
+                await sessionStorage.SetItemAsync("Department", departmentUnitPosition.FirstOrDefault());
+
+                NavigationManager.NavigateTo("/index2");
+
+            }
+        }
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}");
+    }
+}
+
+

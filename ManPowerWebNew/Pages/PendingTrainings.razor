@@ -1,0 +1,292 @@
+﻿@page "/pendingtrainings"
+
+
+@using ManPowerWebNew.Model
+@using System.Text.Json
+@using Radzen
+
+
+@inject IJSRuntime JSRuntime
+@inject DialogService DialogService
+
+
+<div id="main">
+
+
+                
+ <RadzenCard Style="margin-top:50px">
+
+<RadzenTemplateForm TItem="Model"  Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+
+
+                        <div class="wizard-heading">Request Trainings</div>
+
+                 <div class="row" style="margin-top:55px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Date:" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    
+                                    <RadzenDatePicker @bind-Value=@model.date  Popup=@popup   Class="w-50" Name="dates" Style="display: block"/>
+                                    
+
+                                </div>
+                              </div>
+
+                 <div class="row" style="margin-top:20px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Employee Number :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.nameOfTheProgram" Popup=@popup Name="nameOfTheProgram"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="nameOfTheProgram" Text="Name Of TheProgram is required" Style="position: absolute"/>
+                                </div>
+                              </div>   
+
+
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Employee Name :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.institute" Popup=@popup Name="institute"></RadzenTextBox>
+                                    <RadzenRequiredValidator Component="institute" Text="Institute is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Program :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col-4">
+                                    <RadzenDropDown AllowClear="true"  TValue="int" Data=@allPrograms TextProperty="shortCode" ValueProperty="id" Class="w-100" Popup=@popup @bind-Value="programId"  Style="width: 50px margin-bottom:10px; display: block" />
+                                    <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                                    
+                                </div>
+                              </div>
+                              
+
+                  <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Institute :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="model.subjectAreaOrTopic" Popup=@popup Name="subjectAreaOrTopic"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="subjectAreaOrTopic" Text="Subject Area Or Topic is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+
+
+                           <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Content :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                    <RadzenTextBox Placeholder="" Style="margin-bottom:10px;  display: block " Class="w-50"  @bind-Value="model.nameOfTheOrganization" Popup=@popup Name="nameOfTheOrganization"></RadzenTextBox>
+                                     <RadzenRequiredValidator Component="nameOfTheOrganization" Text="NameOfTheOrganization is required" Style="position: absolute"/>
+                                </div>
+                              </div>
+                             
+
+                              <div class="row" style="margin-top:15px; margin-left:120px ">
+                                <div class="col-4">
+                                    <RadzenLabel Text="Upload University Application :" ></RadzenLabel><br/><br/>
+                                </div>
+                                    <div class="col">
+                                        <RadzenButton Text="Upload" Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" Click=@Clear/>
+                                    </div>
+                              </div>
+
+                             <br/><br/><br/>
+
+                            <div class="row" style="margin-top:60px; margin-left:120px ">
+                                <div class="col">
+                                    <RadzenButton Text="Submit" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" ButtonType="ButtonType.Submit"/>
+                                </div>
+
+                                <div class="col">
+                                     <RadzenButton Text="Clear" Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Secondary" Style="margin-left:10px" Click=@Clear/>
+                                </div>
+
+                            </div>   <br/><br/><br/><br/> 
+
+  </RadzenTemplateForm>
+
+  </RadzenCard>
+          
+</div>   
+
+
+
+@code {
+
+
+
+    List<ManPowerCore.Domain.Program> allPrograms { get; set; } = new List<ManPowerCore.Domain.Program>();
+    string value;
+    public int programId = 0;
+
+    void OnChange(string value, string name)
+    {
+
+    }
+
+    string[] SelectedOrganizationType = { "Private","Public" };
+
+    class Model
+    {
+        public DateTime date { get; set; }
+        public string nameOfTheProgram { get; set; }= "";
+        public string institute { get; set; }= "";
+        public string address { get; set; }= "";
+        public string subjectAreaOrTopic { get; set; }= "";
+        public string nameOfTheOrganization { get; set; }= "";
+        public string organizationType { get; set; }= "";
+        public string ds { get; set; } = "";
+        public string organizationAddress { get; set; }= "";
+
+        public string name { get; set; }= "";
+        public string position { get; set; }= "";
+        public string contactNumber { get; set; }= "";
+        public string whatsappNumber { get; set; }= "";
+        public string email { get; set; }= "";
+        public string detailsOfTheProvidedService { get; set; }= "";
+
+    }
+
+    public string year = "";
+
+    bool popup;
+
+    Model model = new Model();
+
+    List<ResourceProvisionProgress>resourceProvisionProgressValidate = new List<ResourceProvisionProgress>();
+
+    void  OnSubmit(Model model)
+    {
+
+        ResourceProvisionProgress resourceProvisionProgress = new ResourceProvisionProgress();
+        ResourceProvisionProgressController resourceProvisionProgressController = ControllerFactory.CreateResourceProvisionProgressController();
+
+
+        resourceProvisionProgress.ResourceProvisionProgressId = 1;
+        resourceProvisionProgress.Date = model.date;
+        resourceProvisionProgress.NameOfTheProgram = model.nameOfTheProgram;
+        resourceProvisionProgress.Institute = model.institute;
+        resourceProvisionProgress.Address = model.address;
+        resourceProvisionProgress.SubjectAreaOrTopic = model.subjectAreaOrTopic;
+        resourceProvisionProgress.NameOfTheOrganization = model.nameOfTheOrganization;
+        resourceProvisionProgress.OrganizationType = model.organizationType;
+        resourceProvisionProgress.Ds = model.ds;
+        resourceProvisionProgress.OrganizationAddress = model.organizationAddress;
+        resourceProvisionProgress.Name = model.name;
+        resourceProvisionProgress.Position = model.position;
+        resourceProvisionProgress.ContactNumber = model.contactNumber;
+        resourceProvisionProgress.WhatsappNumber = model.whatsappNumber;
+        resourceProvisionProgress.Email = model.email;
+        resourceProvisionProgress.DetailsOfTheProvidedService = model.detailsOfTheProvidedService;
+
+
+        resourceProvisionProgressController.SaveResourceProvisionProgress(resourceProvisionProgress);
+
+        JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added success");
+
+        Clear();
+
+
+        //   console.Log($"Submit: {JsonSerializer.Serialize(model, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        // console.Log($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+
+
+    IEnumerable<ResourceProProgress> resourceProProgress;
+
+    private void AddData()
+    {
+
+        ResourceProProgress resourceProProgressObj = new ResourceProProgress();
+
+
+
+        resourceProProgressObj.Date = model.date;
+        resourceProProgressObj.NameOfTheProgram = model.nameOfTheProgram;
+        resourceProProgressObj.Institute = model.institute;
+        resourceProProgressObj.Address = model.address;
+        resourceProProgressObj.SubjectAreaOrTopic = model.subjectAreaOrTopic;
+        resourceProProgressObj.NameOfTheOrganization = model.nameOfTheOrganization;
+        resourceProProgressObj.OrganizationType = model.organizationType;
+        resourceProProgressObj.Ds = model.ds;
+        resourceProProgressObj.OrganizationAddress = model.organizationAddress;
+        resourceProProgressObj.Name = model.name;
+        resourceProProgressObj.Position = model.position;
+        resourceProProgressObj.ContactNumber = model.contactNumber;
+        resourceProProgressObj.WhatsappNumber = model.whatsappNumber;
+        resourceProProgressObj.Email = model.email;
+        resourceProProgressObj.DetailsOfTheProvidedService = model.detailsOfTheProvidedService;
+
+
+        resourceProProgress = new ResourceProProgress[] { resourceProProgressObj };
+
+    }
+
+
+    private void Clear()
+    {
+
+        model.nameOfTheProgram = "";
+        model.institute = "";
+        model.address= "";
+        model.subjectAreaOrTopic = "";
+        model.nameOfTheOrganization ="";
+        model.organizationType ="";
+        model.ds ="";
+        model.organizationAddress ="";
+        model.name ="";
+        model.position ="";
+        model.name ="";
+        model.position ="";
+        model.contactNumber ="";
+        model.whatsappNumber ="";
+        model.whatsappNumber ="";
+        model.email ="";
+        model.detailsOfTheProvidedService ="";
+
+        ResourceProProgress resourceProProgressObj = new ResourceProProgress();
+
+       
+        resourceProProgressObj.Date = model.date;
+        resourceProProgressObj.NameOfTheProgram = "";
+        resourceProProgressObj.Institute = "";
+        resourceProProgressObj.Address = "";
+        resourceProProgressObj.SubjectAreaOrTopic = "";
+        resourceProProgressObj.NameOfTheOrganization = "";
+        resourceProProgressObj.OrganizationType = "";
+        resourceProProgressObj.Ds = "";
+        resourceProProgressObj.OrganizationAddress = "";
+        resourceProProgressObj.Name = "";
+        resourceProProgressObj.Position = "";
+        resourceProProgressObj.ContactNumber = "";
+        resourceProProgressObj.WhatsappNumber = "";
+        resourceProProgressObj.Email = "";
+        resourceProProgressObj.DetailsOfTheProvidedService = "";
+
+
+        resourceProProgress = new ResourceProProgress[] { resourceProProgressObj };
+  
+
+    }
+
+    
+
+     }
+ }
+
