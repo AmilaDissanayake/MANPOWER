@@ -17,10 +17,11 @@ namespace ManPowerCore.Controller
         int UpdateProgramTarget(ProgramTarget programAssignee);
 
         int UpdateProgramTargetApproval(int id, int status);
+        int UpdateProgramTargetApprovalRecomended(int id, string name, int status);
 
         List<ProgramTarget> GetAllProgramTarget(bool withProgram, bool withProgramType, bool withProgramAssignee, bool withProgramPlan);
 
-        List<ProgramTarget> GetAllProgramTarget(int runYear, int runMonth , bool withProgram, bool withProgramType, bool withProgramAssignee, bool withProgramPlan );
+        List<ProgramTarget> GetAllProgramTarget(int runYear, int runMonth, bool withProgram, bool withProgramType, bool withProgramAssignee, bool withProgramPlan);
 
         ProgramTarget GetProgramTarget(int id, bool withProgram, bool withProgramType, bool withProgramAssignee, bool withProgramPlan);
 
@@ -52,7 +53,7 @@ namespace ManPowerCore.Controller
                 }
 
                 return id;
-                
+
             }
             catch (Exception)
             {
@@ -96,6 +97,27 @@ namespace ManPowerCore.Controller
             {
                 dBConnection = new DBConnection();
                 var taregts = programTargetDAO.UpdateProgramTargetApproval(id, status, dBConnection);
+                return taregts;
+            }
+            catch (Exception)
+            {
+                dBConnection.RollBack();
+
+                throw;
+            }
+            finally
+            {
+                if (dBConnection.con.State == System.Data.ConnectionState.Open)
+                    dBConnection.Commit();
+            }
+        }
+
+        public int UpdateProgramTargetApprovalRecomended(int id, string name, int status)
+        {
+            try
+            {
+                dBConnection = new DBConnection();
+                var taregts = programTargetDAO.UpdateProgramTargetApprovalRecomended(id, name, status, dBConnection);
                 return taregts;
             }
             catch (Exception)
@@ -179,7 +201,7 @@ namespace ManPowerCore.Controller
         }
 
 
-        public List<ProgramTarget> GetAllProgramTarget(int runYear, int  runMonth , bool withProgram, bool withProgramType, bool withProgramAssignee, bool withProgramPlan)
+        public List<ProgramTarget> GetAllProgramTarget(int runYear, int runMonth, bool withProgram, bool withProgramType, bool withProgramAssignee, bool withProgramPlan)
         {
             try
             {
@@ -193,7 +215,7 @@ namespace ManPowerCore.Controller
 
                     foreach (var item in list.Where(u => u.TargetYear == runYear && u.TargetMonth == runMonth))
                     {
-                        item._Program = listProgram.Where(a => a.ProgramId == item.ProgramId ).Single();
+                        item._Program = listProgram.Where(a => a.ProgramId == item.ProgramId).Single();
                     }
                 }
 
@@ -247,15 +269,15 @@ namespace ManPowerCore.Controller
         {
             DBConnection dbConnection = new DBConnection();
             try
-            { 
+            {
                 ProgramTargetDAO DAO = DAOFactory.CreateProgramTargetDAO();
                 ProgramTarget _ProgramTarget = DAO.GetProgramTarget(id, dbConnection);
 
-               
+
 
                 if (withProgram)
                 {
-                    ProgramDAO _ProgramController=DAOFactory.CreateProgramDAO();          
+                    ProgramDAO _ProgramController = DAOFactory.CreateProgramDAO();
                     _ProgramTarget._Program = _ProgramController.GetProgram(_ProgramTarget.ProgramId, dbConnection);
 
                 }
@@ -263,7 +285,7 @@ namespace ManPowerCore.Controller
                 if (withProgramType)
                 {
                     ProgramTypeDAO _ProgramTypeController = DAOFactory.CreateProgramTypeDAO();
-                    _ProgramTarget._ProgramType = _ProgramTypeController.GetProgramType(_ProgramTarget.ProgramTypeId , dbConnection);
+                    _ProgramTarget._ProgramType = _ProgramTypeController.GetProgramType(_ProgramTarget.ProgramTypeId, dbConnection);
 
                 }
 
@@ -282,7 +304,7 @@ namespace ManPowerCore.Controller
                 }
 
 
-                return _ProgramTarget;  
+                return _ProgramTarget;
             }
             catch (Exception ex)
             {

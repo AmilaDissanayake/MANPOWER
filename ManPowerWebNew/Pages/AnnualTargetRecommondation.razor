@@ -1,0 +1,143 @@
+﻿@page "/anualTargetRecommondation"
+
+@inject NavigationManager NavigationManager
+
+
+<div id="main">
+	<RadzenCard Style="padding-left:45px;">
+		<div class="wizard-heading">Annual Targets Recommondation</div>
+
+
+
+		@foreach (var i in programTargetsList.Where(u => u.IsRecommended == 1))
+		{
+			myList.Add(i);
+		}
+		<RadzenDataGrid TItem="ProgramTarget" Data="@myList">
+			<EmptyTemplate>
+				<p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+			</EmptyTemplate>
+			<Columns>
+				<RadzenDataGridColumn TItem="ProgramTarget" Property="ProgramTargetId" Title="ID" Width="90px" TextAlign="TextAlign.Center" />
+				<RadzenDataGridColumn TItem="ProgramTarget" Property="TargetYear" Title="Year" Width="150px" TextAlign="TextAlign.Center" />
+				<RadzenDataGridColumn TItem="ProgramTarget" Property="TargetMonth" Title="Month" Width="150px" TextAlign="TextAlign.Center" />
+				<RadzenDataGridColumn TItem="ProgramTarget" Property="Title" Title="Project" Width="170px" TextAlign="TextAlign.Center" />
+				<RadzenDataGridColumn TItem="ProgramTarget" Title="Action" Width="200px" TextAlign="TextAlign.Center">
+					<Template Context="myList">
+						<RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(myList.ProgramTargetId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+					</Template>
+				</RadzenDataGridColumn>
+			</Columns>
+		</RadzenDataGrid>
+
+	</RadzenCard>
+</div>
+
+@code {
+	string[] form = { "DME 21", "DME 22" };
+	private int status;
+	private List<DME21Model> dme = new List<DME21Model>();
+	private bool isClicked = false;
+	private int count;
+	private string statusName;
+
+	List<Month> monthTable = new List<Month>();
+	ProgramTarget programTarget = new ProgramTarget();
+	List<ProgramTarget> searchTarget = new List<ProgramTarget>();
+	ProgramAssignee programAssignee = new ProgramAssignee();
+	List<DepartmentUnit> listDistrict = new List<DepartmentUnit>();
+	List<DepartmentUnit> listDSDivision = new List<DepartmentUnit>();
+	List<Designation> listDesignation = new List<Designation>();
+	List<ProgramType> listProgramType = new List<ProgramType>();
+	List<DepartmentUnitPositions> listUser = new List<DepartmentUnitPositions>();
+	List<SystemUser> listUsers = new List<SystemUser>();
+	List<ManPowerCore.Domain.Program> program = new List<ManPowerCore.Domain.Program>();
+	List<ProgramTarget> programTargetsList = new List<ProgramTarget>();
+	List<ProgramTarget> myList = new List<ProgramTarget>();
+	List<ProgramAssignee> assignees = new List<ProgramAssignee>();
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		monthTable.Add(new Month() { monthName = "January", monthNumber = 1 });
+		monthTable.Add(new Month() { monthName = "February", monthNumber = 2 });
+		monthTable.Add(new Month() { monthName = "March", monthNumber = 3 });
+		monthTable.Add(new Month() { monthName = "April", monthNumber = 4 });
+		monthTable.Add(new Month() { monthName = "May", monthNumber = 5 });
+		monthTable.Add(new Month() { monthName = "June", monthNumber = 6 });
+		monthTable.Add(new Month() { monthName = "July", monthNumber = 7 });
+		monthTable.Add(new Month() { monthName = "August", monthNumber = 8 });
+		monthTable.Add(new Month() { monthName = "September", monthNumber = 9 });
+		monthTable.Add(new Month() { monthName = "October", monthNumber = 10 });
+		monthTable.Add(new Month() { monthName = "November", monthNumber = 11 });
+		monthTable.Add(new Month() { monthName = "December", monthNumber = 12 });
+
+
+		ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
+		programTargetsList = programTargetController.GetAllProgramTarget(true, true, true, true);
+
+		ProgramAssigneeController programAssigneeController = ControllerFactory.CreateProgramAssigneeController();
+		assignees = programAssigneeController.GetAllProgramAssignee(true, true, true);
+	}
+
+	async Task navigateToView(int index)
+	{
+		NavigationManager.NavigateTo($"/anualTargetRecommondation/target/{index}");
+	}
+}
+
+
+@*<div class="row">
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Select Form" />
+                    </div>
+                    <div class="col-7">
+                        <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Name="year" Data="@form"
+                                        Style="margin-bottom:10px;font-size:0.9em;" /><br />
+                        <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                    </div>
+                </div>
+                <br />
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Officer Name" />
+                    </div>
+                    <div class="col-7">
+                        <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Name="year"
+                                        Style="margin-bottom:10px;font-size:0.9em;" /><br />
+                        <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                    </div>
+                </div>
+                <br />
+
+
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Select Status" />
+                    </div>
+                    <div class="col-7">
+                        <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Name="year" Data="@pStatus"
+                                        ValueProperty="ProjectStatusId" TextProperty="ProjectStatusName" Style="margin-bottom:10px;font-size:0.9em;" /><br />
+                        <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                    </div>
+                </div>
+                <br />
+
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Month" />
+                    </div>
+                    <div class="col-7">
+                        <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Name="Month" Style="margin-bottom:10px;font-size:0.9em;" />
+                        <RadzenRequiredValidator Component="Month" Text="Month is required" Style="position: absolute" />
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>*@

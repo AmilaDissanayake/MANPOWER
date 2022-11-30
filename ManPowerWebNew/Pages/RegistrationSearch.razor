@@ -1,0 +1,103 @@
+﻿@page "/planning/Registration"
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+@inject NavigationManager NavigationManager
+
+<div id="main">
+
+    <div class="wizard-heading">Registered Users</div>
+    <div class="form-floating mb-3">
+        <RadzenCard>
+            <div class="row">
+
+                <div class="col-5">
+                    <label>Name:</label>
+                    <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Placeholder=" " Data="@searchNameList" Name="programe_type"
+                                    SelectedItem="selectedName" ValueProperty="InduvidualBeneficiaryName" TextProperty="InduvidualBeneficiaryName" @bind-Value="selectedName" Style="margin-bottom:10px;"></RadzenDropDown>
+                </div>
+                @*<div class="col-5" style="margin-right:100px;">
+                <label>District : </label>
+                <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Placeholder=" " Data="@listDistrict" Name="district"
+                SelectedItem="selecteddistrict" @bind-Value="selecteddistrict" ValueProperty="DepartmentUnitId" TextProperty="Name" Style="margin-bottom:10px;"></RadzenDropDown>
+                </div>*@
+
+                <div class="row">
+                    <div class="col-6">
+                        <input type="button" class="primary-btn" value="Search" @onclick="onClick_Search" />
+                    </div>
+                </div>
+                <br />
+
+            </div>
+        </RadzenCard>
+    </div>
+    <a href="/vRegistration">
+        <RadzenButton Shade="Shade.Darker" Text="New Registartion" ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Style="width:200px;" />
+    </a>
+    <br />
+    @*<div class="row justify-content-center">
+
+    <div class="col-6" style="margin-right:100px;">
+    <a href="/vRegistration">
+    <RadzenButton Shade="Shade.Darker" Text="Registration" ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Style="width:130px;" />
+    </a>
+    </div>
+    </div>
+    <br />*@
+
+    <RadzenCard>
+
+        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                        Data="@listName" TItem="InduvidualBeneficiary" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+            <Columns>
+                <RadzenDataGridColumn TItem="InduvidualBeneficiary" Property="Nic" Title="NIC" Frozen="true" Width="160px" />
+                <RadzenDataGridColumn TItem="InduvidualBeneficiary" Property="InduvidualBeneficiaryName" Title="Name" Width="160px" />
+                <RadzenDataGridColumn TItem="InduvidualBeneficiary" Property="Email" Title="Email" Width="200px" />
+                <RadzenDataGridColumn TItem="InduvidualBeneficiary" Property="ContactNumber" Title="Contact Number" Width="120px" />
+                <RadzenDataGridColumn TItem="InduvidualBeneficiary" Title="Action" Width="100px">
+                    <Template Context="listName">
+                        <RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(listName.BenificiaryId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+
+    </RadzenCard>
+</div>
+
+@code {
+
+    private string selectedName;
+    private string selecteddistrict;
+
+    List<DepartmentUnit> listDistrict = new List<DepartmentUnit>();
+    List<InduvidualBeneficiary> listName = new List<InduvidualBeneficiary>();
+    List<InduvidualBeneficiary> searchNameList = new List<InduvidualBeneficiary>();
+
+
+    protected override void OnInitialized()
+    {
+        DepartmentUnitTypeController _DepartmentUnitTypeController = ControllerFactory.CreateDepartmentUnitTypeController();
+        listDistrict = _DepartmentUnitTypeController.GetDepartmentUnitType(2, true)._DepartmentUnit;
+
+        InduvidualBeneficiaryController induvidualBeneficiaryController = ControllerFactory.CreateInduvidualBeneficiaryController();
+        listName = induvidualBeneficiaryController.GetAllInduvidualBeneficiary();
+
+        searchNameList = induvidualBeneficiaryController.GetAllInduvidualBeneficiary();
+
+
+    }
+
+    async Task navigateToView(int BenificiaryId)
+    {
+        NavigationManager.NavigateTo($"/InduvidualBeneficiary/ViewInduvidualBeneficiary/{BenificiaryId}");
+    }
+
+    private void onClick_Search()
+    {
+        InduvidualBeneficiary induvidualBeneficiary = new InduvidualBeneficiary();
+        InduvidualBeneficiaryController induvidualBeneficiaryController = ControllerFactory.CreateInduvidualBeneficiaryController();
+
+        listName = induvidualBeneficiaryController.GetAllInduvidualBeneficiary(selectedName);
+    }
+}

@@ -1,0 +1,381 @@
+﻿@page "/dme24"
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+
+@using ManPowerWebNew.Model
+@using System.Text.Json
+
+
+<div id="main">
+	<RadzenCard Style="padding-left:30px;">
+		<div class="wizard-heading">DME 24</div>
+		<div class="wizard-heading">Completed Program Confirmation Report DME 24</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Name of the program :" />
+			</div>
+			<div class="col-4">
+				<RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Data="@program" Name="ProgramPlanId" ValueProperty="ProgramId" TextProperty="ProgramName"
+								@bind-Value="programName" Style="margin-bottom:10px;font-size:0.9em;" />
+				@*<RadzenRequiredValidator Component="year" Text="This Feild is required" Popup=@popup Style="position: absolute" />*@
+			</div>
+		</div>
+
+
+		@*@foreach (var prop in program.Where(u => u.ProgramPlanId == Convert.ToInt32(ProgramPlanId)))
+		{*@
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Place :" />
+			</div>
+			<div class="col-7">
+				@*@prop.Location.ToString()*@
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="place" Name="Place"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="Place" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Program Conducted Date :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="conductDate" Name="ConductDate"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Number of Date :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="numberOfDate" Name="NumberOfDate"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Coordinater Officer :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="cordOfficer" Name="CoordOfficer"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+		@* }*@
+
+
+		<div class="row" style="margin-top:30px; margin-left:120px ">
+			<div class="col-4">
+				<h6><b>Resource Person</b></h6><br /><br />
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Name :" />
+			</div>
+			<div class="col-4">
+				<RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Placeholder="" Data="@resName" Name="ProgramName" ValueProperty="Name" TextProperty="Name"
+								SelectedItem="resourceName" @bind-Value="resourceName" Style="margin-bottom:10px;font-size:0.9em;" />
+				@*<RadzenRequiredValidator Component="year" Text="This Feild is required" Popup=@popup Style="position: absolute" />*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Working Place :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="workPlace" Name="WorkPlace"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Subject Area/Topic :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="subject" Name="Subject"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+			@*<div class="col-2">
+			<RadzenButton Text="Add Person" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Click="AddData" /> Click="() => onClick_add(workType, place,duty,value)"
+			</div>*@
+		</div>
+		<div class="row">
+			<div class="col-3">
+				<RadzenButton Text="Add Person" Icon="add_circle_outline" ButtonStyle="ButtonStyle.Secondary" Click="AddData" /> @*Click="() => onClick_add(workType, place,duty,value)"*@
+			</div>
+		</div>
+
+		<RadzenDataGrid Style="width: 1000px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+						Data="@projectPlanResourceDetails" TItem="ProjectPlanResourceDetails" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+
+			<Columns>
+				<RadzenDataGridColumn TItem="ProjectPlanResourceDetails" Property="MName" Title="Name" Width="150px" TextAlign="TextAlign.Center" />
+				<RadzenDataGridColumn TItem="ProjectPlanResourceDetails" Property="MWorkPlace" Title="Work Place" Width="200px" />
+				<RadzenDataGridColumn TItem="ProjectPlanResourceDetails" Property="MSubject" Title="Topic/Subject Area" Width="160px" />
+
+			</Columns>
+		</RadzenDataGrid>
+
+
+		<div class="row" style="margin-top:30px; margin-left:120px ">
+			<div class="col-4">
+				<h6><b>Number Of benificiaries</b></h6><br /><br />
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Male :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="male" Name="Male"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Female :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="female" Name="Female"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<br /><br />
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Vote Number :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="voteNumber" Name="VoteNumber"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Financial Source :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextArea Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="finSource" Name="FinSource"></RadzenTextArea>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Output :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="output" Name="Output"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Outcome :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextBox Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="outcome" Name="OutCome"></RadzenTextBox>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Remark :" />
+			</div>
+			<div class="col-7">
+				<RadzenTextArea Placeholder="" Style="margin-bottom:10px; display: block" Class="w-50" @bind-Value="remark" Name="Remark"></RadzenTextArea>
+				@*<RadzenRequiredValidator Component="ConductDate" Text="Address is required" Style="position: absolute"/>*@
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-3">
+				<RadzenLabel Text="Program Type :" />
+			</div>
+			<div class="col-5">
+				<RadzenRadioButtonList Orientation="Orientation.Horizontal" @bind-Value=@radioSelection TValue="int">
+					<Items>
+						<RadzenRadioButtonListItem Text="Online" Value="1" TValue="int" />
+						<RadzenRadioButtonListItem Text="Physical" Value="2" TValue="int" />
+					</Items>
+				</RadzenRadioButtonList>
+			</div>
+		</div>
+
+		<br /><br />
+
+		<center>
+			<div class="row">
+				<div class="col-2">
+					<RadzenButton Shade="Shade.Darker" Text="Save" ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Style="width:130px;" Click="onClick_Save" />
+				</div>
+				<div class="col-2">
+					<RadzenButton Shade="Shade.Darker" Text="Submit" ButtonStyle="ButtonStyle.Secondary" Style="width:130px;" />
+				</div>
+				<div class="col-2">
+					<RadzenButton Shade="Shade.Darker" Text="Clear" ButtonStyle="ButtonStyle.Secondary" Style="width:130px;" />
+				</div>
+			</div>
+		</center>
+
+		<br /><br />
+
+	</RadzenCard>
+</div>
+
+@code {
+
+	//string[] program = { "Program1", "Program2"};
+	//string[] resName = { "Program1", "Program2"};
+
+	private int programName;
+	//private int programId;
+	private string place;
+	private string conductDate;
+	private string numberOfDate;
+	private string cordOfficer;
+	private string resourceName;
+	private string workPlace;
+	private string subject;
+	private string male;
+	private string female;
+	private string voteNumber;
+	private string finSource;
+	private string output;
+	private string outcome;
+	private string remark;
+	private int radioSelection;
+
+
+
+	//public void Clear()
+	//{
+
+	//public string male= "";
+	//public string female= "";
+	//public string voteNumber= "";
+	//public string finSource= "";
+	//public string output= "";
+	//public string outcome= "";
+	//public string remark= "";
+
+	//}
+
+
+	List<ResourcePerson> resName = new List<ResourcePerson>();
+	//List<ManPowerCore.Domain.ProgramPlan> program = new List<ManPowerCore.Domain.ProgramPlan>();
+	List<ProgramPlan> programPlans = new List<ProgramPlan>();
+	List<ManPowerCore.Domain.Program> program = new List<ManPowerCore.Domain.Program>();
+
+	protected override void OnInitialized()
+	{
+		//ProgramPlanController programPlanController = ControllerFactory.CreateProgramPlanController();
+		//programPlans = programPlanController.GetAllProgramPlan(false, false, true, false, false,false);
+
+		//DepartmentUnitTypeController _DepartmentUnitTypeController = ControllerFactory.CreateDepartmentUnitTypeController();
+		//listDistrict = _DepartmentUnitTypeController.GetDepartmentUnitType(2, true)._DepartmentUnit;
+
+		//ProgramTargetController _ProgramTargetController = ControllerFactory.CreateProgramTargetController();
+		//programlist = _ProgramTargetController.GetAllProgramTarget()._ProgramType;
+
+		ProgramPlanController programPlanController = ControllerFactory.CreateProgramPlanController();
+		programPlans = programPlanController.GetAllProgramPlan(false, false, false, false, false, false);
+
+		ResourcePersonController resourcePersonController = ControllerFactory.CreateResourcePersonController();
+		resName = resourcePersonController.GetAllResourcePerson();
+
+		ProgramController programController = ControllerFactory.CreateProgramController();
+		program = programController.GetAllProgram(false);
+
+
+	}
+
+	class Model
+	{
+		public string MName { get; set; } = "";
+		public string MWorkPlace { get; set; } = "";
+		public string MSubject { get; set; } = "";
+	}
+
+	IEnumerable<ProjectPlanResourceDetails> projectPlanResourceDetails;
+
+	private void AddData()
+	{
+
+		ProjectPlanResourceDetails projectPlanResourceDetailsObj = new ProjectPlanResourceDetails();
+
+		projectPlanResourceDetailsObj.MName = resourceName;
+		projectPlanResourceDetailsObj.MWorkPlace = workPlace;
+		projectPlanResourceDetailsObj.MSubject = subject;
+
+		projectPlanResourceDetails = new ProjectPlanResourceDetails[] { projectPlanResourceDetailsObj };
+		onClick_clear();
+
+	}
+
+	private void onClick_clear()
+	{
+		resourceName = null;
+		workPlace = null;
+		subject = null;
+	}
+
+	void onClick_Save()
+	{
+
+		ProgramPlan programPlan = new ProgramPlan();
+		ProgramPlanController programPlanController = ControllerFactory.CreateProgramPlanController();
+
+		programPlan.ProjectStatusId = 4;
+		programPlan.ProgramCategoryId = 1;
+		programPlan.ProgramTargetId = 1;
+		programPlan.Date = DateTime.Today;
+		programPlan.MaleCount = int.Parse(male);
+		programPlan.FemaleCount = int.Parse(female);
+		programPlan.Outcome = int.Parse(output);
+		programPlan.Output = int.Parse(outcome);
+		programPlan.Remark = remark;
+		programPlan.FinancialSource = finSource;
+		programPlan.Date = DateTime.Today;
+		programPlan.ApprovedDate = DateTime.Today;
+
+		programPlanController.SaveProgramPlan(programPlan);
+		//Clear();
+		JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added success");
+
+
+		//ProjectPlanResource projectPlanResource = new ProjectPlanResource();
+		//ProjectPlanResourceController projectPlanResourceController = ControllerFactory.CreateProjectPlanResourceController();
+
+
+
+		//projectPlanResource.SaveProjectPlanResource(projectPlanResource);
+	}
+
+	@*private void onClick_Change()
+    {
+        @foreach (var prop in programPlans.Where(u => u.ProgramPlane.Program == Program))
+        {
+             place = @prop.location ;
+             conductDate = @prop.Date;
+             numberOfDate = @prop.coordinater;
+             cordOfficer = @prop.coordinater;
+        }
+    }*@
+}

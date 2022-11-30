@@ -1,0 +1,1570 @@
+﻿@page "/pm"
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@using Radzen
+@using System.Text.Json
+
+<div id="main">
+    <RadzenTemplateForm TItem="Employee" Submit="OnSubmit" InvalidSubmit="OnInvalidSubmit">
+        <RadzenCard Style="padding-left:45px;">
+            <div class="wizard-heading" style="align-content:center;">Personal Files</div>
+            <RadzenCard Style="padding-left:45px;">
+                @if(count == 0)
+                {
+                    <h4><b>Personal Details</b></h4><br/>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label>Last Name<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDropDown Data="specific" AllowClear="true" TValue="string" Class="w-100" Placeholder="" Style="display: block" Name="Division" />
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-7">
+                            <div class="row">
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="lastName" @bind-Value="lastName" Style="display: block" />
+                                    <RadzenRequiredValidator Component="lastName" Text="Vote is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div><br/><br/>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Initials<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="initial" @bind-Value="initials" Style="display: block" />
+                                    <RadzenRequiredValidator Component="initial" Text="this is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Name Denoted by the Initials<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextArea @bind-Value="nameOfInitials" Class="w-100" Style="display: block" Name="init" MaxLength="500" />
+                                    <RadzenRequiredValidator Component="init" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Ethnicity<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Style="display: block" Name="ethnicity" Data="@ethnicityList"
+                                                @bind-Value="ethnicityID" ValueProperty="EthnicityId" TextProperty="EthnicityName" />
+                                    <RadzenRequiredValidator Component="ethnicity" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Religion<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Style="display: block" Name="religion" Data="religionList"
+                                                @bind-Value="religionId" TextProperty="ReligionName" ValueProperty="ReligionId" />
+                                    <RadzenRequiredValidator Component="religion" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Gender<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Data="gender" @bind-Value="empGender"
+                                                Style="display: block" Name="gen" />
+                                    <RadzenRequiredValidator Component="gen" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Date of Birth<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDatePicker TValue="DateTime" @bind-Value="dob" Name="s" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="display: block" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>NIC Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="nic" @bind-Value="nic" Style="display: block" />
+                                    <RadzenRequiredValidator Component="nic" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Marital Status<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Style="display: block" Name="m" Data="maritalStatus"
+                                                @bind-Value="empMaritalStatus" />
+                                    <RadzenRequiredValidator Component="m" Text="This is required" Style="position: absolute" />
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>NIC Release Date<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDatePicker @bind-Value="nicIssuedDate" TValue="DateTime" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="display: block" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Passport Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="passport" @bind-Value="passportNo" Style="display: block" />
+                                    <RadzenRequiredValidator Component="passport" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+
+                    <div class="row justify-content-end">
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Next" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 1" />
+                        </div>
+                    </div>
+
+                    <br />
+                    <br />
+                }
+                else if(count == 1)
+                {
+                    <h4><b>Employment Details</b></h4>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Company Name<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="companyName"/>
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Personal File Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="file" Style="display: block" @bind-Value="fileNo" />
+                                    <RadzenRequiredValidator Component="file" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Is Resigned<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenRadioButtonList Orientation="Orientation.Horizontal" @bind-Value=@isResigned TValue="int">
+                                        <Items>
+                                            <RadzenRadioButtonListItem Text="Yes" Value="1" TValue="int" />
+                                            <RadzenRadioButtonListItem Text="No" Value="0" TValue="int" />
+                                        </Items>
+                                    </RadzenRadioButtonList>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Employee Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" @bind-Value="empNo" Name="empNo" Style="display: block" />
+                                    <RadzenRequiredValidator Component="empNo" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    @*<div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Photograph<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenUpload @ref="upload" Icon="upload" Auto="false" Multiple="true" Url="upload/multiple" Change=@(args => OnChange(args, "Manual Upload"))
+                                              Progress=@(args => OnProgress(args, "Manual Upload")) />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Leave Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="leaveNo" @bind-Value="leaveNo" Style="display: block" />
+                                    <RadzenRequiredValidator Component="leaveNo" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />*@
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Start Date<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDatePicker Name="s" @bind-Value="startDate" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="display: block" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>End Date<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDatePicker Name="s" @bind-Value="endDate" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="display: block" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Retirement Date<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDatePicker Name="s" @bind-Value="value1" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="display: block" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>EPF<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="leaveNo" @bind-Value="epf" Style="display: block" />
+                                    <RadzenRequiredValidator Component="leaveNo" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div><br/><br/>
+
+                    <div class="row">
+                                <div class="col-3">
+                                    <RadzenButton Shade="Shade.Darker" ButtonType="ButtonType.Button" Text="Add" ButtonStyle="ButtonStyle.Secondary" Style="width:150px;" 
+                                 Click="() => addEmploymentDetails(contractType,designationId,companyName,startDate,endDate,isResigned,retirementDate,epf)"/>
+                                </div>
+                            </div><br/><br/>
+
+                            @if (employmentDetails.Count != 0) 
+                                {
+                                    <RadzenDataGrid Style="width: 90%" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                                            Data="@employmentDetails" TItem="EmploymentDetails" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or" AllowRowSelectOnRowClick="true">    
+                                        <Columns>
+                
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="CompanyName" Title="Company Name" Width="150px" TextAlign="TextAlign.Center" />
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="StartDate" Title="Start Date" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="EndDate" Title="End Date" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="RetirementDate" Title="Retirement Date" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="Epf" Title="EPF" Width="150px" TextAlign="TextAlign.Center"/>
+                                </Columns>
+                            </RadzenDataGrid>
+                            }
+                            else
+                            {
+                                <RadzenDataGrid TItem="EmploymentDetails" Data="@employmentDetails">
+                                    <EmptyTemplate>
+                                        <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+                                    </EmptyTemplate>
+                                        <Columns>
+                
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="CompanyName" Title="Company Name" Width="150px" TextAlign="TextAlign.Center" />
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="StartDate" Title="Start Date" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="EndDate" Title="End Date" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="RetirementDate" Title="Retirement Date" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="EmploymentDetails" Property="Epf" Title="EPF" Width="150px" TextAlign="TextAlign.Center"/>
+                                </Columns>
+                                </RadzenDataGrid>
+
+                            }
+
+                            <br/>
+
+                    <div class="row justify-content-between">
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Back" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 0" />
+                        </div>
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Next" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 2" />
+                        </div>
+                    </div>
+
+                    <br />
+                    <br />
+                }
+                else if (count == 2)
+                {
+                    <br />
+
+                    <h4><b>Contact Details</b></h4>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Permenant Address<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextArea @bind-Value="address" Class="w-100" Style="display: block" Name="add" MaxLength="500" />
+                                    <RadzenRequiredValidator Component="add" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Divisional Secretary<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextArea Class="w-100" Style="display: block" Name="Instructions" MaxLength="500" />
+                                    <RadzenRequiredValidator Component="Instructions" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>City / Town<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>District<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Style="display: block" Name="Division" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Mobile<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="mobile" Style="display: block" @bind-Value="mobile" />
+                                    <RadzenRequiredValidator Component="mobile" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Fax<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="fax" Style="display: block" @bind-Value="fax" />
+                                    <RadzenRequiredValidator Component="fax" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Telephone<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="telephone" Style="display: block" @bind-Value="telephone" />
+                                    <RadzenRequiredValidator Component="telephone" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Postal Code<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br /><br/>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Personal Email<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="email" Style="display: block" @bind-Value="email" />
+                                    <RadzenRequiredValidator Component="email" Text="This is required" Style="position: absolute" />
+                                    <RadzenEmailValidator Component="email" Text="Provide a valid email address" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br /><br/>
+
+                    <div class="row justify-content-between">
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Back" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 1" />
+                        </div>
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Next" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 3" />
+                        </div>
+                    </div>
+                }
+                else if(count == 3)
+                {
+                    <br />
+
+                    <h4><b>Emergency Details</b></h4>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Name<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="emergencyPersonName" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Home Phone Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="emgPersonTele" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Relationship to Employee<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="dependentToEmp" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Office Phone Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="emgPersonOfficePhone" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Address of Emergency Contact Person<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="emergencyPersonAddress" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Mobile Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="emgPersonMobile" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+
+                    <div class="row justify-content-between">
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Back" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 2" />
+                        </div>
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Next" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 4" />
+                        </div>
+                    </div>
+                    <br/>
+                    <br/>
+                }
+                else if(count == 4)
+                {
+                    <h4><b>Dependant Informations</b></h4><br />
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <label>Dependant Type<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                        </div>
+                                        <div class="col-6">
+                                            <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Data="@dependantTypes" @bind-Value="empDependantType"
+                                                            ValueProperty="DependantTypeId" TextProperty="DependantTypeName" Style="display: block " Name="Division"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>Relationship<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="relationshipToDependant"/>
+                                                <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div><br />
+
+                            
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>First Name<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="dependantFirstName"/>
+                                                <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>Last Name<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="dependantLastName"/>
+                                                <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><br />
+
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>Date of Birth<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenDatePicker TValue="DateTime" @bind-Value="dependantDOB" Name="s" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="display: block" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>Birth Certificate Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="dependantBirthCertificate"/>
+                                                <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><br />
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>Passport<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="dependantPassport"/>
+                                                <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>Any Kind of Special Sickness<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextArea Class="w-100" Style="display: block" Name="Instructions" MaxLength="500" @bind-Value="dependantRemarks"/>
+                                                <RadzenRequiredValidator Component="Instructions" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><br/><br/>
+
+
+                            @if (empDependantType == 1)
+                            {
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>NIC Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="dependantNic"/>
+                                                <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><br />
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>Marriage Date<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenDatePicker @bind-Value="marriedDate" TValue="DateTime" Name="s" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Style="display: block" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>Marriage Certificate Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="marriageCertificateNo"/>
+                                                <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><br />
+
+                                <br /><h6><b>Spouse Employement Details</b></h6><br />
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>Ministry / Department / Company<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="dependantCompany"/>
+                                                <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <div class="row">
+                                            <div class="col-5">
+                                                <label>City / District <span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                            </div>
+                                            <div class="col-6">
+                                                <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="dependentCity"/>
+                                                <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><br /><br/>
+                            }
+
+                            <div class="row">
+                                <div class="col-3">
+                                    <RadzenButton Shade="Shade.Darker" ButtonType="ButtonType.Button" Text="Add" ButtonStyle="ButtonStyle.Secondary" Style="width:150px;" 
+                                 Click="() => addDependant(empDependantType,dependantFirstName,dependantLastName,dependantNic,dependantPassport,dependantBirthCertificate,dependantDOB,
+                                 relationshipToDependant,dependantRemarks,marriedDate,marriageCertificateNo,dependantCompany,dependentCity)"/>
+                                </div>
+                            </div><br/><br/>
+
+                            @if (dependant.Count != 0) 
+                                {
+                                    <RadzenDataGrid Style="width: 90%" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                                            Data="@dependant" TItem="Dependant" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or" AllowRowSelectOnRowClick="true">    
+                                        <Columns>
+                
+                                        <RadzenDataGridColumn TItem="Dependant" Title="Dependant Type" Width="150px" TextAlign="TextAlign.Center" >
+                                            <Template Context="dependant">
+                                                @foreach(var i in dependantTypes.Where(u => u.DependantTypeId == dependant.DependantTypeId))
+                                                {
+                                                    dependantTypeName = i.DependantTypeName;
+                                                }
+                                                @dependantTypeName
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="FirstName" Title="First Name" Width="150px" TextAlign="TextAlign.Center" />
+                                        <RadzenDataGridColumn TItem="Dependant" Property="LastName" Title="Last Name" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="DependantNIC" Title="NIC" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="DependantPassportNo" Title="Passport" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="BirthCertificateNumber" Title="Birth Certificate No" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="Remarks" Title="Any Kind of Sicknesses" Width="150px" TextAlign="TextAlign.Center"/>
+                                </Columns>
+                            </RadzenDataGrid>
+                            }
+                            else
+                            {
+                                <RadzenDataGrid TItem="Dependant" Data="@dependant">
+                                    <EmptyTemplate>
+                                        <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+                                    </EmptyTemplate>
+                                    <Columns>
+                                       <RadzenDataGridColumn TItem="Dependant" Title="Dependant Type" Width="150px" TextAlign="TextAlign.Center" >
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="FirstName" Title="First Name" Width="150px" TextAlign="TextAlign.Center" />
+                                        <RadzenDataGridColumn TItem="Dependant" Property="LastName" Title="Last Name" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="DependantNIC" Title="NIC" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="DependantPassportNo" Title="Passport" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="BirthCertificateNumber" Title="Birth Certificate No" Width="150px" TextAlign="TextAlign.Center"/>
+                                        <RadzenDataGridColumn TItem="Dependant" Property="Remarks" Title="Any Kind of Sicknesses" Width="150px" TextAlign="TextAlign.Center"/>
+                                    </Columns>
+                                </RadzenDataGrid>
+
+                            }
+
+                            <br/>
+                    <div class="row justify-content-between">
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Back" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 3" />
+                        </div>
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Next" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 5" />
+                        </div>
+                    </div>
+                    <br/>
+                    <br/>
+                }
+                else if(count == 5)
+                {
+                    <h4><b>Education Details</b></h4>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Education Type<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Data="@educationTypes" @bind-Value="eduType"
+                                                ValueProperty="EducationTypeId" TextProperty="EducationTypeName" Style="display: block " Name="Division" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Institute / School / University<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="institute" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Attempt<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Data="@Attemps" @bind-Value="attempt" Style="display: block " Name="Division" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Year<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenDatePicker TValue="DateTime" @bind-Value="year" Name="s" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "yyyy")) Class="w-100" Style="display: block" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Index Number<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="index" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Subject<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="subject" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Stream<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="stream" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Grade<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="grade" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Status<span>&nbsp;<sup style="color:red">*</sup></span></label>
+                                </div>
+                                <div class="col-6">
+                                    <RadzenTextBox Class="w-100" Name="v" Style="display: block" @bind-Value="status" />
+                                    <RadzenRequiredValidator Component="v" Text="This is required" Style="position: absolute" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+
+                    <div class="row">
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" ButtonType="ButtonType.Button" Text="Add" ButtonStyle="ButtonStyle.Secondary" Style="width:150px;"
+                                      Click="() => addEducationDetails(eduType,institute,attempt,year,index,subject,stream,grade,status)" />
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <br />
+
+                    @if (educationDetails.Count != 0)
+                    {
+                        <RadzenDataGrid Style="width: 90%" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                                Data="@educationDetails" TItem="EducationDetails" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or" AllowRowSelectOnRowClick="true">
+                            <Columns>
+
+                                <RadzenDataGridColumn TItem="EducationDetails" Title="Education Type" Width="150px" TextAlign="TextAlign.Center">
+                                    <Template Context="educationDetails">
+                                        @foreach (var i in educationTypes.Where(u => u.EducationTypeId == educationDetails.EducationTypeId))
+                                        {
+                                            EducatinTypeName = i.EducationTypeName;
+                                        }
+                                        @EducatinTypeName
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="StudiedInstitute" Title="Institute" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="NoOfAttempts" Title="Attempt" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamYear" Title="Year" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamIndex" Title="Index" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamSubject" Title="Subject" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamStream" Title="Stream" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamGrade" Title="Grade" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamStatus" Title="Status" Width="150px" TextAlign="TextAlign.Center" />
+                            </Columns>
+                        </RadzenDataGrid>
+                    }
+                    else
+                    {
+                        <RadzenDataGrid TItem="EducationDetails" Data="@educationDetails">
+                            <EmptyTemplate>
+                                <p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+                            </EmptyTemplate>
+                            <Columns>
+                                <RadzenDataGridColumn TItem="EducationDetails" Title="Education Type" Width="150px" TextAlign="TextAlign.Center">
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="StudiedInstitute" Title="Institute" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="NoOfAttempts" Title="Attempt" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamYear" Title="Year" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamIndex" Title="Index" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamSubject" Title="Subject" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamStream" Title="Stream" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamGrade" Title="Grade" Width="150px" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="EducationDetails" Property="ExamStatus" Title="Status" Width="150px" TextAlign="TextAlign.Center" />
+                            </Columns>
+                        </RadzenDataGrid>
+
+                    }
+
+                    <br />
+                    <div class="row justify-content-between">
+                        <div class="col-3">
+                            <RadzenButton Shade="Shade.Darker" Text="Back" ButtonStyle="ButtonStyle.Secondary" Click="() => count = 4" />
+                        </div>
+                        <div class="col-3 justify-content-flex-end">
+                            <RadzenButton Shade="Shade.Darker" Text="Save" ButtonStyle="ButtonStyle.Danger" ButtonType="ButtonType.Submit" Style="width:150px;" Click="SaveEmployee"/>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+
+                }
+            </RadzenCard>
+        </RadzenCard>
+    </RadzenTemplateForm>
+</div>
+
+@code
+{
+    RadzenUpload upload;
+
+    bool showComplete;
+    string completionMessage;
+    bool cancelUpload = false;
+    int count = 0;
+
+    string[] specific = { "Mr.", "Mrs.", "Miss" };
+    string[] gender = { "Male", "Female" };
+    string[] maritalStatus = { "Married", "Single" };
+    int[] Attemps = { 2, 3 };
+
+
+    private string dependantTypeName;
+    private string EducatinTypeName;
+
+    //Employee
+    private int religionId;
+    private int ethnicityID;
+    private string nic;
+    private DateTime nicIssuedDate = DateTime.Today;
+    private string passportNo;
+    private string leaveNo;
+    private string address;
+    private string telephone;
+    private string fax;
+    private string mobile;
+    private string email;
+    private string fileNo;
+    private string appointmentLetterNo;
+    private string serviceType;
+    private string empNo;
+    private string initials;
+    private string lastName;
+    private string nameOfInitials;
+    private string empGender;
+    private DateTime dob = DateTime.Today;
+    private string empMaritalStatus;
+    private DateTime marriedDate = DateTime.Today;
+    private int supervisorId;
+    private int managerId;
+
+    //Emergency Contact
+    private string emergencyPersonName;
+    private string dependentToEmp;
+    private string emergencyPersonAddress;
+    private string emgPersonTele;
+    private string emgPersonMobile;
+    private string emgPersonOfficePhone;
+
+    //Employment Details
+    private int designationId;
+    private int contractType;
+    private string companyName;
+    private DateTime startDate = DateTime.Today;
+    private DateTime endDate = DateTime.Today;
+    private int isResigned;
+    private DateTime retirementDate = DateTime.Today;
+    private string epf;
+
+    //Dependant Details
+    private int empDependantType;
+    private string dependantFirstName;
+    private string dependantLastName;
+    private string dependantNic;
+    private string dependantPassport;
+    private string dependantBirthCertificate;
+    private DateTime dependantDOB = DateTime.Today;
+    private string relationshipToDependant;
+    private string dependantRemarks;
+    private DateTime dependantMarriedDate = DateTime.Today;
+    private string marriageCertificateNo = "";
+    private string dependantCompany ="";
+    private string dependentCity="";
+
+    //Education Details
+    private int eduType;
+    private string institute;
+    private int attempt = 1;
+    private DateTime year;
+    private string index;
+    private string subject;
+    private string stream;
+    private string grade;
+    private string status;
+
+    //EmployeeContact
+    private int contactModeId;
+    private string contactDetail;
+
+
+    List<ContactType> contactTypes = new List<ContactType>();
+    List<Designation> designation = new List<Designation>();
+    List<Ethnicity> ethnicityList = new List<Ethnicity>();
+    List<Religion> religionList = new List<Religion>();
+    List<EducationType> educationTypes = new List<EducationType>();
+    List<DependantType> dependantTypes = new List<DependantType>();
+    List<Dependant> dependant = new List<Dependant>();
+    List<EmergencyContact> emergencyContact = new List<EmergencyContact>();
+    List<EmployeeContact> employeeContact = new List<EmployeeContact>();
+    List<EmploymentDetails> employmentDetails = new List<EmploymentDetails>();
+    List<EducationDetails> educationDetails = new List<EducationDetails>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        EthnicityController aa = ControllerFactory.CreateEthnicityController();
+        ethnicityList = aa.GetAllEthnicity();
+
+        ReligionController rc = ControllerFactory.CreateReligionController();
+        religionList = rc.GetAllReligion();
+
+        ContactTypeController ct = ControllerFactory.CreateContactTypeController();
+        contactTypes = ct.GetAllContactType();
+
+        DependantTypeController dt = ControllerFactory.CreateDependantTypeController();
+        dependantTypes = dt.GetAllDependantType();
+
+        EducationTypeController et = ControllerFactory.CreateEducationTypeController();
+        educationTypes = et.GetAllEducationType();
+
+        DesignationController d = ControllerFactory.CreateDesignationController();
+        designation = d.GetAllDesignation(false,false);
+    }
+
+    void addDependant(int typeId, string fname, string lname, string dnic, string pp, string bc, 
+        DateTime ddob, string rel, string dremarks, DateTime dMarriageDate, string mCertificate, string dCompany, string dcity)
+    {
+        if(typeId == 1)
+        {
+            dependant.Add(new Dependant()
+            {
+                DependantTypeId = typeId,
+                EmpId = 0,
+                FirstName = fname,
+                LastName = lname,
+                DependantNIC = dnic,
+                DependantPassportNo = pp,
+                BirthCertificateNumber = int.Parse(bc),
+                Dob = ddob,
+                RelationshipToEmp = rel,
+                Remarks = dremarks,
+                MarriageDate = dMarriageDate,
+                MarriageCertificateNo = int.Parse(mCertificate),
+                WorkingCompany = dCompany,
+                City = dcity
+            });
+        }
+        else
+        {
+            dependant.Add(new Dependant()
+            {
+                DependantTypeId = typeId,
+                EmpId = 0,
+                FirstName = fname,
+                LastName = lname,
+                DependantNIC = "",
+                DependantPassportNo = pp,
+                BirthCertificateNumber = int.Parse(bc),
+                Dob = ddob,
+                RelationshipToEmp = rel,
+                Remarks = dremarks,
+                MarriageDate = DateTime.Today,
+                MarriageCertificateNo = 0,
+                WorkingCompany = "",
+                City = ""
+            });
+        }
+
+        JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added to the List");
+
+        empDependantType = 0;
+        dependantFirstName = "";
+        dependantLastName = "";
+        dependantNic = "";
+        dependantPassport = "";
+        dependantBirthCertificate = "";
+        dependantDOB = DateTime.Today;
+        relationshipToDependant = "";
+        dependantRemarks = "";
+        dependantMarriedDate = DateTime.Today;
+        marriageCertificateNo = "";
+        dependantCompany = "";
+        dependentCity = "";
+
+    }
+
+    async void addEmploymentDetails(int ct, int desig, string cmpany, DateTime sDate, DateTime eDate,
+    int resign, DateTime ret, string empEpf)
+    {
+        employmentDetails.Add(new EmploymentDetails()
+        {
+            ContractTypeId = ct,
+            DesignationId = desig,
+            CompanyName = cmpany,
+            StartDate = sDate,
+            EndDate = eDate,
+            IsResigned = resign,
+            RetirementDate = ret,
+            Epf = int.Parse(empEpf)
+        });
+
+        await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added to the List");
+
+        contractType = 0;
+        designationId = 0;
+        companyName ="";
+        startDate = DateTime.Today;
+        endDate = DateTime.Today;
+        isResigned = 0;
+        retirementDate = DateTime.Today;
+        epf = "";
+    }
+
+    async void addEmployeeContact(int cMode, string cDetail)
+    {
+        employeeContact.Add(new EmployeeContact()
+        {
+                ContactModeId = cMode,
+                ContactDetials = cDetail
+        });
+
+        await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added to the List");
+
+        contactModeId = 0;
+        contactDetail = "";
+    }
+
+    void addEducationDetails(int eType, string inst, int att, DateTime yr, string indx, string sub, string strm, string grd, string st)
+    {
+        educationDetails.Add(new EducationDetails()
+            {
+                EmployeeId = 0,
+                EducationTypeId = eType,
+                StudiedInstitute = inst,
+                NoOfAttempts = att,
+                ExamYear = yr.Year,
+                ExamIndex = indx,
+                ExamSubject = sub,
+                ExamStream = strm,
+                ExamGrade = grd,
+                ExamStatus = st
+            });
+
+        JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added to the List");
+
+        eduType = 0;
+        institute = "";
+        attempt = 1;
+        year = DateTime.Today;
+        index = "";
+        subject = "";
+        stream = "";
+        grade = "";
+        status = "";
+    }
+
+
+    void SaveEmployee()
+    {
+        EmployeeController emp = ControllerFactory.CreateEmployeeController();
+        Employee e = new Employee();
+
+        e.ReligionId = religionId;
+        e.EthnicityId = ethnicityID;
+        e.EmployeeNIC = nic;
+        e.NicIssueDate = nicIssuedDate;
+        e.EmployeePassportNumber = passportNo;
+        e.leaveNumber = int.Parse(leaveNo);
+        e.Adress = address;
+        e.TelephoneNumber = int.Parse(telephone);
+        e.EmpFax = int.Parse(fax);
+        e.empMobile = int.Parse(mobile);
+        e.Email = email;
+        e.FileNumber = int.Parse(fileNo);
+        e.AppointmentLetterNumber = int.Parse(appointmentLetterNo);
+        e.ServiceType = int.Parse(serviceType);
+        e.EmpNumber = int.Parse(empNo);
+        e.EmpInitials = initials;
+        e.LastName = lastName;
+        e.NameWithInitials = nameOfInitials;
+        e.EmpGender = empGender;
+        e.DOB = dob;
+        e.MaritalStatus = empMaritalStatus;
+        e.SupervisorId = supervisorId;
+        e.ManagerId = managerId;
+
+        e._EmergencyContact.Name = emergencyPersonName;
+        e._EmergencyContact.DependentToEmployee = dependentToEmp;
+        e._EmergencyContact.EmgAddress = emergencyPersonAddress;
+        e._EmergencyContact.EmgTelephone = int.Parse(emgPersonTele);
+        e._EmergencyContact.EmgMobile = int.Parse(emgPersonMobile);
+        e._EmergencyContact.OfficePhone = int.Parse(emgPersonOfficePhone);
+
+        e._Dependant = dependant;
+        e._EducationDetails = educationDetails;
+        e._EmployeeContact = employeeContact;
+        e._EmploymentDetails = employmentDetails;
+
+        int results = emp.SaveEmployee(e);
+
+        if (results == 1)
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Successfully Inserted Emplyee Details");
+            NavigationManager.NavigateTo("/pm", true);
+        }
+        else
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Something went wrong");
+            NavigationManager.NavigateTo("/pm", true);
+        }
+    }
+
+    void OnSubmit(Employee e)
+    {
+        Console.WriteLine($"Submit: {JsonSerializer.Serialize(e, new JsonSerializerOptions() { WriteIndented = true })}");
+
+        EmployeeController emp = ControllerFactory.CreateEmployeeController();
+
+        e.ReligionId = religionId;
+        e.EthnicityId = ethnicityID;
+        e.EmployeeNIC = nic;
+        e.NicIssueDate = nicIssuedDate;
+        e.EmployeePassportNumber = passportNo;
+        e.leaveNumber = int.Parse(leaveNo);
+        e.Adress = address;
+        e.TelephoneNumber = int.Parse(telephone);
+        e.EmpFax = int.Parse(fax);
+        e.empMobile = int.Parse(mobile);
+        e.Email = email;
+        e.FileNumber = int.Parse(fileNo);
+        e.AppointmentLetterNumber = int.Parse(appointmentLetterNo);
+        e.ServiceType = int.Parse(serviceType);
+        e.EmpNumber = int.Parse(empNo);
+        e.EmpInitials = initials;
+        e.LastName = lastName;
+        e.NameWithInitials = nameOfInitials;
+        e.EmpGender = empGender;
+        e.DOB = dob;
+        e.MaritalStatus = empMaritalStatus;
+        e.SupervisorId = supervisorId;
+        e.ManagerId = managerId;
+
+        e._EmergencyContact.Name = emergencyPersonName;
+        e._EmergencyContact.DependentToEmployee = dependentToEmp;
+        e._EmergencyContact.EmgAddress = emergencyPersonAddress;
+        e._EmergencyContact.EmgTelephone = int.Parse(emgPersonTele);
+        e._EmergencyContact.EmgMobile = int.Parse(emgPersonMobile);
+        e._EmergencyContact.OfficePhone = int.Parse(emgPersonOfficePhone);
+
+        e._Dependant = dependant;
+        e._EducationDetails = educationDetails;
+        e._EmployeeContact = employeeContact;
+        e._EmploymentDetails = employmentDetails;
+
+        int results = emp.SaveEmployee(e);
+
+        if (results == 1)
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Successfully Inserted Emplyee Details");
+            NavigationManager.NavigateTo("/pm", true);
+        }
+        else
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Something went wrong");
+            NavigationManager.NavigateTo("/pm", true);
+        }
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}");
+    }
+
+    //------------- File Upload ----------------------------//
+
+    void CompleteUpload(UploadCompleteEventArgs args)
+    {
+        if (!args.Cancelled)
+            completionMessage = "Upload Complete!";
+        else
+            completionMessage = "Upload Cancelled!";
+
+        showComplete = true;
+    }
+
+    void CancelUpload()
+    {
+        cancelUpload = true;
+    }
+
+    int customParameter = 1;
+
+    void OnChange(UploadChangeEventArgs args, string name)
+    {
+        foreach (var file in args.Files)
+        {
+            Console.WriteLine($"File: {file.Name} / {file.Size} bytes");
+        }
+
+        Console.WriteLine($"{name} changed");
+    }
+
+    void OnProgress(UploadProgressArgs args, string name)
+    {
+        Console.WriteLine($"{args.Progress}% '{name}' / {args.Loaded} of {args.Total} bytes.");
+
+        if (args.Progress == 100)
+        {
+            foreach (var file in args.Files)
+            {
+                Console.WriteLine($"Uploaded: {file.Name} / {file.Size} bytes");
+            }
+        }
+    }
+
+    void OnComplete(UploadCompleteEventArgs args)
+    {
+        Console.WriteLine($"Server response: {args.RawResponse}");
+    }
+
+    //-------------- Date Picker hander --------------------//
+
+    DateTime value1 = DateTime.Today;
+    DateTime value2 = DateTime.Today;
+
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
+
+
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+    }
+
+    void DateRenderSpecial(DateRenderEventArgs args)
+    {
+        if (dates.Contains(args.Date))
+        {
+            args.Attributes.Add("style", "background-color: #ff6d41; border-color: white;");
+        }
+    }
+
+    void DateRender(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || dates.Contains(args.Date);
+    }
+
+    void DateRenderNoWeekends(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || args.Date.DayOfWeek == DayOfWeek.Sunday || args.Date.DayOfWeek == DayOfWeek.Saturday;
+    }
+
+    void OnTodayClick()
+    {
+        value1 = DateTime.Today;
+        value2 = DateTime.Today;
+    }
+}

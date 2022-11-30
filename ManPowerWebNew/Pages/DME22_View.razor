@@ -1,0 +1,181 @@
+﻿@page "/addDme22/view/{index}"
+
+@inject IJSRuntime JSRuntime
+@using System.Text.RegularExpressions
+@using Radzen
+@using System.Text.Json
+
+<div id="main">
+    <center>
+        <RadzenCard Style="padding-left:40px;">
+
+            @foreach (var prop in monthTable.Where(u => u.monthNumber == Convert.ToInt32(index)))
+            {
+                month = @prop.monthName;
+            }
+            <div class="wizard-heading">DME 22 - Projects for @month</div><br />
+
+            <RadzenDataGrid Style="width: 930px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                            Data="@myList" TItem="TaskAllocationDetail" ColumnWidth="400px" LogicalFilterOperator="LogicalFilterOperator.Or">
+                <Columns>
+                    <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="StartTime.Date" Title="Start Date" Width="200px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="EndTime.Date" Title="End Date" Width="200px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="TaskAllocationDetail" Title="Program Type" Width="150px" TextAlign="TextAlign.Center">
+                        <Template Context="myList">
+                            @foreach (var i in taskTypes.Where(u => u.TaskTypeId == myList.TaskTypeId))
+                            {
+                                task = i.TaskTypeName;
+                            }
+                            @task
+                        </Template>
+                    </RadzenDataGridColumn>                    
+                    <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="TaskDescription" Title="Performed Duty" Width="200px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="WorkLocation" Title="Work Location" Width="200px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="TaskAllocationDetail" Property="TaskRemarks" Title="Remarks" Width="200px" TextAlign="TextAlign.Center" />>
+                </Columns>
+            </RadzenDataGrid>
+
+            <br /><br />
+
+            @*<table class="table primary-table">
+            <thead class="table-active">
+            <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Program Type</th>
+            <th scope="col">Work Place</th>
+            <th scope="col">Performed Duty</th>
+            <th scope="col">Status</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            @foreach (var item in taskAllocationDetails.Where(u => u.StartTime.Month == int.Parse(index)))
+            {
+            @foreach (var prop in taskAllocations.Where(u => u.TaskYearMonth.Month == Convert.ToInt32(index)))
+            {
+            s = @prop.StatusId;
+            }
+            @foreach (var i in pStatus.Where(u => u.ProjectStatusId == s))
+            {
+            status = i.ProjectStatusName;
+            }
+
+            @foreach (var i in taskTypes.Where(u => u.TaskTypeId == item.TaskTypeId))
+            {
+            pName = i.TaskTypeName;
+            }
+
+            <tr @key="@item">
+            <td>@item.StartTime.Date</td>
+            <td>@pName</td>
+            <td>@item.WorkLocation</td>
+            <td>@item.TaskDescription</td>
+            <td>@status</td>
+            </tr>
+            }
+
+            </tbody>
+            </table>*@
+
+            <a href="/dme22">
+                <RadzenButton Text="Back" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;" />
+            </a>
+
+        </RadzenCard>
+    </center>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string index { get; set; }
+    private string emptyText = "No Items to display!";
+    private string status;
+    private string task;
+    private string pName;
+    private string month;
+    private int s;
+
+    List<TaskAllocationDetail> taskAllocationDetails = new List<TaskAllocationDetail>();
+    List<TaskAllocation> taskAllocations = new List<TaskAllocation>();
+    TaskAllocation single = new TaskAllocation();
+    List<TaskType> taskTypes = new List<TaskType>();
+    List<ProjectStatus> pStatus = new List<ProjectStatus>();
+    List<Month> monthTable = new List<Month>();
+    List<TaskAllocationDetail> myList = new List<TaskAllocationDetail>();
+
+
+
+    protected override void OnInitialized()
+    {
+        monthTable.Add(new Month() { monthName = "January", monthNumber = 1 });
+        monthTable.Add(new Month() { monthName = "February", monthNumber = 2 });
+        monthTable.Add(new Month() { monthName = "March", monthNumber = 3 });
+        monthTable.Add(new Month() { monthName = "April", monthNumber = 4 });
+        monthTable.Add(new Month() { monthName = "May", monthNumber = 5 });
+        monthTable.Add(new Month() { monthName = "June", monthNumber = 6 });
+        monthTable.Add(new Month() { monthName = "July", monthNumber = 7 });
+        monthTable.Add(new Month() { monthName = "August", monthNumber = 8 });
+        monthTable.Add(new Month() { monthName = "September", monthNumber = 9 });
+        monthTable.Add(new Month() { monthName = "October", monthNumber = 10 });
+        monthTable.Add(new Month() { monthName = "November", monthNumber = 11 });
+        monthTable.Add(new Month() { monthName = "December", monthNumber = 12 });
+
+        base.OnInitialized();
+
+        TaskAllocationController taskAllocationList = ControllerFactory.CreateTaskAllocationController();
+        taskAllocations = taskAllocationList.GetAllTaskAllocation(true, false,true,true);
+
+        TaskAllocationDetailController aa = ControllerFactory.CreateTaskAllocationDetailController();
+        taskAllocationDetails = aa.GetAllTaskAllocationDetail(false, false, false);
+
+        ProjectStatusController projectStatus = ControllerFactory.CreateProjectStatusController();
+        pStatus = projectStatus.GetAllProjectStatus(false);
+
+        TaskTypeController taskTypeController = ControllerFactory.CreateTaskTypeController();
+        taskTypes = taskTypeController.GetAllTaskType(false);
+
+        foreach (var i in taskAllocationDetails.Where(u => u.StartTime.Month == Convert.ToInt32(index)))
+        {
+            myList.Add(i);
+        }
+    }
+
+
+    //-------------- Date Picker handler --------------------//
+
+    DateTime? value = DateTime.Now;
+
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
+
+
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+    }
+
+    void DateRenderSpecial(DateRenderEventArgs args)
+    {
+        if (dates.Contains(args.Date))
+        {
+            args.Attributes.Add("style", "background-color: #ff6d41; border-color: white;");
+        }
+    }
+
+    void DateRender(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || dates.Contains(args.Date);
+    }
+
+    void DateRenderNoWeekends(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || args.Date.DayOfWeek == DayOfWeek.Sunday || args.Date.DayOfWeek == DayOfWeek.Saturday;
+    }
+
+    void OnTodayClick()
+    {
+        value = DateTime.Now;
+    }
+
+}

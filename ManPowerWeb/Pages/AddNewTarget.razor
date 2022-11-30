@@ -118,7 +118,7 @@
 						<div class="row">
 							<div class="col-4">
 								<label>Officer Name<span>&nbsp;<sup style="color:red">*</sup></span></label>
-							
+
 
 							</div>
 							<div class="col-7">
@@ -381,9 +381,9 @@
 				<div class="col-2">
 					<RadzenButton ButtonType="ButtonType.Reset" Text="Clear" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
 				</div>
-				@if (isClicked == true)
+				@if (!isClicked == true)
 				{
-					<input onclick="document.getElementById('id02').style.display='block'" type="button" class="rdzn-btn" value="Send to Recommondation" style="width:230px;" />
+					<input onclick="document.getElementById('id01').style.display='block'" type="button" class="rdzn-btn" value="Send to Recommondation" style="width:230px;" />
 				}
 				else
 				{
@@ -421,11 +421,16 @@
 						<br /><br />
 
 						<label><b>Officer Name</b></label>
-						<select class="form-select" aria-label="Default select example" required>
-							<option selected>Open this select menu</option>
-							<option value="1">Mr. R Fernando</option>
-							<option value="2">Mrs. A Abhesinghe</option>
-						</select>
+
+						<RadzenDropDown AllowClear="true" TValue="string" Placeholder="Open this select menu" Data="@listManagers.Where(u=>u.UserTypeId==2)"
+										ValueProperty="SystemUserId" TextProperty="Name" @bind-Value="selectedManger">
+
+						</RadzenDropDown>
+						<span>@selectedManger</span>
+
+						@*<RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Data="@listUsers.Where(u=>u.UserTypeId==2)" Name="ManagerRecomendation"
+						ValueProperty="RecommendedBy" TextProperty="ManagerName" SelectedItem="selectedManger" @bind-Value="selectedManger" Style="display: block" />
+						*@
 					</div>
 				</form>
 
@@ -435,7 +440,7 @@
 							<input onclick="document.getElementById('id01').style.display='none'" type="button" class="red-btn" value="Cancel" style="width:160px;" />
 						</div>
 						<div class="col-4">
-							<input onclick="document.getElementById('id01').style.display='none'" type="button" class="blue-btn" value="Send" style="width:160px;" />
+							<RadzenButton Click=@onClick_send Text="Send" style="width:160px;" />
 						</div>
 					</div>
 				</div>
@@ -476,6 +481,7 @@
 	private int month;
 	private int depUnitPId;
 	private int radioSelection;
+	private string selectedManger;
 
 
 	private string selectedYear;
@@ -502,6 +508,7 @@
 	List<ProgramType> listProgramType = new List<ProgramType>();
 	List<DepartmentUnitPositions> listUser = new List<DepartmentUnitPositions>();
 	List<SystemUser> listUsers = new List<SystemUser>();
+	List<SystemUser> listManagers = new List<SystemUser>();
 	List<ProgramTarget> allTargets = new List<ProgramTarget>();
 	List<Possitions> PositionList = new List<Possitions>();
 	List<ManPowerCore.Domain.Program> program = new List<ManPowerCore.Domain.Program>();
@@ -534,6 +541,7 @@
 
 		SystemUserController systemUserController = ControllerFactory.CreateSystemUserController();
 		listUsers = systemUserController.GetAllSystemUser(true, false, false);
+		listManagers = systemUserController.GetAllSystemUser(false, false, false);
 
 		ProgramTypeController programTypeController = ControllerFactory.CreateProgramTypeController();
 		listProgramType = programTypeController.GetAllProgramType(false);
@@ -564,68 +572,56 @@
 
 	//----------------------------- validator ------------------------------//
 
-	void OnSubmit(ProgramTarget programTarget)
+	void OnSubmit()
 	{
 
 		Console.WriteLine($"Submit: {JsonSerializer.Serialize(programTarget, new JsonSerializerOptions() { WriteIndented = true })}");
 		ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
 		ProgramAssigneeController programAssigneeController = ControllerFactory.CreateProgramAssigneeController();
 
-		if (value1 == null || value2 == null)
+		isClicked = true;
+		programTarget.ProgramTypeId = programType;
+		programTarget.ProgramId = selectedProgramID;
+		programTarget.Title = selectedProgram;
+		programTarget.Description = description;
+		programTarget.Instractions = pInstruct;
+		programTarget.VoteNumber = vote;
+		programTarget.NoOfProjects = int.Parse(phyCount);
+		programTarget.EstimatedAmount = float.Parse(finCount);
+		programTarget.TargetYear = int.Parse(selectedYear);
+		programTarget.TargetMonth = month;
+		programTarget.Output = int.Parse(output);
+		programTarget.Outcome = int.Parse(outcome);
+		programTarget.IsRecommended = 0;
+		programTarget.RecommendedBy = selectedManger;
+		programTarget.RecommendedDate = DateTime.Now;
+		programTarget.StartDate = DateTime.Now;
+		programTarget.EndDate = DateTime.Now;
+
+
+		programTarget._ProgramAssignee.Add(new ProgramAssignee()
+			{
+				DesignationId = 1,
+				ProgramAssigneeId = selectedOfficer,
+				DepartmentUnitPossitionsId = depUnitPId,
+			});
+
+		TargetResponse = programTargetController.SaveProgramTarget(programTarget);
+
+
+
+		if (TargetResponse != 0)
 		{
-			JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Please enter a Date");
-		}
-		else if (value1.Date >= value2.Date)
-		{
-			JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Please Enter a Valid End Date");
-		}
-		else if (value1.Year < int.Parse(selectedYear) || value2.Year < int.Parse(selectedYear))
-		{
-			JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Can not set Start/End Dates for Previous Years");
+			JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "validate success");
+			programTarget = new ProgramTarget();
+			//NavigationManager.NavigateTo($"/planning/annualTargets");
 		}
 		else
 		{
-			isClicked = true;
-			programTarget.ProgramTypeId = programType;
-			programTarget.ProgramId = selectedProgramID;
-			programTarget.Title = selectedProgram;
-			programTarget.Description = description;
-			programTarget.Instractions = pInstruct;
-			programTarget.StartDate = value1;
-			programTarget.EndDate = value2;
-			programTarget.VoteNumber = vote;
-			programTarget.NoOfProjects = int.Parse(phyCount);
-			programTarget.EstimatedAmount = float.Parse(finCount);
-			programTarget.TargetYear = int.Parse(selectedYear);
-			programTarget.TargetMonth = month;
-			programTarget.Output = int.Parse(output);
-			programTarget.Outcome = int.Parse(outcome);
-			programTarget.IsRecommended = 0;
-			programTarget.RecommendedBy = "";
-			programTarget.RecommendedDate = DateTime.Now;
-
-			programTarget._ProgramAssignee.Add(new ProgramAssignee()
-				{
-					DesignationId = selectedDesignation,
-					ProgramAssigneeId = selectedOfficer,
-					DepartmentUnitPossitionsId = depUnitPId,
-				});
-
-			TargetResponse = programTargetController.SaveProgramTarget(programTarget);
-
-
-			if (TargetResponse != 0)
-			{
-				JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "validate success");
-				programTarget = new ProgramTarget();
-				NavigationManager.NavigateTo($"/planning/annualTargets");
-			}
-			else
-			{
-				JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Something went wrong");
-				programTarget = new ProgramTarget();
-			}
+			JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Something went wrong");
+			programTarget = new ProgramTarget();
 		}
+
 	}
 
 	void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
@@ -642,11 +638,12 @@
 	{
 
 		ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
-
-		foreach (var prop in allTargets.Where(u => u.IsRecommended == 0 && u.ProgramTargetId == TargetResponse))
-		{
-			programTargetController.UpdateProgramTargetApproval(prop.ProgramTargetId, 1);
-		}
+		programTargetController.UpdateProgramTargetApprovalRecomended(30, "abc", 1);
+		
+		//foreach (var prop in allTargets.Where(u => u.IsRecommended == 0 && u.ProgramTargetId == TargetResponse))
+		//{
+		//	programTargetController.UpdateProgramTargetApproval(30, 1);
+		//}
 
 		await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Sent to Approval..");
 
