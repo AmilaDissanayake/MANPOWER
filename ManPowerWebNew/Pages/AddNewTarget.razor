@@ -4,6 +4,8 @@
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
 @using Radzen
 @using System.Text.Json
 
@@ -381,7 +383,7 @@
 				<div class="col-2">
 					<RadzenButton ButtonType="ButtonType.Reset" Text="Clear" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;"></RadzenButton>
 				</div>
-				@if (!isClicked == true)
+				@if (isClicked == true)
 				{
 					<input onclick="document.getElementById('id01').style.display='block'" type="button" class="rdzn-btn" value="Send to Recommondation" style="width:230px;" />
 				}
@@ -422,11 +424,12 @@
 
 						<label><b>Officer Name</b></label>
 
-						<RadzenDropDown AllowClear="true" TValue="string" Placeholder="Open this select menu" Data="@listManagers.Where(u=>u.UserTypeId==2)"
+						<RadzenDropDown AllowClear="true" TValue="int" Placeholder="Open this select menu" Data="@listManagers.Where(u=>u.UserTypeId==2 && u.SystemUserId!=systemUserID)"
 										ValueProperty="SystemUserId" TextProperty="Name" SelectedItem="selectedManger" @bind-Value="selectedManger">
 
 						</RadzenDropDown>
 						<span>@selectedManger</span>
+
 
 						@*<RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Data="@listUsers.Where(u=>u.UserTypeId==2)" Name="ManagerRecomendation"
 						ValueProperty="RecommendedBy" TextProperty="ManagerName" SelectedItem="selectedManger" @bind-Value="selectedManger" Style="display: block" />
@@ -481,7 +484,7 @@
 	private int month;
 	private int depUnitPId;
 	private int radioSelection;
-	private string selectedManger;
+	private int selectedManger;
 
 
 	private string selectedYear;
@@ -495,6 +498,9 @@
 
 	private string output;
 	private string outcome;
+
+	public SystemUser userRegistationDetailsList;
+	private int systemUserID = 0;
 
 	string message = "Insert Success";
 	int TargetResponse = 0;
@@ -557,6 +563,18 @@
 
 		PossitionsController possitionsController = ControllerFactory.CreatePossitionsController();
 		PositionList = possitionsController.GetAllPossitions(false);
+	}
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+			systemUserID = userRegistationDetailsList.SystemUserId;
+
+
+
+			this.StateHasChanged();
+		}
 	}
 
 	void search(int year, int month)
@@ -638,15 +656,16 @@
 	{
 
 		ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
-		programTargetController.UpdateProgramTargetApprovalRecomended(31, "abc", 1);
+		programTargetController.UpdateProgramTargetApprovalRecomended(TargetResponse, selectedManger, 1);
+
 		//programTargetController.UpdateProgramTargetApproval(30, 1);
 
 		//foreach (var prop in allTargets.Where(u => u.IsRecommended == 0 && u.ProgramTargetId == TargetResponse))
 		//{
-		//	programTargetController.UpdateProgramTargetApproval(30, 1);
+		//	programTargetController.UpdateProgramTargetApprovalRecomended(TargetResponse, selectedManger, 1);
 		//}
 
-		await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Sent to Approval..");
+		//await JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Sent to Approval..");
 
 	}
 

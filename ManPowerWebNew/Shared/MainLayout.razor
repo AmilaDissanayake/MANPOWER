@@ -16,45 +16,45 @@
 <NavMenu />
 
 <div class="main">
-    <div class="top-row">
-        <div class="col-9">
-            <img src="../header2.png" style="height:94%; width:30em" />
-        </div>
-        <div class="col-1">
-            <RadzenButton Style="color:white;" Icon="person" Shade="Shade.Lighter" Click="GetUserInformatin"></RadzenButton>
+	<div class="top-row">
+		<div class="col-9">
+			<img src="../header2.png" style="height:94%; width:30em" />
+		</div>
+		<div class="col-1">
+			<RadzenButton Style="color:white;" Icon="person" Shade="Shade.Lighter" Click="GetUserInformatin"></RadzenButton>
 
-        </div>
-        @if (isClicked == true)
-        {
-            <div class="col-2">
-                @if (userRegistationDetailsList != null)
-                {
-                    name = "Log Out " + @userRegistationDetailsList.Name;
-                }
-                <RadzenButton Click="LogOutUser" Shade="Shade.Lighter" Text=@name ButtonStyle="ButtonStyle.Danger" />
-            </div>
-        }
-
-
-        @*<img src="../profile-user.png" style="height:2em; width:2em; margin-left:800px; margin-top:5px" @onclick="GetUserInformatin" />
+		</div>
+		@if (isClicked == true)
+		{
+			<div class="col-2">
+				@if (userRegistationDetailsList != null)
+				{
+					name = "Log Out " + @userRegistationDetailsList.Name;
+				}
+				<RadzenButton Click="LogOutUser" Shade="Shade.Lighter" Text=@name ButtonStyle="ButtonStyle.Danger" />
+			</div>
+		}
 
 
-        @if (userRegistationDetailsList != null)
-        {
-        <RadzenButton style=" margin-left:30px; margin-top:0px" Click="LogOutUser" Shade="Shade.Darker" Text="Log Out" ButtonStyle="ButtonStyle.Primary" />
+		@*<img src="../profile-user.png" style="height:2em; width:2em; margin-left:800px; margin-top:5px" @onclick="GetUserInformatin" />
 
-        <p style="margin-left:1240px; margin-top:-20px; font-size:smaller; color:aliceblue">@userRegistationDetailsList.Name</p>
-        }
-        </div>*@
-    </div>
 
-    <div class="content px-4">
+		@if (userRegistationDetailsList != null)
+		{
+		<RadzenButton style=" margin-left:30px; margin-top:0px" Click="LogOutUser" Shade="Shade.Darker" Text="Log Out" ButtonStyle="ButtonStyle.Primary" />
 
-        @* <button style="margin-left:1020px" class="btn btn-success" @onclick="GetUserInformatin">User Info</button>*@
+		<p style="margin-left:1240px; margin-top:-20px; font-size:smaller; color:aliceblue">@userRegistationDetailsList.Name</p>
+		}
+		</div>*@
+	</div>
 
-        @Body
+	<div class="content px-4">
 
-    </div>
+		@* <button style="margin-left:1020px" class="btn btn-success" @onclick="GetUserInformatin">User Info</button>*@
+
+		@Body
+
+	</div>
 </div>
 
 
@@ -62,29 +62,29 @@
 
 @code {
 
-    private string name;
-    private bool isClicked = false;
+	private string name;
+	private bool isClicked = false;
 
-    public SystemUser userRegistationDetailsList;
+	public SystemUser userRegistationDetailsList;
 
-    public async Task GetUserInformatin()
-    {
-        isClicked = true;
-        userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
-    }
+	public async Task GetUserInformatin()
+	{
+		isClicked = true;
+		userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+	}
 
-    public void LogOutUser()
-    {
-        sessionStorage.ClearAsync();
-        userRegistationDetailsList = new SystemUser();
-        NavigationManager.NavigateTo("/login");
-    }
+	public void LogOutUser()
+	{
+		sessionStorage.ClearAsync();
+		userRegistationDetailsList = new SystemUser();
+		NavigationManager.NavigateTo("/login");
+	}
 
-    //protected override async void OnInitialized()
-    //{
-    //    base.OnInitialized();
-    //    userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
-    //}
+	//protected override async void OnInitialized()
+	//{
+	//    base.OnInitialized();
+	//    userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+	//}
 
 
 }
