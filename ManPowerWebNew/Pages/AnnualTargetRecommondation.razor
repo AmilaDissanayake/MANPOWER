@@ -1,45 +1,53 @@
 ﻿@page "/anualTargetRecommondation"
 
 @inject NavigationManager NavigationManager
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+
 
 
 <div id="main">
 	<RadzenCard Style="padding-left:45px;">
 		<div class="wizard-heading">Annual Targets Recommondation</div>
 
-
-
-		@foreach (var i in programTargetsList.Where(u => u.IsRecommended == 1))
+		<RadzenButton Click=@statechange Text="Refresh"></RadzenButton>
+		@foreach (var i in myList)
 		{
-			myList.Add(i);
+			<span>@i.RecommendedBy</span>
 		}
-		<RadzenDataGrid TItem="ProgramTarget" Data="@myList">
-			<EmptyTemplate>
-				<p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
-			</EmptyTemplate>
-			<Columns>
-				<RadzenDataGridColumn TItem="ProgramTarget" Property="ProgramTargetId" Title="ID" Width="90px" TextAlign="TextAlign.Center" />
-				<RadzenDataGridColumn TItem="ProgramTarget" Property="TargetYear" Title="Year" Width="150px" TextAlign="TextAlign.Center" />
-				<RadzenDataGridColumn TItem="ProgramTarget" Property="TargetMonth" Title="Month" Width="150px" TextAlign="TextAlign.Center" />
-				<RadzenDataGridColumn TItem="ProgramTarget" Property="Title" Title="Project" Width="170px" TextAlign="TextAlign.Center" />
-				<RadzenDataGridColumn TItem="ProgramTarget" Title="Action" Width="200px" TextAlign="TextAlign.Center">
-					<Template Context="myList">
-						<RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(myList.ProgramTargetId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
-					</Template>
-				</RadzenDataGridColumn>
-			</Columns>
-		</RadzenDataGrid>
+
+
+		@*	<RadzenDataGrid TItem="ProgramTarget" Data="@myList">
+		<EmptyTemplate>
+		<p style="color: lightgrey; font-size: 24px; text-align: center; margin: 2rem;">No records to display.</p>
+		</EmptyTemplate>
+		<Columns>
+		<RadzenDataGridColumn TItem="ProgramTarget" Property="ProgramTargetId" Title="ID" Width="90px" TextAlign="TextAlign.Center" />
+		<RadzenDataGridColumn TItem="ProgramTarget" Property="TargetYear" Title="Year" Width="150px" TextAlign="TextAlign.Center" />
+		<RadzenDataGridColumn TItem="ProgramTarget" Property="TargetMonth" Title="Month" Width="150px" TextAlign="TextAlign.Center" />
+		<RadzenDataGridColumn TItem="ProgramTarget" Property="Title" Title="Project" Width="170px" TextAlign="TextAlign.Center" />
+		<RadzenDataGridColumn TItem="ProgramTarget" Title="Action" Width="200px" TextAlign="TextAlign.Center">
+		<Template Context="myList">
+		<RadzenButton Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Success" Text="View" Size="ButtonSize.Medium" Click="() => navigateToView(myList.ProgramTargetId)" @onclick:stopPropagation="true" Style="width:80px;"> </RadzenButton>
+		</Template>
+		</RadzenDataGridColumn>
+		</Columns>
+		</RadzenDataGrid>*@
 
 	</RadzenCard>
 </div>
 
 @code {
+
 	string[] form = { "DME 21", "DME 22" };
 	private int status;
 	private List<DME21Model> dme = new List<DME21Model>();
 	private bool isClicked = false;
 	private int count;
 	private string statusName;
+	public SystemUser userRegistationDetailsList;
+	private int systemUserID = 0;
+
+
 
 	List<Month> monthTable = new List<Month>();
 	ProgramTarget programTarget = new ProgramTarget();
@@ -55,6 +63,11 @@
 	List<ProgramTarget> programTargetsList = new List<ProgramTarget>();
 	List<ProgramTarget> myList = new List<ProgramTarget>();
 	List<ProgramAssignee> assignees = new List<ProgramAssignee>();
+
+
+	//SystemUser systemUserList = sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+
+
 
 	protected override void OnInitialized()
 	{
@@ -74,17 +87,55 @@
 		monthTable.Add(new Month() { monthName = "December", monthNumber = 12 });
 
 
+
+
 		ProgramTargetController programTargetController = ControllerFactory.CreateProgramTargetController();
 		programTargetsList = programTargetController.GetAllProgramTarget(true, true, true, true);
 
 		ProgramAssigneeController programAssigneeController = ControllerFactory.CreateProgramAssigneeController();
 		assignees = programAssigneeController.GetAllProgramAssignee(true, true, true);
+
+		//userRegistationDetailsList = sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+		//systemUserID = userRegistationDetailsList.SystemUserId;
+
+
+
 	}
+	//protected override async Task OnInitializedAsync()
+	//{
+
+	//	userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+	//	systemUserID = userRegistationDetailsList.SystemUserId;
+
+	//}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+			systemUserID = userRegistationDetailsList.SystemUserId;
+
+			foreach (var i in programTargetsList.Where(u => u.IsRecommended == 1 && u.RecommendedBy == systemUserID))
+			{
+				myList.Add(i);
+			}
+
+			this.StateHasChanged();
+		}
+	}
+
 
 	async Task navigateToView(int index)
 	{
 		NavigationManager.NavigateTo($"/anualTargetRecommondation/target/{index}");
 	}
+
+	async void statechange()
+	{
+		StateHasChanged();
+	}
+
 }
 
 

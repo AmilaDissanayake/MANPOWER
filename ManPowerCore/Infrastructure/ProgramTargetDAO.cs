@@ -23,7 +23,7 @@ namespace ManPowerCore.Infrastructure
         int UpdateProgramTarget(ProgramTarget programTarget, DBConnection dbConnection);
 
         int UpdateProgramTargetApproval(int id, int status, DBConnection dbConnection);
-        int UpdateProgramTargetApprovalRecomended(int id, string name, int status, DBConnection dbConnection);
+        int UpdateProgramTargetApprovalRecomended(int id, int recomendedby, int status, DBConnection dbConnection);
 
         List<ProgramTarget> GetAllProgramTargetFilter(int runYear, int runMonth, DBConnection dbConnection);
 
@@ -141,7 +141,7 @@ namespace ManPowerCore.Infrastructure
             dbConnection.cmd.ExecuteNonQuery();
             return 1;
         }
-        public int UpdateProgramTargetApprovalRecomended(int id, string name, int status, DBConnection dbConnection)
+        public int UpdateProgramTargetApprovalRecomended(int id, int recomendedby, int status, DBConnection dbConnection)
         {
             if (dbConnection.dr != null)
                 dbConnection.dr.Close();
@@ -150,7 +150,7 @@ namespace ManPowerCore.Infrastructure
                 "RECOMMENDED_BY=@RecomendedBy WHERE ID=@programTargetId";
 
             dbConnection.cmd.Parameters.AddWithValue("@IsRecomended", status);
-            dbConnection.cmd.Parameters.AddWithValue("@RecomendedBy", name);
+            dbConnection.cmd.Parameters.AddWithValue("@RecomendedBy", recomendedby);
             dbConnection.cmd.Parameters.AddWithValue("@programTargetId", id);
 
             dbConnection.cmd.ExecuteNonQuery();
