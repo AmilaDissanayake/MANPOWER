@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManPowerWeb", "ManPowerWeb\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManPowerCore", "ManPowerCore\ManPowerCore.csproj", "{87B19D03-1AFA-4BEB-9B5D-748C4D05EBBA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManPowerWebNew", "ManPowerWebNew\ManPowerWebNew.csproj", "{D0923273-DBBE-49B9-891D-F26052B3F92D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{87B19D03-1AFA-4BEB-9B5D-748C4D05EBBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87B19D03-1AFA-4BEB-9B5D-748C4D05EBBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87B19D03-1AFA-4BEB-9B5D-748C4D05EBBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0923273-DBBE-49B9-891D-F26052B3F92D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0923273-DBBE-49B9-891D-F26052B3F92D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0923273-DBBE-49B9-891D-F26052B3F92D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0923273-DBBE-49B9-891D-F26052B3F92D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

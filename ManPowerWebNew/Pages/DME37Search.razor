@@ -1,0 +1,129 @@
+﻿@page "/DME37Search"
+
+
+
+
+
+@inject IJSRuntime JSRuntime
+@inject DialogService DialogService
+
+<div id="main">
+
+	<RadzenCard>
+		<div class="wizard-heading">DME 37</div>
+
+
+
+		<div class="row" style="margin-left:6px">
+			<div class="col-6">
+				<div class="row">
+					<div class="col-3">
+						<RadzenLabel Text="Year" />
+					</div>
+					<div class="col-7">
+						<RadzenTextBox Class="w-100" @bind-Value="year" Placeholder="" Name="year" Style="margin-bottom:10px;font-size:0.9em; display: block"> </RadzenTextBox>
+						@*<RadzenDatePicker @bind-Value=@selectedYear DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" />*@
+
+					</div>
+				</div>
+				<br />
+
+			</div>
+		</div>
+
+
+		@*-------------------------------------------------------------------------------------------*@
+
+		<div class="col-6">
+			<div class="row" style="margin-left:-3px">
+				<div class="col-3">
+					<RadzenLabel Text="Position" />
+				</div>
+				<div class="col-7">
+					<RadzenTextBox Class="w-100" Placeholder="" Name="possition" @bind-Value="position" TextProperty="monthName" Style="margin-bottom:10px;font-size:0.9em; display: block" />
+					<RadzenRequiredValidator Component="possition" Text="Possition is required" Style="position: absolute" />
+				</div>
+			</div>
+		</div>
+		<br />
+
+
+		<RadzenButton Shade="Shade.Darker" Text="Search" ButtonStyle="ButtonStyle.Secondary" Click="() => Search(year,position)" />
+
+		<br /><br />
+
+
+		<a href="/DME37">
+			<RadzenButton Shade="Shade.Darker" Text="Add Vacancy" ButtonStyle="ButtonStyle.Secondary" Style="width:170px;"></RadzenButton>
+		</a>
+
+		<br /><br /><br /><br />
+
+
+
+		<RadzenDataGrid Style="width: 1000px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+						Data="@cc" TItem="CompanyVecansyRegistationDetails" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+
+
+			<Columns>
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="Date" Filterable="false" Title="Date" Frozen="true" Width="150px" TextAlign="TextAlign.Center" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="Address" Title="Address" Frozen="true" Width="200px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="WebSiteLink" Title="WebSiteLink" Width="160px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="BusinessRegistationNumber" Title="BRN" Width="120px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="JobPosition" Title="JobPosition" Width="170px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="CareerPath" Title="Career Path" FormatString="{0:d}" Width="150px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="Levels" Title="Level" FormatString="{0:d}" Width="100px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="SalaryLevel" Title="SalaryLevel" Width="150px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="NumberOfVacancy" Title="Number Of Vacancy" Width="200px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="Name" Title="Name" Width="200px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="Position" Title="Position" Width="150px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="ContactNumber" Title="Contact Number" Width="180px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="WhatsappNumber" Title="Whatsapp Number" Width="180px" />
+				<RadzenDataGridColumn TItem="CompanyVecansyRegistationDetails" Property="Email" Title="Email" Width="220px" />
+
+			</Columns>
+		</RadzenDataGrid>
+
+		<br /><br />
+
+
+	</RadzenCard>
+
+</div>
+
+
+
+
+
+@code {
+
+
+	public string year = "";
+
+	public string position = "";
+
+
+	List<CompanyVecansyRegistationDetails> cc = new List<CompanyVecansyRegistationDetails>();
+
+
+
+	void Search(string y, string p)
+	{
+		CompanyVecansyRegistationDetails companyVecansyRegistationDetails = new CompanyVecansyRegistationDetails();
+		CompanyVecansyRegistationDetailsController companyVecansyRegistationDetailsController = ControllerFactory.CreateCompanyVecansyRegistationDetailsController();
+
+		cc = companyVecansyRegistationDetailsController.GetAllCompanyVecansyRegistationDetails(p, y);
+
+	}
+
+
+	void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+	{
+		// console.Log($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+	}
+
+
+
+
+}
+

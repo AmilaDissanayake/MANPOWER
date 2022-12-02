@@ -1,0 +1,235 @@
+﻿@page "/addDme21New"
+
+
+@using ManPowerWebNew.Model
+@using System.Text.Json
+
+
+
+@inject IJSRuntime JSRuntime
+@inject DialogService DialogService
+
+
+<div id="main">
+
+
+                               
+ 
+        
+                
+            
+        <RadzenDataGrid Style="width: 1000px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+        Data="@models" TItem="Model"  ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+
+            <Columns>
+            <RadzenDataGridColumn TItem="Model" Property=@nameof(Model.date) Filterable="false" Title="Date" Frozen="true" Width="150px" TextAlign="TextAlign.Center"></RadzenDataGridColumn> 
+            <RadzenDataGridColumn TItem="Model"  Property=@nameof(Model.nameOfTheProgram) Title="Name of the Program" Frozen="true" Width="220px" />
+            <RadzenDataGridColumn TItem="Model" Property=@nameof(Model.institute) Title="Institute" Width="160px"/>
+            <RadzenDataGridColumn TItem="Model" Property=@nameof(Model.address) Title="Address" Width="120px" />
+           
+           
+        </Columns>
+        </RadzenDataGrid>
+
+
+
+        
+          
+</div>   
+
+
+
+@code {
+
+
+
+
+    string value;
+
+    void OnChange(string value, string name)
+    {
+
+    }
+
+    //Enumerable<Model> models;
+    public List<Model> models { get; set; }
+
+    protected override void OnInitialized()
+    {
+        
+        models = Enumerable.Range(1, 30).Select(x => new Model()
+        {
+            address = null,
+            nameOfTheProgram = null,
+            institute = null,
+            date = DateTime.Now.AddDays(-x),
+        }).ToList();
+    }
+
+    //public class Order {
+    //    public int? OrderID { get; set; }
+    //    public string CustomerID { get; set; }
+    //    public DateTime? OrderDate { get; set; }
+    //    public double? Freight { get; set; }
+    //}
+
+    string[] SelectedOrganizationType = { "Private","Public" };
+
+
+    public class Model
+    {
+        public DateTime date { get; set; } = DateTime.Today;
+        public string nameOfTheProgram { get; set; }= "";
+        public string institute { get; set; }= "";
+        public string address { get; set; }= "";
+        public string subjectAreaOrTopic { get; set; }= "";
+        public string nameOfTheOrganization { get; set; }= "";
+        public string organizationType { get; set; }= "";
+        public string ds { get; set; } = "";
+        public string organizationAddress { get; set; }= "";
+
+        public string name { get; set; }= "";
+        public string position { get; set; }= "";
+        public string contactNumber { get; set; }= "";
+        public string whatsappNumber { get; set; }= "";
+        public string email { get; set; }= "";
+        public string detailsOfTheProvidedService { get; set; }= "";
+
+    }
+
+    public string year = "";
+
+    bool popup;
+
+    Model model = new Model();
+
+    List<ResourceProvisionProgress>resourceProvisionProgressValidate = new List<ResourceProvisionProgress>();
+
+    void  OnSubmit(Model model)
+    {
+
+        
+
+
+
+
+        ResourceProvisionProgress resourceProvisionProgress = new ResourceProvisionProgress();
+        ResourceProvisionProgressController resourceProvisionProgressController = ControllerFactory.CreateResourceProvisionProgressController();
+
+
+        resourceProvisionProgress.ResourceProvisionProgressId = 1;
+        resourceProvisionProgress.Date = model.date;
+        resourceProvisionProgress.NameOfTheProgram = model.nameOfTheProgram;
+        resourceProvisionProgress.Institute = model.institute;
+        resourceProvisionProgress.Address = model.address;
+        resourceProvisionProgress.SubjectAreaOrTopic = model.subjectAreaOrTopic;
+        resourceProvisionProgress.NameOfTheOrganization = model.nameOfTheOrganization;
+        resourceProvisionProgress.OrganizationType = model.organizationType;
+        resourceProvisionProgress.Ds = model.ds;
+        resourceProvisionProgress.OrganizationAddress = model.organizationAddress;
+        resourceProvisionProgress.Name = model.name;
+        resourceProvisionProgress.Position = model.position;
+        resourceProvisionProgress.ContactNumber = model.contactNumber;
+        resourceProvisionProgress.WhatsappNumber = model.whatsappNumber;
+        resourceProvisionProgress.Email = model.email;
+        resourceProvisionProgress.DetailsOfTheProvidedService = model.detailsOfTheProvidedService;
+
+
+        resourceProvisionProgressController.SaveResourceProvisionProgress(resourceProvisionProgress);
+
+        JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Added success");
+
+        Clear();
+
+
+        //   console.Log($"Submit: {JsonSerializer.Serialize(model, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        // console.Log($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+
+
+    IEnumerable<ResourceProProgress> resourceProProgress;
+
+    private void AddData()
+    {
+
+        ResourceProProgress resourceProProgressObj = new ResourceProProgress();
+
+
+
+        resourceProProgressObj.Date = model.date;
+        resourceProProgressObj.NameOfTheProgram = model.nameOfTheProgram;
+        resourceProProgressObj.Institute = model.institute;
+        resourceProProgressObj.Address = model.address;
+        resourceProProgressObj.SubjectAreaOrTopic = model.subjectAreaOrTopic;
+        resourceProProgressObj.NameOfTheOrganization = model.nameOfTheOrganization;
+        resourceProProgressObj.OrganizationType = model.organizationType;
+        resourceProProgressObj.Ds = model.ds;
+        resourceProProgressObj.OrganizationAddress = model.organizationAddress;
+        resourceProProgressObj.Name = model.name;
+        resourceProProgressObj.Position = model.position;
+        resourceProProgressObj.ContactNumber = model.contactNumber;
+        resourceProProgressObj.WhatsappNumber = model.whatsappNumber;
+        resourceProProgressObj.Email = model.email;
+        resourceProProgressObj.DetailsOfTheProvidedService = model.detailsOfTheProvidedService;
+
+
+        resourceProProgress = new ResourceProProgress[] { resourceProProgressObj };
+
+    }
+
+
+    private void Clear()
+    {
+
+        model.nameOfTheProgram = "";
+        model.institute = "";
+        model.address= "";
+        model.subjectAreaOrTopic = "";
+        model.nameOfTheOrganization ="";
+        model.organizationType ="";
+        model.ds ="";
+        model.organizationAddress ="";
+        model.name ="";
+        model.position ="";
+        model.name ="";
+        model.position ="";
+        model.contactNumber ="";
+        model.whatsappNumber ="";
+        model.whatsappNumber ="";
+        model.email ="";
+        model.detailsOfTheProvidedService ="";
+
+        ResourceProProgress resourceProProgressObj = new ResourceProProgress();
+
+       
+        resourceProProgressObj.Date = model.date;
+        resourceProProgressObj.NameOfTheProgram = "";
+        resourceProProgressObj.Institute = "";
+        resourceProProgressObj.Address = "";
+        resourceProProgressObj.SubjectAreaOrTopic = "";
+        resourceProProgressObj.NameOfTheOrganization = "";
+        resourceProProgressObj.OrganizationType = "";
+        resourceProProgressObj.Ds = "";
+        resourceProProgressObj.OrganizationAddress = "";
+        resourceProProgressObj.Name = "";
+        resourceProProgressObj.Position = "";
+        resourceProProgressObj.ContactNumber = "";
+        resourceProProgressObj.WhatsappNumber = "";
+        resourceProProgressObj.Email = "";
+        resourceProProgressObj.DetailsOfTheProvidedService = "";
+
+
+        resourceProProgress = new ResourceProProgress[] { resourceProProgressObj };
+  
+
+    }
+
+    
+
+     }
+ }
