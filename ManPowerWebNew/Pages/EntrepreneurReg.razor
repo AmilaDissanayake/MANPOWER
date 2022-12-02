@@ -1,0 +1,302 @@
+﻿@page "/entrpreneurReg"
+@inject IJSRuntime JSRuntime
+
+
+<div id="main">
+    <RadzenCard Style="padding-left:50px;">
+        <div class="row">
+            <div class="wizard-heading">Registration</div>
+            <br />
+        </div>
+        <br/><br/>
+
+            <h4 style="font-weight:bold;">Developed Entrepreneur / Self employers details</h4><br/>
+            <RadzenTemplateForm TItem="Model" Data=@model Submit=@OnSubmit InvalidSubmit="OnInvalidSubmit">
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Business Registration Number" />
+                </div>
+                <div class="col-5">
+                    <RadzenTextBox Class="w-100" Name="brn" @bind-Value="model.brn" style="display: block" />
+                    <RadzenRequiredValidator Component="brn" Text="BRN is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Contact Number" />
+                </div>
+                <div class="col-5">
+                    <RadzenTextBox Class="w-100" Name="contact" @bind-Value="model.contact" style="display: block" />
+                    <RadzenRequiredValidator Component="contact" Text="Contact Number is required" Popup=@popup Style="position: absolute" />
+                    <RadzenRegexValidator Component="contact" Text="Invaid Number" Pattern="^\d{10}$" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Email" />
+                 </div>
+                 <div class="col-5">
+                      <RadzenTextBox Class="w-100" Name="email" @bind-Value="model.email" style="display: block" />
+                      <RadzenRequiredValidator Component="email" Text="Email is required" Popup=@popup Style="position: absolute" />
+                      <RadzenEmailValidator Component="email" Text="Invalid email address" Popup=@popup Style="position: absolute" />
+                 </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Business Type" />
+                </div>
+                <div class="col-5">
+                    <RadzenDropDown style="display: block" TValue="int" Data="@business" Class="w-100" Name="gender" @bind-Value="model.businessType" ValueProperty="BusinessTypeId" TextProperty="BusinessTypeName"/>
+                </div>
+            </div>
+             <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Nature of Business" />
+                </div>
+                <div class="col-5">
+                    <RadzenTextArea Class="w-100" Name="nature" @bind-Value="model.nature" style="display: block" />
+                    <RadzenRequiredValidator Component="nature" Text="Business Nature is required" Style="position: absolute" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Start Date" />
+                </div>
+                <div class="col-5">
+                    <RadzenDatePicker @bind-Value="model.sdate" DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Name="date" />
+                    <RadzenRequiredValidator Component="date" Text="Date is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Average Monthly Income" />
+                </div>
+                <div class="col-5">
+                    <RadzenTextBox Class="w-100" Name="income" @bind-Value="model.income" style="display: block" />
+                    <RadzenRequiredValidator Component="income" Text="Income is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Number of Workers" />
+                </div>
+                <div class="col-5">
+                    <RadzenTextBox Class="w-100" Name="workers" @bind-Value="model.workers" style="display: block" />
+                    <RadzenRequiredValidator Component="workers" Text="Number of Workers is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Market Type" />
+                </div>
+                <div class="col-5">
+                    <RadzenDropDown style="display: block" TValue="int" Data="@mType" Class="w-100" Name="gender" @bind-Value="model.marketType" ValueProperty="MarketTypeId" TextProperty="MarketTypeName"/>
+                </div>
+            </div>
+             <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="District" />
+                </div>
+                <div class="col-5">
+                    <RadzenTextBox Class="w-100" Name="districts" @bind-Value="model.district" style="display: block" />
+                    <RadzenRequiredValidator Component="districts" Text="District is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+             <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Divisional Secretary" />
+                </div>
+                <div class="col-5">
+                    <RadzenTextBox Class="w-100" Name="Secretary" @bind-Value="model.secretary" style="display: block" />
+                    <RadzenRequiredValidator Component="Secretary" Text="Secretary is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+            <br />
+
+
+
+            <br /><br/>
+
+            <h4 style="font-weight:bold;">Facilitation for Business Plan Preparation</h4><br/>
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Date" />
+                </div>
+                <div class="col-5">
+                    <RadzenDatePicker @bind-Value=@date DateFormat="d" Change=@(args => OnChange(args, "DatePicker", "MM/dd/yyyy")) Class="w-100" Name="d" />
+                    <RadzenRequiredValidator Component="d" Text="Date is required" Style="position: absolute" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Bank Loan Arrangement" />
+                </div>
+                <div class="col-5">
+                    <RadzenDropDown style="display: block" TValue="string" Data="@bLoan" Class="w-100" Name="gender" @bind-Value="model.loan" />
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <RadzenLabel Text="Facilitation Type" />
+                </div>
+                <div class="col-5">
+                    <RadzenTextBox Class="w-100" Name="f" @bind-Value="model.facilitation" style="display: block" />
+                    <RadzenRequiredValidator Component="f" Text="Number of Workers is required" Popup=@popup Style="position: absolute" />
+                </div>
+            </div>
+            <br /><br/>
+            <br /><br/>
+
+        <div class="row">
+            <div class="col-2">
+                <RadzenButton  Text="Add" ButtonStyle="ButtonStyle.Secondary" Shade="Shade.Darker" Style="width:130px;" />
+            </div>
+            <div class="col-2">
+                @*<a href="/planning/EntrepreneurRegSearch">*@
+                    <RadzenButton Shade="Shade.Darker" Text="Save" ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Style="width:130px;"/>
+               @*</a>*@
+            </div>
+        </div>
+        <br /><br />
+        </RadzenTemplateForm>
+    </RadzenCard>
+</div>
+
+@code {
+    class Model
+    {
+        public int businessType;
+        public string nature;
+        public string income;
+        public string workers;
+        public int marketType;
+        public string loan;
+        public string facilitation;
+        public string district;
+        public string secretary;
+        public string brn;
+        public string contact;
+        public string email;
+        public DateTime sdate;
+    }
+    private bool popup;
+
+    Model model = new Model();
+
+    //string[] business = { "Agriculture", "service", "Product" };
+    //string[] mType = { "Local", "Foreign", "Both" };
+    string[] bLoan = { "Yes", "No" };
+
+
+    List<BusinessType> business = new List<BusinessType>();
+    List<MarketType> mType = new List<MarketType>();
+
+    protected override void OnInitialized()
+    {
+        BusinessTypeController businessTypeController = ControllerFactory.CreateBusinessTypeController();
+        business = businessTypeController.GetAllBusinessType();
+
+        MarketTypeController marketTypeController = ControllerFactory.CreateMarketTypeController();
+        mType = marketTypeController.GetAllMarketType();
+    }
+
+    void OnSubmit(Model model)
+    {
+        EntrepreneurController entrepreneurctrl = ControllerFactory.CreateEntrepreneurController();
+        Entrepreneur entrepreneur = new Entrepreneur();
+
+        entrepreneur.MarketTypeId = model.marketType;
+        entrepreneur.BusinessTypeId = model.businessType;
+        entrepreneur.NatureOfBusiness = model.nature;
+        entrepreneur.BusinessStartDate = model.sdate;
+        entrepreneur.AvgMonthlyIncome = double.Parse(model.income);
+        entrepreneur.NumberOfWorkers = model.workers;
+        entrepreneur.District = model.district;
+        entrepreneur.DivisionalSecretery = model.secretary;
+        entrepreneur.ContactNumber = model.contact;
+        entrepreneur.Brn = model.brn;
+        entrepreneur.Email = model.email;
+
+        int result = entrepreneurctrl.SaveEntrepreneur(entrepreneur);
+
+        if (result == 1)    
+        { 
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "success", "", "Succesfully registerd");
+            
+        }
+        else
+        {
+            JSRuntime.InvokeAsync<object>("ErrorAlert", "error", "", "Something went wrong");
+        }
+    }
+    
+
+
+
+
+    //-------------- Date Picker handler --------------------//
+
+    DateTime? startDate = DateTime.Today;
+    DateTime? date = DateTime.Today;
+
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
+
+
+
+    void OnChange(DateTime? value, string name, string format)
+    {
+    }
+
+    void DateRenderSpecial(DateRenderEventArgs args)
+    {
+        if (dates.Contains(args.Date))
+        {
+            args.Attributes.Add("style", "background-color: #ff6d41; border-color: white;");
+        }
+    }
+
+    void DateRender(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || dates.Contains(args.Date);
+    }
+
+    void DateRenderNoWeekends(DateRenderEventArgs args)
+    {
+        args.Disabled = args.Disabled || args.Date.DayOfWeek == DayOfWeek.Sunday || args.Date.DayOfWeek == DayOfWeek.Saturday;
+    }
+
+    void OnTodayClick()
+    {
+        startDate = DateTime.Today;
+        date = DateTime.Today;
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Console.WriteLine($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}");
+    }
+}

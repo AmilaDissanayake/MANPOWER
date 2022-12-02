@@ -1,0 +1,137 @@
+﻿@inject Blazored.LocalStorage.ILocalStorageService LocalStore
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@using ManPowerCore.Domain
+@using ManPowerCore.Common
+@using ManPowerCore.Controller
+@using ManPowerCore.Infrastructure
+<!-- ======= Mobile nav toggle button ======= -->
+@*<i class="bi bi-list mobile-nav-toggle d-xl-none"></i>*@
+
+<!-- ======= Header ======= -->
+<header id="header">
+    <div class="d-flex flex-column">
+        <nav id="navbar" class="nav-menu navbar">
+            <ul>
+                <li><a href="/index2" class="nav-link scrollto" @onclick="() => expandSubMenu = !expandSubMenu">Planning<i class="bx bx-down-arrow-alt"></i></a></li>
+
+                <ul style="margin-left:20px">
+                    @*<li><a href="/planning/annualTargets" class="nav-link scrollto"> <span>Anuual Target Allocation</span></a></li>
+                    <li><a href="/planning/myAnnualTargets" class="nav-link scrollto"><span>My Annual Targets</span></a></li>
+                    <li><a href="/UserRegister" class="nav-link scrollto"><span>User Registation</span></a></li>
+                    <li><a href="/login" class="nav-link scrollto"><span>Login</span></a></li>
+                    <li><a href="/DME37Search" class="nav-link scrollto"><span>DME 37</span></a></li>
+                    <li><a href="/DME42Search" class="nav-link scrollto"><span>DME 42</span></a></li>
+                    <li><a href="/resourcePerson" class="nav-link scrollto"><span>Resource Person</span></a></li>
+                    <li><a href="/planning/Registration" class="nav-link scrollto"><span>Induvidual Beneficiary Register</span></a></li>
+                    <li><a href="/planning/EntrepreneurRegSearch" class="nav-link scrollto"><span>Entrepreneur Register</span></a></li>
+                    <li><a href="/planning/UpcommingProgramme" class="nav-link scrollto"><span>Upcoming Programs</span></a></li>
+                    <li><a href="/planning/CompletedPrograms" class="nav-link scrollto"><span>Completed programs</span></a></li>
+                    <li><a href="/scheduler" class="nav-link scrollto"><span>Program calender</span></a></li>
+                    <li><a href="/DME37" class="nav-link scrollto"><span>DME37</span></a></li>
+                    <li><a href="/dme21" class="nav-link scrollto"><span>DME21</span></a></li>
+                    <li><a href="/dme22" class="nav-link scrollto"><span>DME22</span></a></li>
+                    <li><a href="/DME42" class="nav-link scrollto"><span>DME42</span></a></li>
+                    <li><a href="/dme24" class="nav-link scrollto"><span>DME24</span></a></li>*@
+
+
+                    @*<li><a href="/datagrid" class="nav-link scrollto"><span>newtable</span></a></li>
+                    <li><a href="/testPage" class="nav-link scrollto"><span>test page</span></a></li>
+                    <li><a href="url" class="nav-link scrollto"> <span>function_name</span></a></li>*@
+
+                    @foreach (var prop in FunctionList)
+                    {
+                        <li><a href="@prop.Url" class="nav-link scrollto"> <span>@prop.FunctionName</span></a></li>
+                    }
+
+                </ul>
+
+            </ul>
+
+        </nav>
+    </div>
+</header>
+
+
+@code {
+    private bool collapseNavMenu = true;
+    private bool expandSubMenu;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    List<AutSystemRoleFunction> AutFunctionList = new List<AutSystemRoleFunction>();
+    List<AutFunction> FunctionList = new List<AutFunction>();
+
+    public SystemUser userRegistationDetails;
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            string aa = await sessionStorage.GetItemAsync<string>("myFlag");
+            userRegistationDetails = await LocalStore.GetItemAsync<SystemUser>("UserDetails");
+            // userRegistationDetails = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+
+            AutSystemRoleFunctionController autSystemRoleFunctionController = ControllerFactory.CreateAutSystemRoleFunctionController();
+            AutFunctionList = autSystemRoleFunctionController.GetAllAutSystemRoleFunctionById(userRegistationDetails.UserTypeId);
+
+            foreach (var item in AutFunctionList)
+            {
+                AutFunctionController autFunctionController = ControllerFactory.CreateAutFunctionController();
+                FunctionList.AddRange(autFunctionController.GetAllAutFunctionById(item.AutFunctionId));
+            }
+            StateHasChanged();
+        }
+    }
+
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+
+    //    AutSystemRoleFunctionController autSystemRoleFunctionController = ControllerFactory.CreateAutSystemRoleFunctionController();
+    //    AutFunctionList = autSystemRoleFunctionController.GetAllAutSystemRoleFunctionById(userRegistationDetails.UserTypeId);
+
+    //    foreach (var item in AutFunctionList)
+    //    {
+    //        AutFunctionController autFunctionController = ControllerFactory.CreateAutFunctionController();
+    //        FunctionList.AddRange(autFunctionController.GetAllAutFunctionById(item.AutFunctionId));
+    //    }
+    //}
+
+    //protected async override void OnInitialized()
+    //{
+    //    base.OnInitialized();
+
+    //    AutSystemRoleFunctionController autSystemRoleFunctionController = ControllerFactory.CreateAutSystemRoleFunctionController();
+    //    AutFunctionList = autSystemRoleFunctionController.GetAllAutSystemRoleFunctionById(userRegistationDetails.UserTypeId);
+
+    //    foreach (var item in AutFunctionList)
+    //    {
+    //        AutFunctionController autFunctionController = ControllerFactory.CreateAutFunctionController();
+    //        FunctionList.AddRange(autFunctionController.GetAllAutFunctionById(item.AutFunctionId));
+    //    }
+    //}
+
+
+    //protected async override void OnInitialized()
+    //{
+    //    base.OnInitialized();
+    //    //userRegistationDetails = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
+
+    //    AutSystemRoleFunctionController autSystemRoleFunctionController = ControllerFactory.CreateAutSystemRoleFunctionController();
+    //    AutFunctionList = autSystemRoleFunctionController.GetAllAutSystemRoleFunctionById(userRegistationDetails.UserTypeId);
+
+    //    foreach (var item in AutFunctionList)
+    //    {
+    //        AutFunctionController autFunctionController = ControllerFactory.CreateAutFunctionController();
+    //        FunctionList.AddRange(autFunctionController.GetAllAutFunctionById(item.AutFunctionId));
+    //    }
+    //}
+
+}

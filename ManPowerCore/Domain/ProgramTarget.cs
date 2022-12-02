@@ -60,7 +60,7 @@ namespace ManPowerCore.Domain
         public int IsRecommended { get; set; }
 
         [DBField("RECOMMENDED_BY")]
-        public string RecommendedBy { get; set; }
+        public int RecommendedBy { get; set; }
 
         [DBField("RECOMMENDED_DATE")]
         public DateTime RecommendedDate { get; set; }
