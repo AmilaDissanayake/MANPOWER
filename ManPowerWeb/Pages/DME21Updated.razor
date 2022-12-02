@@ -1,4 +1,5 @@
 ﻿@page "/DME21updated"
+@inject IJSRuntime JsRuntime
 
 <div id="main">
     <RadzenCard Style="padding-left:40px; margin-bottom:30px;">
@@ -8,12 +9,10 @@
             <div class="col-6">
                 <div class="row">
                     <div class="col-2">
-                        <RadzenLabel Text="Year" />
+                        <RadzenLabel Text="Year :" />
                     </div>
                     <div class="col-7">
-                        <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" Placeholder="" Data="@year" Name="year"
-                                        @bind-Value="selectedYear" Style="margin-bottom:10px;font-size:0.9em;" /><br />
-                        <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                        <RadzenLabel Text="@selectedYear" />
                     </div>
                 </div>
                 <br />
@@ -21,31 +20,36 @@
             <div class="col-6">
                 <div class="row">
                     <div class="col-2">
-                        <RadzenLabel Text="Month" />
+                        <RadzenLabel Text="Month :" />
                     </div>
                     <div class="col-7">
-                        <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Data="@monthTable" Name="Month"
-                                        ValueProperty="monthNumber" TextProperty="monthName" @bind-Value="month" Style="margin-bottom:10px;font-size:0.9em;" />
-                        <RadzenRequiredValidator Component="Month" Text="Month is required" Style="position: absolute" />
+                        <RadzenLabel Text="@monthName" />
                     </div>
                 </div>
                 <br />
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-2">
-                <RadzenButton Shade="Shade.Darker" Text="Add DME21" ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Style="width:130px;" Click="add
-" />
-            </div>
-        </div>
-
         <div>
             <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" FilterMode="FilterMode.Advanced" AllowSorting="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                            Data="products" TItem="Product" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+                            Data="TaskAllocationList" TItem="TaskAllocation" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
                 <Columns>
-                    <RadzenDataGridColumn TItem="Product" Property="Id" Filterable="true" Title="ID" Width="80px" TextAlign="TextAlign.Center" />
-
+                    <RadzenDataGridColumn TItem="TaskAllocation" Property="TaskYearMonth" Filterable="true" Title="Date" Width="80px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Work Type" Filterable="false" Width="160px" TextAlign="TextAlign.Center">
+                        <Template>
+                            <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Data="@taskTypes" Name="work" ValueProperty="TaskTypeId"
+                                            TextProperty="TaskTypeName" Style="display: block" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Perform Duty" Filterable="false" Width="160px" TextAlign="TextAlign.Center">
+                        <Template>
+                            <RadzenTextArea Style="display: block" Name="duty" Class="w-100" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="TaskAllocation" Title="Work Attended Place" Filterable="false" Width="160px" TextAlign="TextAlign.Center">
+                        <Template>
+                            <RadzenTextBox Style="display: block" Name="place" Class="w-100" />
+                        </Template>
+                    </RadzenDataGridColumn>
                 </Columns>
             </RadzenDataGrid>
         </div>
@@ -55,44 +59,13 @@
 @code {
 
     string[] year = { "2021", "2022", "2023" };
-    private string selectedYear = "2022";
+    private string selectedYear = DateTime.Now.AddMonths(1).ToString("yyyy");
     List<Month> monthTable = new List<Month>();
-    private int month = 2;
-    List<TaskAllocation> taskAllocations = new List<TaskAllocation>();
-    List<Product> products;
+    private int month = DateTime.Now.AddMonths(1).Day;
+    List<TaskAllocation> TaskAllocationList = new List<TaskAllocation>();
+    private string monthName = DateTime.Now.AddMonths(1).ToString("MMMM");
+    List<TaskType> taskTypes = new List<TaskType>();
 
-
-    private async Task AddDME21()
-    {
-        for (int i = 0; i < new DateTime(Convert.ToInt32(selectedYear), month, 01).AddMonths(1).AddDays(-1).Day; i++)
-        {
-            taskAllocations.Add(new TaskAllocation() { TaskYearMonth = new DateTime(Convert.ToInt32(selectedYear), month, 01).AddDays(i) });
-        }
-    }
-
-    public class Product
-    {
-        public int Id { get; set; }
-        public string Brand { get; set; }
-        public string Name { get; set; }
-        public double Price { get; set; }
-        public string ImageLink { get; set; }
-        public string Description { get; set; }
-    }
-
-    private async Task add()
-    {
-        products = new List<Product>
-        {
-            new Product { Id = 495, Brand = "Maybelline", Name = "Maybelline face studio", Price = 10.29, ImageLink= "https://hips.hearstapps.com/hmg-prod/images/run-on-shoes-1637184473.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*", Description = "Buy and use" },
-            new Product { Id = 496, Brand = "Maybelline", Name = "Maybelline face studio", Price = 10.29, ImageLink= "https://hips.hearstapps.com/hmg-prod/images/run-on-shoes-1637184473.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*", Description = "Buy and use" },
-            new Product { Id = 497, Brand = "Maybelline", Name = "Maybelline face studio", Price = 10.29, ImageLink = "https://hips.hearstapps.com/hmg-prod/images/run-on-shoes-1637184473.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*", Description = "Buy and use" },
-            new Product { Id = 498, Brand = "Maybelline", Name = "Maybelline face studio", Price = 10.29, ImageLink = "https://hips.hearstapps.com/hmg-prod/images/run-on-shoes-1637184473.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*", Description = "Buy and use" },
-            new Product { Id = 499, Brand = "Maybelline", Name = "Maybelline face studio", Price = 10.29, ImageLink = "https://hips.hearstapps.com/hmg-prod/images/run-on-shoes-1637184473.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*", Description = "Buy and use" },
-            new Product { Id = 500, Brand = "Maybelline", Name = "Maybelline face studio", Price = 10.29, ImageLink = "https://hips.hearstapps.com/hmg-prod/images/run-on-shoes-1637184473.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*", Description = "Buy and use" },
-            new Product { Id = 501, Brand = "Maybelline", Name = "Maybelline eye studio", Price = 10.29, ImageLink = "https://hips.hearstapps.com/hmg-prod/images/run-on-shoes-1637184473.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*", Description = "Buy and use" }
-        };
-    }
     protected override async void OnInitialized()
     {
         base.OnInitialized();
@@ -109,5 +82,14 @@
         monthTable.Add(new Month() { monthName = "October", monthNumber = 10 });
         monthTable.Add(new Month() { monthName = "November", monthNumber = 11 });
         monthTable.Add(new Month() { monthName = "December", monthNumber = 12 });
+
+        for (int i = 0; i < new DateTime(Convert.ToInt32(selectedYear), month, 01).AddMonths(1).AddDays(-1).Day; i++)
+        {
+            TaskAllocationList.Add(new TaskAllocation() { TaskYearMonth = new DateTime(Convert.ToInt32(selectedYear), month, 01).AddDays(i).Date });
+        }
+
+        TaskTypeController taskTypeController = ControllerFactory.CreateTaskTypeController();
+        taskTypes = taskTypeController.GetAllTaskType(false);
+
     }
 }

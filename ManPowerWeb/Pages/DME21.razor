@@ -191,7 +191,7 @@
                         </div>
                         <div class="col-5">
                             <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="@pName" Data="@programObj" Name="programName"
-                                    @bind-Value="pId" Style="display: block" ValueProperty="ProgramId" TextProperty="ProgramName" />
+                                    @bind-Value="pId" Style="display: block" ValueProperty="ProgramId" TextProperty="ProgramName"/>
                             <RadzenRequiredValidator Component="programName" Text="Program Name is required" Popup=@popup Style="position: absolute" />
                             <br />
                             <input onclick="document.getElementById('id01').style.display='block'" type="button" class="primary-btn" value="View Instructions" style="width:160px;" />
