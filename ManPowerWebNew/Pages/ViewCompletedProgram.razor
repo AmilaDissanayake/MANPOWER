@@ -1,0 +1,98 @@
+﻿@page "/CompletedPrograms/ViewCompletedProgram/{ProgramPlanId}"
+
+<div id="main">
+    <div class="primary-container">
+        
+        @foreach (var prop in ProgramPlanlist.Where(u => u.ProgramPlanId == Convert.ToInt32(ProgramPlanId)))
+        {
+            date = prop.Date.ToShortDateString();
+            <div class="wizard-heading">Completed Programs @prop.ProgramPlanId</div>
+            <RadzenCard>
+            <div class="row">
+                <div class="col-5" style="margin-right:100px;">
+
+                    <label class="label">Date</label>                    
+                     <RadzenTextBox TValue="string" @bind-Value="date" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Program Catogery</label>
+                    cate
+                    @foreach (var item in listProgramCategory.Where(x=>x.ProgramCategoryId == prop.ProgramCategoryId))
+                    {
+                        category = item.ProgramCategoryName;                        
+                    }
+                     <RadzenTextBox TValue="string" @bind-Value="category" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Program</label>
+                     <RadzenTextBox TValue="string" @bind-Value="prop.ProgramName" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Program Type</label>
+                    @foreach (var item in listProgramType.Where(x => x.ProgramTypeId == prop._ProgramTarget.ProgramTypeId))
+                     {
+                         programType = item.ProgramTypeName;
+                     }
+                    <RadzenTextBox TValue="string" @bind-Value="programType" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Work Attended Place</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Expected Duty</label>
+                     <RadzenTextBox TValue="string" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> <br />
+
+                    <label class="label">Output</label>
+                     <RadzenNumeric ShowUpDown="false" TValue="int" @bind-Value="prop.Output" Placeholder=""  Class="w-100" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                     @*<RadzenTextBox TValue="string" Class="w-100" @bind-Value="prop.Output.ToString()" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>
+                    </RadzenTextBox> *@<br />
+
+                    <label class="label">Outcome</label>
+                      <RadzenNumeric ShowUpDown="false" TValue="int" @bind-Value="prop.Outcome" Placeholder=""  Class="w-100" Style="margin-bottom:10px;font-size:0.9em;" Disabled />
+                     @*<RadzenTextBox typeof="int" @bind-Value="prop.Outcome.ToString()" Class="w-100" Placeholder="" Style="margin-bottom:10px;font-size:0.9em;" Disabled>*@
+                   @* </RadzenTextBox>*@ <br />
+
+            </div>
+            <a href="/planning/CompletedPrograms">
+                 <input type="button" class="primary-btn" value="Back" style="width:220px;" />
+               </a>
+            </div>
+
+            </RadzenCard>           
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string ProgramPlanId { get; set; }
+
+    public string date { get; set; }
+    public string category { get; set; }
+    public string programType { get; set; }
+    public string output { get; set; }
+    public string outcome{ get; set; }
+
+    private List<ProgramPlan> ProgramPlanlist = new List<ProgramPlan>();
+    List<ProgramType> listProgramType = new List<ProgramType>();
+    List<ProgramCategory> listProgramCategory = new List<ProgramCategory>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        ProgramPlanController programPlanController = ControllerFactory.CreateProgramPlanController();
+        ProgramPlanlist = programPlanController.GetAllProgramPlan(false,false,true,true,false,false);
+
+        
+
+        ProgramTypeController programTypeController = ControllerFactory.CreateProgramTypeController();
+        listProgramType = programTypeController.GetAllProgramType(false);
+
+        ProgramCategoryController programCategoryController = ControllerFactory.CreateProgramCategoryController();
+        listProgramCategory = programCategoryController.GetAllProgramCategory(false);
+
+    }
+}

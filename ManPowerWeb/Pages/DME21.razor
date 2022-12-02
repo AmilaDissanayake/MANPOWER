@@ -152,9 +152,9 @@
                 }
 
                 @foreach (var i in taskTypes.Where(u => u.TaskTypeId == single.TaskTypeId))
-                                {
-                                    taskName = i.TaskTypeName;
-                                }
+                {
+                    taskName = i.TaskTypeName;
+                }
 
                 value = @single.StartTime;
 
@@ -464,7 +464,7 @@
     List<TaskAllocationDetail> taskAllocationDetails = new List<TaskAllocationDetail>();
     TaskAllocationDetail single = new TaskAllocationDetail();
     List<TaskAllocation> taskAllocations = new List<TaskAllocation>();
-    List<TaskAllocation> approval = new List<TaskAllocation>();programObj
+    List<TaskAllocation> approval = new List<TaskAllocation>();
     List<TaskAllocationDetail> myList = new List<TaskAllocationDetail>();
     List<DepartmentUnitPositions> listUser = new List<DepartmentUnitPositions>();
     public SystemUser userRegistationDetailsList;
@@ -498,7 +498,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             userRegistationDetailsList = await sessionStorage.GetItemAsync<SystemUser>("UserDetails");
             user = userRegistationDetailsList.Name;
@@ -516,7 +516,7 @@
             }
             StateHasChanged();
         }
-        
+
     }
 
 

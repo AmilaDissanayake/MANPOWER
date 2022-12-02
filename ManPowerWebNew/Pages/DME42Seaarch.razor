@@ -1,0 +1,128 @@
+﻿@page "/DME42Search"
+
+
+
+
+
+@inject IJSRuntime JSRuntime
+@inject DialogService DialogService
+
+<div id="main">
+
+    <RadzenCard>
+        <div class="wizard-heading">DME 42</div>
+
+        
+
+        <div class="row" style="margin-left:6px">
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-3">
+                        <RadzenLabel Text="Year" />
+                    </div>
+                    <div class="col-7">
+                            <RadzenTextBox Class="w-100" @bind-Value="year" Placeholder="" Name="year" Style="margin-bottom:10px;font-size:0.9em; display: block"> </RadzenTextBox>
+                            <RadzenRequiredValidator Component="year" Text="Year is required" Style="position: absolute" />
+                    </div>
+                </div>
+                <br />
+
+            </div>
+        </div>
+
+
+            @*-------------------------------------------------------------------------------------------*@
+
+        <div class="col-6">
+            <div class="row" style="margin-left:-3px">
+                <div class="col-3">
+                    <RadzenLabel Text="Institute" />
+                </div>
+                <div class="col-7">
+                        <RadzenTextBox Class="w-100" Placeholder="" Name="Institute" @bind-Value="Institute" Style="margin-bottom:10px;font-size:0.9em; display: block" />
+                        <RadzenRequiredValidator Component="Institute" Text="Possition is required" Style="position: absolute" />
+                </div>
+            </div>
+        </div>
+        <br />
+
+
+        <RadzenButton Shade="Shade.Darker" Text="Search" ButtonStyle="ButtonStyle.Secondary" Click="() => Search(Institute, year)" />
+
+        <br /><br />
+
+
+        <a href="/DME42">
+            <RadzenButton Shade="Shade.Darker" Text="Add Resource" ButtonStyle="ButtonStyle.Secondary" ButtonType="ButtonType.Submit" Style="width:170px;"></RadzenButton>
+        </a>
+
+        <br /><br /><br /><br />
+
+
+
+            <RadzenDataGrid Style="width: 1000px" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                        Data="@cc" TItem="ResourceProvisionProgress" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+
+                <Columns>
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="Date" Filterable="false" Title="Date" Frozen="true" Width="150px" TextAlign="TextAlign.Center" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="NameOfTheProgram" Title="Name of the Program" Frozen="true" Width="220px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="Institute" Title="Institute" Width="160px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="Address" Title="Address" Width="120px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="SubjectAreaOrTopic" Title="Subject Area" Width="170px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="NameOfTheOrganization" Title="Name of the Organization" FormatString="{0:d}" Width="230px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="OrganizationType" Title="Organization Type" FormatString="{0:d}" Width="200px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="Ds" Title="DS" Width="150px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="OrganizationAddress" Title="Address" Width="200px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="Name" Title="Name" Width="200px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="Position" Title="Position" Width="150px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="ContactNumber" Title="Contact Number" Width="180px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="WhatsappNumber" Title="Whatsapp Number" Width="180px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="Email" Title="Email" Width="220px" />
+                <RadzenDataGridColumn TItem="ResourceProvisionProgress" Property="DetailsOfTheProvidedService" Title="Details of the Provided Service" Width="320px" />
+
+
+                </Columns>
+            </RadzenDataGrid>
+
+        <br /><br />
+
+           
+    </RadzenCard>
+
+</div>
+
+
+
+
+
+@code {
+
+
+
+
+    public string year = "";
+    public string Institute = "";
+
+
+    List<ResourceProvisionProgress> cc = new List<ResourceProvisionProgress>();
+
+
+
+    void Search(string I, string Y)
+    {
+        ResourceProvisionProgress resourceProvisionProgress = new ResourceProvisionProgress();
+        ResourceProvisionProgressController resourceProvisionProgressController = ControllerFactory.CreateResourceProvisionProgressController();
+
+        cc = resourceProvisionProgressController.GetAllResourceProvisionProgress(I, Y);
+
+    }
+
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        // console.Log($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() {  WriteIndented = true })}");
+    }
+
+
+}
+

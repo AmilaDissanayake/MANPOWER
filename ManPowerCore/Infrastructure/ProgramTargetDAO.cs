@@ -12,7 +12,7 @@ namespace ManPowerCore.Infrastructure
     {
         List<ProgramTarget> GetAllProgramTarget(DBConnection dbConnection);
 
-        List<ProgramTarget> GetAllProgramTargetByProgramId( int programId, DBConnection dbConnection);
+        List<ProgramTarget> GetAllProgramTargetByProgramId(int programId, DBConnection dbConnection);
 
         List<ProgramTarget> GetAllProgramTargetByProgramTypeId(int programtypeId, DBConnection dbConnection);
 
@@ -23,6 +23,7 @@ namespace ManPowerCore.Infrastructure
         int UpdateProgramTarget(ProgramTarget programTarget, DBConnection dbConnection);
 
         int UpdateProgramTargetApproval(int id, int status, DBConnection dbConnection);
+        int UpdateProgramTargetApprovalRecomended(int id, int recomendedby, int status, DBConnection dbConnection);
 
         List<ProgramTarget> GetAllProgramTargetFilter(int runYear, int runMonth, DBConnection dbConnection);
 
@@ -69,24 +70,24 @@ namespace ManPowerCore.Infrastructure
                                  "VALUES(@ProgramTypeId,@ProgramId,@Title,@Description,@StartDate,@EndDate,@Outcome,@VoteNumber,@NoOfProjects,@EstimatedAmount,@TargetYear,@TargetMonth,@Output,@Instractions,@IsRecommended,@RecommendedBy,@RecommendedDate) SELECT SCOPE_IDENTITY() ";
 
 
-                                    //dbConnection.cmd.Parameters.AddWithValue("@id", id);
-                                    dbConnection.cmd.Parameters.AddWithValue("@ProgramTypeId", programTarget.ProgramTypeId);
-                                    dbConnection.cmd.Parameters.AddWithValue("@ProgramId", programTarget.ProgramId);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Title", programTarget.Title);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Description", programTarget.Description);
-                                    dbConnection.cmd.Parameters.AddWithValue("@StartDate", programTarget.StartDate);
-                                    dbConnection.cmd.Parameters.AddWithValue("@EndDate", programTarget.EndDate);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Outcome", programTarget.Outcome);
-                                    dbConnection.cmd.Parameters.AddWithValue("@VoteNumber", programTarget.VoteNumber);
-                                    dbConnection.cmd.Parameters.AddWithValue("@NoOfProjects", programTarget.NoOfProjects);
-                                    dbConnection.cmd.Parameters.AddWithValue("@EstimatedAmount", programTarget.EstimatedAmount);
-                                    dbConnection.cmd.Parameters.AddWithValue("@TargetYear", programTarget.TargetYear);
-                                    dbConnection.cmd.Parameters.AddWithValue("@TargetMonth", programTarget.TargetMonth);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Output", programTarget.Output);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Instractions", programTarget.Instractions);
-                                    dbConnection.cmd.Parameters.AddWithValue("@IsRecommended", programTarget.IsRecommended);
-                                    dbConnection.cmd.Parameters.AddWithValue("@RecommendedBy", programTarget.RecommendedBy);
-                                    dbConnection.cmd.Parameters.AddWithValue("@RecommendedDate", programTarget.RecommendedDate);
+            //dbConnection.cmd.Parameters.AddWithValue("@id", id);
+            dbConnection.cmd.Parameters.AddWithValue("@ProgramTypeId", programTarget.ProgramTypeId);
+            dbConnection.cmd.Parameters.AddWithValue("@ProgramId", programTarget.ProgramId);
+            dbConnection.cmd.Parameters.AddWithValue("@Title", programTarget.Title);
+            dbConnection.cmd.Parameters.AddWithValue("@Description", programTarget.Description);
+            dbConnection.cmd.Parameters.AddWithValue("@StartDate", programTarget.StartDate);
+            dbConnection.cmd.Parameters.AddWithValue("@EndDate", programTarget.EndDate);
+            dbConnection.cmd.Parameters.AddWithValue("@Outcome", programTarget.Outcome);
+            dbConnection.cmd.Parameters.AddWithValue("@VoteNumber", programTarget.VoteNumber);
+            dbConnection.cmd.Parameters.AddWithValue("@NoOfProjects", programTarget.NoOfProjects);
+            dbConnection.cmd.Parameters.AddWithValue("@EstimatedAmount", programTarget.EstimatedAmount);
+            dbConnection.cmd.Parameters.AddWithValue("@TargetYear", programTarget.TargetYear);
+            dbConnection.cmd.Parameters.AddWithValue("@TargetMonth", programTarget.TargetMonth);
+            dbConnection.cmd.Parameters.AddWithValue("@Output", programTarget.Output);
+            dbConnection.cmd.Parameters.AddWithValue("@Instractions", programTarget.Instractions);
+            dbConnection.cmd.Parameters.AddWithValue("@IsRecommended", programTarget.IsRecommended);
+            dbConnection.cmd.Parameters.AddWithValue("@RecommendedBy", programTarget.RecommendedBy);
+            dbConnection.cmd.Parameters.AddWithValue("@RecommendedDate", programTarget.RecommendedDate);
 
             return Convert.ToInt32(dbConnection.cmd.ExecuteScalar());
         }
@@ -104,24 +105,24 @@ namespace ManPowerCore.Infrastructure
 
 
 
-                                    dbConnection.cmd.Parameters.AddWithValue("@ProgramTargetId", programTarget.ProgramTargetId);
-                                    dbConnection.cmd.Parameters.AddWithValue("@ProgramTypeId", programTarget.ProgramTypeId);
-                                    dbConnection.cmd.Parameters.AddWithValue("@ProgramId", programTarget.ProgramId);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Title", programTarget.Title);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Description", programTarget.Description);
-                                    dbConnection.cmd.Parameters.AddWithValue("@StartDate", programTarget.StartDate);
-                                    dbConnection.cmd.Parameters.AddWithValue("@EndDate", programTarget.EndDate);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Outcome", programTarget.Outcome);
-                                    dbConnection.cmd.Parameters.AddWithValue("@VoteNumber", programTarget.VoteNumber);
-                                    dbConnection.cmd.Parameters.AddWithValue("@NoOfProjects", programTarget.NoOfProjects);
-                                    dbConnection.cmd.Parameters.AddWithValue("@EstimatedAmount", programTarget.EstimatedAmount);
-                                    dbConnection.cmd.Parameters.AddWithValue("@TargetYear", programTarget.TargetYear);
-                                    dbConnection.cmd.Parameters.AddWithValue("@TargetMonth", programTarget.TargetMonth);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Output", programTarget.Output);
-                                    dbConnection.cmd.Parameters.AddWithValue("@Instractions", programTarget.Instractions);
-                                    dbConnection.cmd.Parameters.AddWithValue("@IsRecommended", programTarget.IsRecommended);
-                                    dbConnection.cmd.Parameters.AddWithValue("@RecommendedBy", programTarget.RecommendedBy);
-                                    dbConnection.cmd.Parameters.AddWithValue("@RecommendedDate", programTarget.RecommendedDate);
+            dbConnection.cmd.Parameters.AddWithValue("@ProgramTargetId", programTarget.ProgramTargetId);
+            dbConnection.cmd.Parameters.AddWithValue("@ProgramTypeId", programTarget.ProgramTypeId);
+            dbConnection.cmd.Parameters.AddWithValue("@ProgramId", programTarget.ProgramId);
+            dbConnection.cmd.Parameters.AddWithValue("@Title", programTarget.Title);
+            dbConnection.cmd.Parameters.AddWithValue("@Description", programTarget.Description);
+            dbConnection.cmd.Parameters.AddWithValue("@StartDate", programTarget.StartDate);
+            dbConnection.cmd.Parameters.AddWithValue("@EndDate", programTarget.EndDate);
+            dbConnection.cmd.Parameters.AddWithValue("@Outcome", programTarget.Outcome);
+            dbConnection.cmd.Parameters.AddWithValue("@VoteNumber", programTarget.VoteNumber);
+            dbConnection.cmd.Parameters.AddWithValue("@NoOfProjects", programTarget.NoOfProjects);
+            dbConnection.cmd.Parameters.AddWithValue("@EstimatedAmount", programTarget.EstimatedAmount);
+            dbConnection.cmd.Parameters.AddWithValue("@TargetYear", programTarget.TargetYear);
+            dbConnection.cmd.Parameters.AddWithValue("@TargetMonth", programTarget.TargetMonth);
+            dbConnection.cmd.Parameters.AddWithValue("@Output", programTarget.Output);
+            dbConnection.cmd.Parameters.AddWithValue("@Instractions", programTarget.Instractions);
+            dbConnection.cmd.Parameters.AddWithValue("@IsRecommended", programTarget.IsRecommended);
+            dbConnection.cmd.Parameters.AddWithValue("@RecommendedBy", programTarget.RecommendedBy);
+            dbConnection.cmd.Parameters.AddWithValue("@RecommendedDate", programTarget.RecommendedDate);
 
 
 
@@ -140,13 +141,28 @@ namespace ManPowerCore.Infrastructure
             dbConnection.cmd.ExecuteNonQuery();
             return 1;
         }
+        public int UpdateProgramTargetApprovalRecomended(int id, int recomendedby, int status, DBConnection dbConnection)
+        {
+            if (dbConnection.dr != null)
+                dbConnection.dr.Close();
+
+            dbConnection.cmd.CommandText = "UPDATE PROGRAM_TARGET SET IS_RECOMMENDED = @IsRecomended," +
+                "RECOMMENDED_BY=@RecomendedBy WHERE ID=@programTargetId";
+
+            dbConnection.cmd.Parameters.AddWithValue("@IsRecomended", status);
+            dbConnection.cmd.Parameters.AddWithValue("@RecomendedBy", recomendedby);
+            dbConnection.cmd.Parameters.AddWithValue("@programTargetId", id);
+
+            dbConnection.cmd.ExecuteNonQuery();
+            return 1;
+        }
 
         public List<ProgramTarget> GetAllProgramTargetFilter(int runYear, int runMonth, DBConnection dbConnection)
         {
             if (dbConnection.dr != null)
                 dbConnection.dr.Close();
 
-            dbConnection.cmd.CommandText = "SELECT * FROM PROGRAM_TARGET  WHERE TARGET_YEAR = "+runYear+ " AND TARGET_MONTH = "+runMonth+" ORDER BY ID ";
+            dbConnection.cmd.CommandText = "SELECT * FROM PROGRAM_TARGET  WHERE TARGET_YEAR = " + runYear + " AND TARGET_MONTH = " + runMonth + " ORDER BY ID ";
 
             dbConnection.dr = dbConnection.cmd.ExecuteReader();
             DataAccessObject dataAccessObject = new DataAccessObject();
@@ -180,7 +196,7 @@ namespace ManPowerCore.Infrastructure
 
         }
 
-        public List<ProgramTarget> GetAllProgramTargetByProgramId( int programId, DBConnection dbConnection)
+        public List<ProgramTarget> GetAllProgramTargetByProgramId(int programId, DBConnection dbConnection)
         {
             if (dbConnection.dr != null)
                 dbConnection.dr.Close();

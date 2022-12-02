@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using CurrieTechnologies.Razor.SweetAlert2;
+using ManPowerCore.Common;
 using ManPowerWeb.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -14,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 
 namespace ManPowerWeb
 {
@@ -40,7 +42,7 @@ namespace ManPowerWeb
             services.AddScoped<ContextMenuService>();
             services.AddBlazoredLocalStorage();
             services.AddBlazoredSessionStorage();
-
+            services.AddTransient<ControllerFactory, ControllerFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
