@@ -35,20 +35,10 @@
                 <Columns>
                     <RadzenDataGridColumn TItem="TaskAllocation" Property="TaskYearMonth" Filterable="true" Title="Date" Width="80px" TextAlign="TextAlign.Center" />
                     <RadzenDataGridColumn TItem="TaskAllocation" Title="Work Type" Filterable="false" Width="160px" TextAlign="TextAlign.Center">
-                        <Template>
-                            <RadzenDropDown AllowClear="true" TValue="int" Class="w-100" Placeholder="" Data="@taskTypes" Name="work" ValueProperty="TaskTypeId"
-                                            TextProperty="TaskTypeName" Style="display: block" />
-                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="TaskAllocation" Title="Perform Duty" Filterable="false" Width="160px" TextAlign="TextAlign.Center">
-                        <Template>
-                            <RadzenTextArea Style="display: block" Name="duty" Class="w-100" />
-                        </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="TaskAllocation" Title="Work Attended Place" Filterable="false" Width="160px" TextAlign="TextAlign.Center">
-                        <Template>
-                            <RadzenTextBox Style="display: block" Name="place" Class="w-100" />
-                        </Template>
                     </RadzenDataGridColumn>
                 </Columns>
             </RadzenDataGrid>
